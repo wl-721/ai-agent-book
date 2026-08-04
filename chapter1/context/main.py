@@ -554,7 +554,7 @@ def run_single_task(api_key: str, task: str, context_mode: str = "full", provide
             "base_url": result.get("base_url"),
             "using_openrouter": result.get("using_openrouter", False),
         }
-        json.dump(serializable_result, f, indent=2)
+        json.dump(serializable_result, f, indent=2, ensure_ascii=False)
     
     logger.info(f"Detailed results saved to {output_file}")
 
@@ -770,7 +770,7 @@ def run_ablation_study(api_key: str, provider: str = "siliconflow", model: str =
     # Save raw results
     output_file = output or "ablation_results.json"
     with open(output_file, "w") as f:
-        json.dump(results, f, indent=2)
+        json.dump(results, f, indent=2, ensure_ascii=False)
     logger.info(f"Raw results saved as '{output_file}'")
     
     # Print analysis summary
