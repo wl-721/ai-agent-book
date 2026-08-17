@@ -4,6 +4,16 @@
 
 ← [返回主目录](../README.md) · 📖 [读本章正文](../book/chapter5.md)
 
+## 如何阅读实验
+
+正文用 skeleton 展示 Coding Agent 的“读/搜 → 补丁 → 测试 → 修复 → 验证”循环；可运行代码分层阅读：
+
+- **Starter**：从 [coding-agent](coding-agent/) 的 `CodingAgent.run` 入口和一个只读任务开始；
+- **Builder**：沿工具 schema、工作区隔离、测试执行和 Reviewer 反馈追踪，再对照 [small-model-codified-rules](small-model-codified-rules/) 的服务端真值；
+- **Maintainer**：阅读权限门、失败归因、证据 manifest 和回归测试；PPT/视频项目可作为独立的提议者—审核者案例。
+
+不需要首轮逐行阅读模型客户端、渲染器或兼容层；先确认“模型声明”与“环境事实”如何被分开验收。
+
 ## 配套项目
 
 | 编号 | 项目 | 类型 | 一句话说明 |
@@ -19,7 +29,8 @@
 | 5-9 | [dynamic-form](dynamic-form/) | ✅ | 信息不全时动态生成含级联逻辑的 HTML 表单让用户一次性补全，汇总 JSON 交回 Agent |
 | 5-10 | [erp-agent](erp-agent/) | ✅ | 中文自然语言转 SQL 由 DB 执行，artifact 模式让 LLM 只生成 SQL 制品不搬运数据，省 token 又防错 |
 | 5-11 | [conversational-ui](conversational-ui/) | ✅ | 自然语言提 UI 定制需求（颜色/字体/文案/布局），Agent 改 React 源码借 Vite HMR 即时生效 |
-| 5-12 | [agent-creator](agent-creator/) | ✅ | 模板/从零双臂均已通过结构、编译、测试、真实 Kimi K3 任务和语义门禁；[正式对照](agent-creator/runs/exp5-12-kimi-k3-20260730-v1/comparison.json)完整结束。模板质量非劣且创建更高效，但正文预期的“质量与效率同时严格占优”未出现——这是已完成实验的诚实负结果，不是未完成状态 |
+| 5-12 | [permission-embedded-data-objects](permission-embedded-data-objects/) | ✅ | 在 PostgreSQL 之上的权限内嵌对象存储：应用层代码可以动态生成，但每次读写仍由数据层强制执行权限、校验、引用完整性和受控后果反应 |
+| 5-13 | [agent-creator](agent-creator/) | ✅ | 模板/从零双臂均已通过结构、编译、测试、真实 Kimi K3 任务和语义门禁；[正式对照](agent-creator/runs/exp5-12-kimi-k3-20260730-v1/comparison.json)完整结束。模板质量非劣且创建更高效，但正文预期的“质量与效率同时严格占优”未出现——这是已完成实验的诚实负结果，不是未完成状态 |
 
 ## 正式实验验收
 

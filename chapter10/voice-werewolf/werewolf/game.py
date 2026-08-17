@@ -235,7 +235,7 @@ class Judge:
         tally = Counter(votes)
         top = tally.most_common()
         best = [n for n, c in top if c == top[0][1]]
-        killed = votes[0] if len(best) > 1 else top[0][0]
+        killed = next((v for v in votes if v in best), best[0]) if len(best) > 1 else top[0][0]
         # 把「今晚狼人共识」写进狼人共享上下文（只有狼人看得到）
         self.wolves_send("狼人夜间共识", f"第{self.round_no}回合夜晚，狼人决定击杀 {killed}")
         self._print_private(
@@ -313,8 +313,8 @@ class Judge:
         else:
             self.private_send(witch, "女巫夜间信息", f"第{self.round_no}回合是平安夜（无人被狼人击杀，或你无从得知）")
 
-        # 毒药：是否毒一人
-        if self.witch_poison_available:
+        # 毒药：被狼人击杀且未救活的女巫今晚无法使用毒药
+        if self.witch_poison_available and not (killed == witch.name and not saved):
             candidates = [p.name for p in self.alive() if p.name != witch.name]
             dec = witch.choose_target(
                 "你是否使用【毒药】毒死一名你怀疑是狼人的玩家？（毒则填玩家名，不毒填 none）",
@@ -421,6 +421,8 @@ class Judge:
         否则返回 None（继续游戏）。"""
         w = len(self.wolves(alive_only=True))
         g = len([p for p in self.alive() if p.role != Role.WEREWOLF])
+        if w == 0 and g == 0:
+            return Faction.UNDECIDED
         if w == 0:
             return Faction.GOOD
         if w >= g:  # 狼人数不少于好人数 → 狼人胜（屠边简化规则）

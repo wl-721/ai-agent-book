@@ -4,6 +4,16 @@
 
 ← [한국어 메인 README로 돌아가기](../docs/ko/README.md) · 📖 [제3장 본문 읽기](../book-ko/chapter3.ko.md)
 
+## 실험 읽는 방법
+
+본문은 짧은 메커니즘 skeleton으로 제어 흐름을 설명하고, 실험 디렉터리에는 완전한 SDK 어댑터·로그·테스트·검수 증거를 둡니다. 모든 파일을 줄 단위로 읽을 필요는 없습니다.
+
+- **Starter:** 목표, 최소 명령, 검수 조건부터 시작하고 다음에서 출발하세요: [user-memory](user-memory/) / [retrieval-pipeline](retrieval-pipeline/);
+- **Builder:** 진입점, 핵심 루프, 상태/메시지 스키마, 도구와 verifier를 따라갑니다.
+- **Maintainer:** 마지막으로 테스트, 증거 manifest, 실패 처리, rollback 경로와 provider adapter를 읽습니다.
+
+첫 읽기에서는 credential, UI, provider 호환 계층을 건너뛰고 수치를 재현할 때 돌아오세요.
+
 ## 연계 프로젝트
 
 | 실험 | 프로젝트 | 유형 | 설명 |
@@ -15,13 +25,12 @@
 | 3-4 | [dense-embedding](dense-embedding/) | ✅ | 벡터 유사도 검색 서비스를 만들고 트리 기반 ANNOY와 그래프 기반 HNSW 근사 최근접 이웃 색인을 비교합니다. 성능, 메모리 사용량, 갱신 가능성 측면에서 색인 전략마다 어떤 절충이 필요한지 보여 줍니다. |
 | 3-5 | [sparse-embedding](sparse-embedding/) | ✅ | BM25 알고리즘을 바탕으로 희소 벡터 검색 엔진을 처음부터 구현합니다. 풍부한 로그와 시각화 인터페이스를 통해 용어 빈도 가중치 계산, 역색인 원리 등 검색 엔진의 내부 동작을 이해할 수 있습니다. |
 | 3-6 | [retrieval-pipeline](retrieval-pipeline/) | ✅ | 밀집 검색, 희소 검색, 신경망 재순위화를 결합한 완전한 검색 파이프라인을 구축합니다. 세심하게 설계한 테스트 사례로 여러 상황에서 하이브리드 검색 방식이 어떻게 서로의 단점을 보완하는지 체계적으로 보여 줍니다. |
-| 3-7 | [multimodal-agent](multimodal-agent/) | ✅ | 네이티브 멀티모달 처리, 텍스트 추출, 도구 기반 분석이라는 세 가지 멀티모달 처리 전략을 비교합니다. 하나의 프레임워크에서 구성 요소 제거 실험을 수행해 각 기술 경로의 충실도, 비용, 유연성 사이 절충을 드러냅니다. |
-| 3-8 | [structured-index](structured-index/) | ✅ | 재귀 요약을 이용한 계층형 트리 RAPTOR와 지식 그래프 GraphRAG라는 두 가지 구조화 색인 방식을 구현하고 비교합니다. |
-| 3-9 | [agentic-rag](agentic-rag/) | ✅ | 전통적인 비에이전트형 RAG와 Agentic RAG의 성능을 비교합니다. ReAct 패턴을 사용하는 에이전트가 반복적인 정보 검색을 주도해 복잡한 사법 질의응답에서 답변 품질을 크게 높이는 과정을 보여 줍니다. |
-| 3-10 | [agentic-rag-for-user-memory](agentic-rag-for-user-memory/) | ✅ | Agentic RAG 프레임워크를 사용자 대화 기록 관리에 적용합니다. 여러 차례 반복 검색하는 능력을 활용해 세션을 넘나드는 메모리 검색을 처리하고, 기본 회상과 세션 간 검색 기능을 구현합니다. |
-| 3-11 | [contextual-retrieval](contextual-retrieval/) | ✅ | Anthropic이 제안한 컨텍스트 인식 검색 기법을 구현합니다. 텍스트 청크마다 핵심 맥락을 담은 접두 요약을 생성해 전통적인 청킹의 컨텍스트 손실 문제를 해결하고 검색 실패율을 49~67% 줄입니다. |
-| 3-12 | [contextual-retrieval-for-user-memory](contextual-retrieval-for-user-memory/) | ✅ | 컨텍스트 인식 검색 기법을 사용자 메모리 구축에 적용합니다. 고급 JSON 카드와 컨텍스트 인식 RAG를 결합해 2계층 메모리 아키텍처를 만들고, 더 높은 수준의 능동적 서비스 역량을 구현합니다. |
-| 3-13 | [structured-knowledge-extraction](structured-knowledge-extraction/) | ✅ | 사법 판례를 예로 들어 ‘상향식 요인 발견 → 사건 프로토타입 군집화 → 대화형 자문 에이전트’의 3단계 파이프라인을 구현합니다. 미리 정한 경직된 필드 없이 LLM이 많은 사건에서 요인을 스스로 발견해 모듈형 스키마(핵심 요인 + 혐의별 확장 요인)로 정리합니다. 이어 사건을 여러 프로토타입으로 군집화하고 각 프로토타입에서 요인별 중요도를 계산합니다. 에이전트는 새 사건의 사실관계를 가장 유사한 프로토타입에 대응시키고, 요인 중요도에 따라 빠진 정보를 질문한 뒤 근거 기반 조언을 제공합니다(법률 면책 고지 포함). |
+| 3-7 | [structured-index](structured-index/) | ✅ | 재귀 요약을 이용한 계층형 트리 RAPTOR와 지식 그래프 GraphRAG라는 두 가지 구조화 색인 방식을 구현하고 비교합니다. |
+| 3-8 | [agentic-rag](agentic-rag/) | ✅ | 전통적인 비에이전트형 RAG와 Agentic RAG의 성능을 비교합니다. ReAct 패턴을 사용하는 에이전트가 반복적인 정보 검색을 주도해 복잡한 사법 질의응답에서 답변 품질을 크게 높이는 과정을 보여 줍니다. |
+| 3-9 | [agentic-rag-for-user-memory](agentic-rag-for-user-memory/) | ✅ | Agentic RAG 프레임워크를 사용자 대화 기록 관리에 적용합니다. 여러 차례 반복 검색하는 능력을 활용해 세션을 넘나드는 메모리 검색을 처리하고, 기본 회상과 세션 간 검색 기능을 구현합니다. |
+| 3-10 | [contextual-retrieval](contextual-retrieval/) | ✅ | Anthropic이 제안한 컨텍스트 인식 검색 기법을 구현합니다. 텍스트 청크마다 핵심 맥락을 담은 접두 요약을 생성해 전통적인 청킹의 컨텍스트 손실 문제를 해결하고 검색 실패율을 49~67% 줄입니다. |
+| 3-11 | [contextual-retrieval-for-user-memory](contextual-retrieval-for-user-memory/) | ✅ | 컨텍스트 인식 검색 기법을 사용자 메모리 구축에 적용합니다. 고급 JSON 카드와 컨텍스트 인식 RAG를 결합해 2계층 메모리 아키텍처를 만들고, 더 높은 수준의 능동적 서비스 역량을 구현합니다. |
+| 3-12 | [structured-knowledge-extraction](structured-knowledge-extraction/) | ✅ | 사법 판례를 예로 들어 ‘상향식 요인 발견 → 사건 프로토타입 군집화 → 대화형 자문 에이전트’의 3단계 파이프라인을 구현합니다. 미리 정한 경직된 필드 없이 LLM이 많은 사건에서 요인을 스스로 발견해 모듈형 스키마(핵심 요인 + 혐의별 확장 요인)로 정리합니다. 이어 사건을 여러 프로토타입으로 군집화하고 각 프로토타입에서 요인별 중요도를 계산합니다. 에이전트는 새 사건의 사실관계를 가장 유사한 프로토타입에 대응시키고, 요인 중요도에 따라 빠진 정보를 질문한 뒤 근거 기반 조언을 제공합니다(법률 면책 고지 포함). |
 
 ## 프로젝트 유형
 

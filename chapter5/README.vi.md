@@ -4,6 +4,16 @@
 
 ← [Về README chính](../docs/vi/README.md) · 📖 [Đọc nội dung chương](../book-vi/chapter5.vi.md)
 
+## Cách đọc các thí nghiệm
+
+Phần văn bản dùng skeleton cơ chế ngắn để giải thích luồng điều khiển; thư mục thí nghiệm chứa adapter SDK đầy đủ, log, kiểm thử và bằng chứng nghiệm thu. Không cần đọc từng tệp theo từng dòng.
+
+- **Starter:** Bắt đầu từ mục tiêu, lệnh tối thiểu và điều kiện nghiệm thu; hãy bắt đầu với [coding-agent](coding-agent/);
+- **Builder:** Lần theo điểm vào, vòng lặp lõi, schema trạng thái/tin nhắn, công cụ và verifier.
+- **Maintainer:** Sau đó đọc test, manifest bằng chứng, xử lý lỗi, đường rollback và adapter nhà cung cấp.
+
+Lần đầu có thể bỏ qua credential, lớp trình bày và tương thích provider; quay lại khi cần tái tạo số liệu.
+
 ## Dự án đi kèm
 
 | Thí nghiệm | Project | Type | Description |
@@ -19,7 +29,8 @@
 | 5-9 | [dynamic-form](dynamic-form/) | ✅ | Khi đối mặt với yêu cầu thiếu thông tin, Agent không hỏi từng câu một mà sinh động một biểu mẫu HTML tự chứa có logic liên kết để người dùng bổ sung một lần; frontend tổng hợp biểu mẫu thành JSON rồi trả lại Agent để tiếp tục nhiệm vụ. |
 | 5-10 | [erp-agent](erp-agent/) | ✅ | Chuyển truy vấn tiếng Trung tự nhiên thành SQL để cơ sở dữ liệu thực thi và hiển thị trực tiếp bảng kết quả. Cốt lõi là mô thức artifact: LLM chỉ sinh artifact SQL, không tự vận chuyển dữ liệu; vừa tiết kiệm token vừa tránh sai do tính tay, ngay cả kết quả hàng chục nghìn dòng cũng trả về trong vài giây. |
 | 5-11 | [conversational-ui](conversational-ui/) | ✅ | Người dùng nêu yêu cầu tùy biến UI bằng ngôn ngữ tự nhiên (màu sắc/phông chữ/nội dung/bố cục), Agent tự định vị và sửa mã nguồn frontend React, nhờ hot loading (HMR) của Vite để thay đổi có hiệu lực tức thì, hỗ trợ tùy biến lặp nhiều vòng. |
-| 5-12 | [agent-creator](agent-creator/) | ✅ | Agent siêu lập trình so sánh sửa đổi một triển khai tham chiếu đã được xác minh với sinh Agent từ đầu; cả hai nhánh đều được biên dịch, kiểm thử và chạy qua API gọi công cụ Kimi K3 thật. |
+| 5-12 | [permission-embedded-data-objects](permission-embedded-data-objects/) | ✅ | Kho đối tượng trên PostgreSQL thực thi quyền, kiểm tra và tính toàn vẹn tham chiếu bên dưới mã ứng dụng được sinh động. |
+| 5-13 | [agent-creator](agent-creator/) | ✅ | Agent siêu lập trình so sánh sửa đổi một triển khai tham chiếu đã được xác minh với sinh Agent từ đầu; cả hai nhánh đều được biên dịch, kiểm thử và chạy qua API gọi công cụ Kimi K3 thật. |
 
 ## Phân loại dự án
 

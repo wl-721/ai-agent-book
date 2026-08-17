@@ -20,7 +20,7 @@ Gerçekten kişiselleştirilmiş, sürekli bir hizmet sunan bir AI Agent inşa e
 
 Bu süreci somut bir örnekle anlayalım. Bir kullanıcı ve Agent'ın şu konuşmayı yaptığını varsayalım:
 
-```
+```text
 Kullanıcı: Gelecek Cuma Tokyo'ya bir uçuş ayırtmama yardım et. Pencere kenarı
       koltukları tercih ederim ve vejetaryenim, bu yüzden özel bir yemeğe ihtiyacım olacak.
 Agent: Gelecek Cuma için Tokyo'ya uçuşları arayacağım...
@@ -32,7 +32,7 @@ Kullanıcı: Evet, ve United MileagePlus numaramı kullan: 12345678.
 
 Bu konuşma bittikten sonra, Agent çerçevesi diyaloğu analiz etmek ve uzun vadede hatırlanmaya değer bilgiyi çıkarmak için özel bir LLM çağırır:
 
-```
+```text
 Çıkarılan bellekler:
 - Kullanıcı pencere kenarı koltukları tercih ediyor (tercih)
 - Kullanıcı vejetaryen, uçuşlarda özel yemeğe ihtiyaç duyuyor (diyet kısıtlaması)
@@ -40,11 +40,15 @@ Bu konuşma bittikten sonra, Agent çerçevesi diyaloğu analiz etmek ve uzun va
 - Kullanıcının Tokyo'ya seyahat planları var (son etkinlik)
 ```
 
-Bu çıkarım sürecinin birkaç kilit özelliğine dikkat edin: **Seçicilik**—Agent "arama 3 seçenek döndürdü" gibi geçici bilgileri hatırlamayacak, yalnızca gelecekte yararlı olacak gerçekleri hatırlayacaktır; **Soyutlama**—"pencere kenarı koltuk tercih ederim" ifadesi, bu belirli uçuşa bağlı olmayan genel bir tercihe inceltilir; **Yapı**—her bellek, daha sonra kolayca getirilebilmesi için bir türle (tercih, kısıtlama, hesap numarası) etiketlenir. Kullanıcı bir dahaki sefere uçuş ayırttığında, Agent'ın koltuk tercihini veya yemek gereksinimlerini sormasına gerek kalmayacaktır—bu bilgi zaten bellekte mevcuttur.
+**Seçicilik**—Agent, "arama 3 seçenek döndürdü" gibi geçici bilgileri değil, yalnızca gelecekte yararlı olacak gerçekleri hatırlar.
+
+**Soyutlama**—"Pencere kenarı koltuk tercih ederim" ifadesi, belirli bir uçuşa bağlı olmayan genel bir tercihe dönüştürülür.
+
+**Yapı**—Markdown, JSON veya başka bir format kullanılsın, iyi bir düzenleme daha sonraki retrieval'ı kolaylaştırır. Kullanıcı bir dahaki sefere uçuş ayırttığında Agent'ın koltuk tercihini veya yemek gereksinimlerini yeniden sormasına gerek kalmaz; bu bilgi zaten bellektedir.
 
 ### Bellek Yeteneklerini Değerlendirmek: Üç Seviyeli Bir Çerçeve
 
-Bir bellek sistemi tasarlamadan önce, önce şu soruyu yanıtlayın: bir bellek sistemini "iyi" yapan nedir? Değerlendirme kriterlerini baştan belirlemek, sonra tartışılacak her tasarım için ortak bir ölçüt verir. Birkaç kamuya açık benchmark mevcuttur; temsili bir tanesi **LoCoMo**'dur (Long-term Conversational Memory; Maharana ve diğerleri, 2024, arXiv:2402.17753). En fazla 35 oturuma yayılan, ortalama yaklaşık 300 turluk son derece uzun diyaloglar oluşturur ve bir modelin uzun menzilli konuşmaya dair belleğini ve anlayışını üç görev ailesi aracılığıyla araştırır: soru yanıtlama (tek sıçramalı, çok sıçramalı, zamansal reasoning, açık alan ve çelişik sorulara ayrılır), olay özetleme ve çok modlu diyalog üretimi.
+Bir bellek sistemi tasarlamadan önce, önce şu soruyu yanıtlayın: bir bellek sistemini "iyi" yapan nedir? Değerlendirme kriterlerini baştan belirlemek, sonra tartışılacak her tasarım için ortak bir ölçüt verir. Birkaç kamuya açık benchmark mevcuttur; temsili bir tanesi **LoCoMo**'dur (Long-term Conversational Memory). En fazla 35 oturuma yayılan, ortalama yaklaşık 300 turluk son derece uzun diyaloglar oluşturur ve bir modelin uzun menzilli konuşmaya dair belleğini ve anlayışını üç görev ailesi aracılığıyla araştırır: soru yanıtlama (tek sıçramalı, çok sıçramalı, zamansal reasoning, açık alan ve çelişik sorulara ayrılır), olay özetleme ve çok modlu diyalog üretimi.
 
 LoCoMo ve benzerlerinden, ticari bellek ürünlerinin pratiğiyle birlikte yararlanarak, kullanıcı belleği yeteneği sekiz maddeye damıtılabilir (yazarın sentezi, herhangi bir tek benchmark'ın orijinal sınıflandırması değil):
 
@@ -57,7 +61,7 @@ LoCoMo ve benzerlerinden, ticari bellek ürünlerinin pratiğiyle birlikte yarar
 - **Zamansal Farkındalık**: Tarihleri hatırlamak, göreceli zamanı anlamak, zaman hesaplamaları yapmak
 - **Çelişki Çözümü**: Bellekler arasındaki tutarsızlıkları belirlemek ve ele almak
 
-Buna dayanarak, bellek yeteneklerini kademeli seviyelere ayrıştıran, Agent senaryolarına daha uygun üç seviyeli bir değerlendirme çerçevesi tasarladık. Bu çerçeve bu bölüm boyunca kullanılacak—sonraki Deney 3-10 ve 3-12, retrieval tekniklerinin bellek yeteneklerini nasıl iyileştirdiğini ölçmek için bunu kullanacak.
+Buna dayanarak, bellek yeteneklerini kademeli seviyelere ayrıştıran, Agent senaryolarına daha uygun üç seviyeli bir değerlendirme çerçevesi tasarladık. Bu çerçeve bu bölüm boyunca kullanılacak—sonraki Deney 3-9 ve 3-11, retrieval tekniklerinin bellek yeteneklerini nasıl iyileştirdiğini ölçmek için bunu kullanacak.
 
 **Seviye 1: Temel Hatırlama** — Bu, bir bellek sisteminin en temel yeteneğidir; Agent'ın kullanıcı tarafından doğrudan sağlanan, yapılandırılmış ve belirsizliksiz bilgiyi doğru biçimde depolayıp getirmesini gerektirir. Örneğin, "Üyelik numaram 12345" ifadesi, daha sonra ihtiyaç duyulduğunda tam olarak döndürülmelidir. Bu seviye, bellek sisteminin temel güvenilirliğini sağlar ve daha karmaşık yeteneklerin temeli olarak hizmet eder.
 
@@ -69,7 +73,7 @@ Buna dayanarak, bellek yeteneklerini kademeli seviyelere ayrıştıran, Agent se
 >
 > Yukarıdaki üç seviyeli çerçeveyi izleyen bir değerlendirme kümesi inşa ettik: seviye başına 20 test durumu, her biri zengin gerçek ayrıntılar içerir. Seviye 1 durumları tipik olarak tek bir oturumdan oluşur; Seviye 2 ve 3 durumları farklı zamanlardan ve kaynaklardan gelen birden fazla oturumdan oluşur (durum başına toplam yaklaşık 50 tur iletişim). Değerlendirme sırasında, test edilen Agent'ın ilk oturuma dayanarak bellekler üretmesi, ardından sonraki oturumlara dayanarak (yalnızca belleğe erişimle, orijinal konuşma geçmişine değil) bellekleri değiştirmesi istenir, o durum için tüm oturumlar işlenene kadar. Bellek üretiminden sonra, Agent'tan belleğe dayanarak yeni bir kullanıcı sorusunu yanıtlaması istenir. Ardından bir LLM-as-a-judge yöntemi (yanıt kalitesini puanlamak için başka bir LLM'i hakem olarak kullanmak) kullanılarak yanıt bir referans yanıtla karşılaştırılır ve o test durumu için bir ödül puanı elde edilir.
 >
-> Bu değerlendirme kümesi ve değerlendirme betiği, eşlik eden depodaki `user-memory` projesine dahildir (sonraki Deney 3-2 ile aynı taşıyıcı). Okuyucular her seviye için test durumlarının eksiksiz tanımlarını orada görebilir.
+> Bu değerlendirme kümesi ve değerlendirme betiği, eşlik eden depodaki `user-memory` projesine dahildir. Okuyucular her seviye için test durumlarının eksiksiz tanımlarını orada görebilir.
 
 ### Belleğin Hiyerarşik Yapısı
 
@@ -95,19 +99,15 @@ Bu bölüm iki temel seviyeye odaklanır: trajectory ve kullanıcı uzun vadeli 
 ![Şekil 3-2: Dört Bellek Stratejisinin Karşılaştırması](images/fig3-2.svg)
 
 
-**Simple Notes (Basit Notlar)**, minimalist bir tasarımı somutlaştırır. Her bellek minimal, bölünemez bir gerçektir (örn. "Kullanıcı e-postası: john@example.com"). Avantajı asgari ek yüktür: O(1) işlemler (veri hacminden bağımsız, sabit süre). Maliyeti, gerçekler arasındaki ilişkilerin tamamen kaybolmasıdır—"TechCorp'ta Kıdemli Mühendis olarak çalışıyor, öneri sistemi geliştirmeden sorumlu" ifadesi üç bağımsız gerçeğe ayrıştırılır ("TechCorp'ta çalışıyor", "İş unvanı Kıdemli Mühendis", "Öneri sisteminden sorumlu"), tek bir işin içsel bağlantılarını koparır. Birden fazla bilgi parçasını sentezlemeyi gerektiren sorguları ele alırken, sistem parçaları yeniden bir araya getirmek için sezgisel kurallar (örn. anahtar kelime örtüşmesine dayanarak hangi gerçeklerin ilgili olabileceğini tahmin etmek) kullanmalıdır.
+**Simple Notes (Basit Notlar)**, minimalist bir tasarımı somutlaştırır. Her bellek minimal, bölünemez bir gerçektir (örn. "Kullanıcı e-postası: john@example.com"). Avantajı asgari ek yüktür: O(1) işlemler (veri hacminden bağımsız, sabit süre). Maliyeti, gerçekler arasındaki ilişkilerin tamamen kaybolmasıdır—"TechCorp'ta Kıdemli Mühendis olarak çalışıyor, öneri sistemi geliştirmeden sorumlu" ifadesi üç bağımsız gerçeğe ayrıştırılır ("TechCorp'ta çalışıyor", "İş unvanı Kıdemli Mühendis", "Öneri sisteminden sorumlu"), tek bir işin içsel bağlantılarını koparır. Birden fazla bilgi parçasını sentezlemeyi gerektiren sorgularda sistem bu parçaları yeniden bir araya getirmek zorundadır.
 
-**Enhanced Notes (Geliştirilmiş Notlar)**, bütüncül bir perspektif benimser, her belleği eksiksiz bağlam içeren bir paragraf olarak kaydeder. Örneğin, aynı iş bilgisi şöyle depolanır: "Kullanıcı üç yıldır TechCorp'ta makine öğrenmesi konusunda uzmanlaşmış Kıdemli Yazılım Mühendisi olarak çalışıyor, şu anda 5 kişilik bir ekiple bir öneri sistemi projesine liderlik ediyor." Anlatı yapısını korumak, semantiği eksiksiz ve zengin tutar—nüanslı anlayış gerektiren senaryolara (örn. "Geçmişime dayanarak yeni bir proje öner", bu beceri düzeyi, liderlik deneyimi ve teknik tercihleri çıkarsamayı gerektirir) uygundur.
-
-Maliyetleri üç yönlüdür: depolama fazlalığı (aynı bilginin paragraflar arasında tekrarlanması), güncelleme karmaşıklığı (bir özellik değişikliği birkaç paragrafı yeniden yazmak anlamına gelir) ve sonraki retrieval'a zarar verecek kadar uzun paragraflar. Sonuncusunun nedeni şudur: metin, bilgisayarların arayabileceği bir forma dönüştürülmesi gerektiğinde, paragraf ne kadar uzunsa, bir vektör gömmenin özünü belirlemesi o kadar zorlaşır—tıpkı bir kitabın tanıtım yazısının uzadıkça kavranmasının zorlaşması gibi (gömme ve retrieval'ın teknik ayrıntıları bu bölümün RAG kısmında gelir).
+**Enhanced Notes (Geliştirilmiş Notlar)**, bütüncül bir perspektif benimser ve her belleği eksiksiz bağlam içeren bir paragraf olarak kaydeder. Örneğin, aynı iş bilgisi şöyle depolanır: "Kullanıcı üç yıldır TechCorp'ta makine öğrenmesi konusunda uzmanlaşmış Kıdemli Yazılım Mühendisi olarak çalışıyor, şu anda 5 kişilik bir ekiple bir öneri sistemi projesine liderlik ediyor." Anlatı yapısını korumak semantiği eksiksiz ve zengin tutar. Bunun karşılığında depolama fazlalığı (aynı bilginin paragraflar arasında tekrarlanması) ve güncelleme karmaşıklığı (bir özellik değişikliğinin birkaç paragrafı yeniden yazmayı gerektirmesi) ortaya çıkar.
 
 **JSON Cards (JSON Kartları)**, üç seviyeli iç içe bir yapı benimser (Kategori → Alt Kategori → Anahtar-Değer Çifti, örn. personal.contact.email, work.position.title), insanların kategorize etme biçimini taklit eder. Kısmi güncellemeleri destekler (work.position.title'ı değiştirmek work.company.name'i etkilemez) ve öngörülebilir ve genişletilebilirdir. Ama katı yapı, bilginin temiz biçimde kategorize edilebileceğini varsayar—"Hafta sonları Python'da kişisel projeler geliştirme" ifadesi aynı anda bir zaman tercihi, bir teknik tercih ve bir etkinlik türüdür; bunu tek bir kategoriye zorlamak bu boyutları düzleştirir.
 
-**Advanced JSON Cards (Gelişmiş JSON Kartları)**, bellek sistemi tasarımında bir paradigma değişimini temsil eder—bilgi depolamadan bilgi yönetimine. Her kart yalnızca gerçekleri değil, aynı zamanda bilgi kaynağının anlatı bağlamını (backstory), öznenin kimliğini (person), kullanıcıyla ilişkisini (relationship) ve bir zaman damgasını da kaydeder. Bunun ardındaki temel fikir şudur: aynı bilgi parçası farklı bağlamlarda tamamen farklı anlamlara sahip olabilir—"Dr. Zhang" kullanıcının kendi dişçisi ya da kullanıcının babasının kardiyoloğu olabilir; bağlamından soyutlandığında, bilgi doğru biçimde anlaşılamaz.
+**Advanced JSON Cards (Gelişmiş JSON Kartları)**, bellek sistemlerini bilgi depolamadan bilgi yönetimine taşır. Her kart yalnızca gerçekleri değil, aynı zamanda bilgi kaynağının anlatı bağlamını (backstory), öznenin kimliğini (person), kullanıcıyla ilişkisini (relationship) ve bir zaman damgasını da kaydeder. Bunun ardındaki temel fikir şudur: aynı bilgi parçası farklı bağlamlarda tamamen farklı anlamlara sahip olabilir—"Dr. Zhang" kullanıcının kendi dişçisi ya da kullanıcının babasının kardiyoloğu olabilir; bağlamından soyutlandığında, bilgi doğru biçimde anlaşılamaz.
 
 Bu tasarım, geleneksel sistemlerin belirsizlik giderme (disambiguation) sorununu çözer. Gerçek dünya senaryolarında, bir kullanıcıya ait bilgiler birden fazla kimlikle (kendisinin, ebeveynlerinin ve çocuklarının kimlikleriyle) ilişkili olabilir ve basit anahtar-değer depolama bunları doğru biçimde ayırt edemez. Advanced JSON Cards, backstory aracılığıyla edinim bağlamını (bu bilginin depolanmasının "nedenini") sağlar ve person ile relationship aracılığıyla net bir varlık modeli kurar (bilginin "kimin için" depolandığını). Kullanıcı "Ailem için yıllık kontrolleri ayarlamama yardım et" dediğinde, sistem relationship aracılığıyla tüm aile üyelerini belirleyebilir ve backstory aracılığıyla sağlık geçmişini anlayabilir. Maliyeti daha yüksek üretim ve bakım ek yüküdür.
-
-Bu dört modu karşılaştırmak, bellek sistemi tasarımındaki temel bir gerilimi ortaya koyar: basitlik ile ifade gücü arasındaki ödünleşim. Simple Notes, semantik eksiksizlik pahasına aşırı basitliği seçer; Enhanced Notes, yapı ve güncellenebilirlik pahasına anlatı eksiksizliğini seçer; JSON Cards, esneklik pahasına yapıyı seçer; Advanced JSON Cards, basitlik pahasına kapsamlılığı seçer. Bu ödünleşimin mutlak bir kazananı yoktur—tamamen belirli uygulama senaryosuna bağlıdır. Olgun bir AI Agent sistemi, modların bir karışımını kullanmayı gerektirebilir: geçici bilgiyi hızlıca kaydetmek için Simple Notes, hassas belirsizlik giderme ve uzun vadeli bakım gerektiren kritik bilgiyi ele almak için Advanced JSON Cards.
 
 Pratik seçim kriteri şudur: **kritik, düşük hacimli** veri için (örn. kullanıcı tercihleri, kilit kişisel ilişkiler) getirilebilirliği sağlamak amacıyla Advanced JSON Cards kullanın; maliyeti azaltmak için **büyük hacimli, kritik olmayan** konuşma gerçekleri için Simple Notes kullanın. Çoğu üretim sistemi hibrit bir yaklaşım benimser—aynı Agent içindeki farklı bilgi türleri farklı yolları izler.
 
@@ -117,7 +117,7 @@ Pratik seçim kriteri şudur: **kritik, düşük hacimli** veri için (örn. kul
 >
 > Deneysel gözlemler önceki analizle örtüşüyor: Simple Notes, en düşük üretim maliyetiyle çoğu "temel hatırlama" durumunu geçiyor, ama birden fazla bilgi parçasını sentezlemeyi veya aynı adlı varlıkları ayırt etmeyi gerektiren ikinci ve üçüncü seviye durumlarda sıklıkla puan kaybediyor. Advanced JSON Cards, belirsizlik giderme ve oturumlar arası ilişkilendirme içeren durumlarda en iyi performansı gösteriyor, maliyeti ise her oturumdan sonra önemli ölçüde daha pahalı ve daha yavaş bellek bakım çağrılarıdır. Okuyucuların dört mod arasında elle geçiş yapıp aynı test durumu için üretilen bellek dosyalarını karşılaştırmaları teşvik edilir—somut örnekler karşınızdayken, formatlar arasındaki farklar bir bakışta bellidir.
 
-### Gelişmiş Temsil: Çalıştırılabilir Koddan Parametrik Belleğe
+### Gelişmiş Bilgi Temsili: Çalıştırılabilir Kod
 
 Yukarıda tartışılan dört format, ister basit ister karmaşık olsun, özünde **metindir**—bu, belleğin "depolanması" ile "kullanılmasının" iki ayrı adım olarak kalması anlamına gelir: önce ilgili metni getir, sonra hataya açık LLM'e okuması ve hesaplaması için ver. Metin tabanlı bellek, tek tek gerçekleri hatırlamada üstündür ama birçok kayıt genelinde istatistik toplamada, çelişkili gerçekleri tespit etmede veya mantıksal kuralları uygulamada zorlanır, çünkü tüm bu işlemler LLM'in "zihinsel aritmetiğine" dayanır. User as Code[^uac] bir çözüm önerir: temsil ortamını metinden **çalıştırılabilir koda** kaydırmak. Agent'ın kullanıcı modelini **canlı bir yazılım mühendisliği projesi** olarak ele alır—kullanıcı durumunu depolamak için tipli Python nesneleri, kısıt kurallarını kodlamak için sıradan Python fonksiyonları kullanır, böylece "kullanıcıyı temsil etmek" ve "kullanıcı hakkında reasoning yapmak" bir yorumlayıcı tarafından çalıştırılabilen aynı ortamda gerçekleşir.
 
@@ -126,64 +126,61 @@ Bellek güncellemelerini iki aşamaya ayırır[^uac]: **bellek aşaması** (her 
 Aşağıda basitleştirilmiş bir örnek var. Yapılandırma aşaması, kullanıcının pasaportunu ve gezilerini tipli durum olarak depolar:
 
 ```python
-from datetime import date
-
-passport = PassportInfo(
-    number="AB1234567", country="US",
-    expiry_date=date(2025, 2, 18),
-)
-trips = [
-    Trip(destination="Tokyo", departure_date=date(2025, 1, 15),
-         is_international=True),
-    # ... kalan geziler
-]
+state = {
+    passport: PassportInfo(
+        number = "AB1234567",
+        country = "US",
+        expiry_date = date(2025, 2, 18),
+    ),
+    trips: [
+        Trip(destination = "Tokyo", departure_date = date(2025, 1, 15),
+             is_international = true),
+        ...
+    ],
+}
 ```
 
 Tipli durumla, daha önce LLM'in "metni okuyup zihinsel aritmetik yapmasını" gerektiren üç görev artık deterministik kod haline gelir:
 
-Birincisi, **toplu istatistik (aggregation)**. "Geçen yıl kaç kez yurt dışına çıktım?"—metin belleğiyle, tüm gezileri hatırlayıp birer birer saymanız gerekir ve kayıtlar arttıkça doğruluk düşer (makale, retrieval tabanlı belleğin bu tür toplu istatistik problemlerinde yalnızca %6-%43 doğruluk elde ettiğini bildiriyor); User as Code ile, bu tek bir ifadedir, neredeyse %99 doğruluk elde eder[^uac]:
+Birincisi, **toplu istatistik (aggregation)**. "Geçen yıl kaç kez yurt dışına çıktım?"—metin belleğiyle tüm gezileri hatırlayıp birer birer saymanız gerekir ve kayıt sayısı arttıkça hata olasılığı yükselir; User as Code ile bu tek bir ifadedir ve neredeyse %100 doğruluk elde eder[^uac]:
+
+**Deterministik toplama:**
 
 ```python
->>> sum(1 for t in trips if t.is_international and t.departure_date.year == 2025)
-2
+count(
+    trip for trip in state.trips
+    if trip.is_international and year(trip.departure_date) == 2025
+)
+# => 2
 ```
 
 İkincisi, **çelişki tespiti (conflict detection)**. "Mevcut ilaçları" ve "alerji geçmişini" yan yana yerleştirerek, tek bir fonksiyon bunları ilaç sınıfına göre çapraz referanslayabilir, metin formunda otomatik olarak ilişkilendirilmesi neredeyse imkânsız olacak, farklı konuşmalara dağılmış çelişkileri ortaya çıkarabilir:
 
+**Çakışma tespiti:**
+
 ```python
 def check_drug_allergy(profile):
-    for med in profile.current_medications:
+    for medication in profile.current_medications:
         for allergy in profile.allergies:
-            if med.drug_class == allergy.drug_class:
-                yield (f"İlaç çakışması: {med.name}, {med.drug_class} sınıfına ait, "
-                       f"ama hasta {allergy.allergen}'e ciddi alerjisi var")
+            if medication.drug_class == allergy.drug_class:
+                emit_conflict(medication, allergy)
 ```
 
 Üçüncüsü, **kısıt uygulama (constraint enforcement)**. Agent, bu tür kontrol fonksiyonlarını kalıcı hale getirebilir ve durum her güncellendiğinde bunları otomatik olarak tetikleyebilir—kullanıcının konuşmasına veya Agent'ın herhangi bir şey getirmesine gerek kalmadan. Örneğin, bir pasaport geçerlilik kısıtı: uluslararası bir gezinin kalkış tarihi pasaportun süresinin dolmasından 180 günden az önceyse uyar.
 
+**Kısıtların uygulanması:**
+
 ```python
 def check():
-    for trip in trips:
+    for trip in state.trips:
         if trip.is_international:
-            days = (passport.expiry_date - trip.departure_date).days
+            days = date_difference(state.passport.expiry_date,
+                                   trip.departure_date)
             if days < 180:
-                yield (f"Pasaportun süresi {passport.expiry_date} tarihinde doluyor, "
-                       f"{trip.destination} gezisine yalnızca {days} gün kaldı. Lütfen en kısa sürede yenileyin.")
+                alert("passport expires too soon", trip, days)
 ```
 
-Aynı pasaport son geçerlilik tarihi hem "depolanmış" hem de "geziye kaç gün kaldığını hesaplamak" için kullanılabilir durumdadır—aritmetik LLM tarafından değil deterministik bir yorumlayıcı tarafından yapılır, bu yüzden Agent siz sormadan önce "pasaportunuzun süresi dolmak üzere" diye uyarabilir. Toplu istatistik, çelişki tespiti ve katı kısıtlar, tam olarak metin belleğinin en çok zorlandığı ve kodun üstün olduğu yerlerdir. Maliyeti, kod üretimi ve yürütmesi için mühendislik iskelesidir ve kod, gevşek yapılandırılmış çeşitli öğeler için hiçbir avantaj sunmaz—bu yüzden `notes` alanı hâlâ metin için bir yer tutar.
-
-User as Code, belleği metinden çalıştırılabilir koda ilerletir, ama öncesindeki metin formatları gibi, modelin **dışında** kalan bir depo olmaya devam eder—önce getirilmesi, ardından model tarafından context'te reasoning yapılması gerekir. "Temsil ortamı" hattını daha içeriye doğru izlersek, kullanıcı belleği doğrudan **modelin kendi parametrelerine** de yazılabilir, bu da iki daha ileri düzey forma yol açar.
-
-**Yerel Parametrelere Yazmak: User as Engram.** Doğal bir fikir, kullanıcı gerçeklerini doğrudan model ağırlıklarına yazmaktır—örneğin, her kullanıcı için özel bir LoRA eğitmek. Ama bu yol şaşırtıcı bir engelle karşılaşır: bu tür gerçek-LoRA'ları doğrudan sorulduğunda gerçekleri neredeyse mükemmel biçimde yeniden üretebilir, ama bu gerçekler üzerinde **dolaylı reasoning** gerektiğinde başarısız olur—çünkü dondurulmuş omurga model, böyle geçici olarak takılmış bir adaptöre nasıl "başvurulacağını" hiç öğrenmemiştir. Başka bir deyişle, **gerçekleri depolamak bir şeydir; modelin bunları ne zaman getireceğini bilmesini sağlamak başka bir şeydir**. User as Engram[^engram] tam olarak bunu ele alır: bir LoRA eğitmez, bunun yerine bir kullanıcı gerçeğini Engram modelindeki boş bir **hash N-gram yuvasına** kesin olarak yazar. Bu tür modeller, pre-training sırasında, bağlama duyarlı bir geçit (gating) mekanizması tarafından kontrol edilen hash tablosu aramaları yoluyla bellekleri getirmeyi öğrenir; böylece yeni yazılan gerçekler, "depolanmış ama kullanılmamış" ikilemini atlayarak gerekli olduklarında doğal biçimde hatırlanır. Farklı kullanıcılardan gelen gerçekler ayrık yuvalara düşer ve üst üste yığılabilir (birden fazla Stable Diffusion LoRA'sının takılıp birleştirilebilmesi gibi)—kullanıcılar arasında karışma olmadan ve omurga modelin kendisine dokunmadan.
-
-**Çok Modlu: Kelimelere Dökülemeyen Algıları Depolamak.** Şimdiye kadar depolanan her şey ayrık semboller olarak yazılabilen gerçeklerdi. Ama kullanıcı belleğinin bir de **algısal** yarısı vardır—bir yüzün görünümü, bir sesin bugün geçen haftaya göre daha yorgun çıkması, bir sanatçının farklı dönemlerdeki fırça darbeleri—bunların hiçbiri "metne dökülmeye" dayanamaz: "kahverengi saçlı bir adam" yazdığınızda, tam olarak iki kahverengi saçlı adamı ayırt eden ince sinyalleri kaybedersiniz. Parametric Multimodal User Memory'nin[^mmm] ardındaki fikir, algıyı **algısal biçiminde** korumaktır: dondurulmuş bir modele küçük bir bellek bankası eklemek, hatırlanacak her kimliğin bir satıra karşılık geldiği—anahtar, hazır bir kodlayıcı (yüzler için ArcFace, sanat üslupları için CLIP) tarafından hesaplanan algısal bir vektördür, değer ise modelin kendisinden bir token kelimesinin (örn. `<id_11>`) gömmesidir. Üretim sırasında, mevcut algı bir sorgu görevi görür, bu bellek bankası üzerinde attention hesaplaması yapar, çıktıyı hiçbir metin olmadan yumuşakça eşleşen token'a yönlendirir. Yeni bir kimlik kaydetmek yalnızca bankaya bir satır eklemeyi gerektirir, eğitim gerekmez. En ilgi çekici olanı, bu şekilde depolanan algıların doğrudan vektör retrieval'ıyla yalnızca eşleşmekle kalmayıp etkinlikte onu **aşmasıdır**—çünkü karşılaştırma dil modelinin kendi temsil uzayında gerçekleştiğinden, bu "cetvel" genellikle kodlayıcının doğal benzerliğinden daha keskindir, tam olarak kodlayıcının en zayıf, en hataya açık halkasını telafi eder.
-
-Düz metinden çalıştırılabilir koda, yerel parametrelere ve hatta sürekli algıya kadar, kullanıcı bellek temsilleri modelin "dışından" "içine" doğru uzanan bir spektrum oluşturur: dış katmanlar güncellemesi, denetlenmesi ve taşınması kolaydır; iç katmanlar daha kompakttır, anlık reasoning'de daha hızlıdır ve kelimelerin dökemeyeceği algıları taşıyabilir. İçe doğru giden iki yol, sırasıyla Bölüm 7'nin parametre ince ayarına ve Bölüm 9'un çok modluluğuna değinir—burada yalnızca bir ön izlemedir.
-
 [^uac]: Kullanıcı belleğini çalıştırılabilir bir kod projesi olarak inşa etmenin eksiksiz tasarımı ve değerlendirmesi şurada bulunabilir: Li, Bojie. *User as Code: Executable Memory for Personalized Agents.* arXiv:2606.16707, 2026.
-[^engram]: Kullanıcı gerçeklerini gradyan güncellemesi olmadan Engram önceden eğitilmiş model hash N-gram yuvalarına cerrahi hassasiyetle eklemenin tasarımı ve değerlendirmesi şurada bulunabilir: Li, Bojie. *User as Engram: Internalizing Per-User Memory as Local Parametric Edits.* arXiv:2606.19172, 2026.
-[^mmm]: "Kelimelere dökülemeyen algıları" taşımak için dondurulmuş bir modele sürekli attention belleği eklemek şurada bulunabilir: Li, Bojie. *Parametric Multimodal User Memory: Storing What Captions Cannot Carry.* 2026 (yayınlanacak).
 
 ### Kullanıcı Belleğinin Bilişsel Bilim Temelleri
 
@@ -240,15 +237,15 @@ Bu referans mimarisi, bilişsel bilimin bellek sınıflandırmalarının mühend
 
 Etkileşim devam ettikçe, bir bellek sistemi depolama alanı ve retrieval verimliliğinin ikiz baskısıyla karşı karşıya kalır. Her şeyi basitçe biriktirmek bellek patlamasına yol açar—depolamayı tüketir ve retrieval doğruluğunu düşürür.
 
-Pratikte, çok katmanlı bir sıkıştırma stratejisi iyi çalışır. İlk katman, bellekleri önem puanına göre filtreler. Önem puanlamasına yaygın bir yaklaşım dört faktörü dikkate alır: erişim sıklığı (sık getirilen bellekler daha önemlidir), zaman çürümesi (daha eski bellekler unutulmaya daha yatkındır), duygusal yoğunluk (güçlü duygusal işaretlere sahip bellekler tutulmaya daha yatkındır) ve bilgi benzersizliği (tekrarlanan bilginin önemi azalır). Bir eşiğin altındaki bellekler sıkıştırılabilir veya silinebilir olarak işaretlenir. Örneğin, 5 kez erişilmiş, 3 gün önce oluşturulmuş, güçlü bir duygusal işareti olan ve tekrarı olmayan bir bellek yüksek bir önem puanı alır. Buna karşılık, yalnızca bir kez erişilmiş, 90 gün önce oluşturulmuş, duygusal işareti olmayan ve 3 diğer bellekle yüksek oranda tekrarlanan bir bellek, sıkıştırma eşiğinin altına düşebilir.
+Pratikte, çok katmanlı bir sıkıştırma stratejisi iyi çalışır.
 
-İkinci katman kümeleme yapar. Benzer bellekler gruplandırılır ve her grup için temsili bir özet üretilir (örn. hava durumuyla ilgili birden fazla konuşma "Kullanıcı sık sık hava durumunu soruyor, özellikle yağmur konusunda endişeli" şeklinde sıkıştırılır). Orijinal ayrıntılı bellekler ikincil depolamaya arşivlenebilir.
+1. İlk katman, bellekleri önem puanına göre filtreler. Önem puanlamasına yaygın bir yaklaşım dört faktörü dikkate alır: erişim sıklığı (sık getirilen bellekler daha önemlidir), zaman çürümesi (daha eski bellekler unutulmaya daha yatkındır), duygusal yoğunluk (güçlü duygusal işaretlere sahip bellekler tutulmaya daha yatkındır) ve bilgi benzersizliği (tekrarlanan bilginin önemi azalır). Bir eşiğin altındaki bellekler sıkıştırılabilir veya silinebilir olarak işaretlenir. Örneğin, 5 kez erişilmiş, 3 gün önce oluşturulmuş, güçlü bir duygusal işareti olan ve tekrarı olmayan bir bellek yüksek bir önem puanı alır. Buna karşılık, yalnızca bir kez erişilmiş, 90 gün önce oluşturulmuş, duygusal işareti olmayan ve 3 diğer bellekle yüksek oranda tekrarlanan bir bellek, sıkıştırma eşiğinin altına düşebilir.
 
-Üçüncü katman soyutlar ve genelleştirir—belirli episodic bellekten genel kurallar çıkarır ve bunları semantic veya procedural belleğe dönüştürür. Örneğin, birden fazla alışveriş konuşmasından, sistem "Uygun maliyetli ürünleri tercih ediyor ve kullanıcı yorumlarına değer veriyor" öğrenebilir.
+2. İkinci katman kümeleme yapar. Benzer bellekler gruplandırılır ve her grup için temsili bir özet üretilir (örn. hava durumuyla ilgili birden fazla konuşma "Kullanıcı sık sık hava durumunu soruyor, özellikle yağmur konusunda endişeli" şeklinde sıkıştırılır). Orijinal ayrıntılı bellekler ikincil depolamaya arşivlenebilir.
+
+3. Üçüncü katman soyutlar ve genelleştirir—belirli episodic bellekten genel kurallar çıkarır ve bunları semantic veya procedural belleğe dönüştürür. Örneğin, birden fazla alışveriş konuşmasından, sistem "Uygun maliyetli ürünleri tercih ediyor ve kullanıcı yorumlarına değer veriyor" öğrenebilir.
 
 Çelişki tespiti bir sürümleme yaklaşımı kullanır—geçmiş sürümler tutulurken en son sürüm işaretlenir. Belirli bilgiler için (örn. mevcut adres), yalnızca en son sürüm tutulur; diğer bilgiler için (örn. iş geçmişi), eksiksiz geçmiş korunur.
-
-Son olarak, diğer bölümlerle karışıklığı önlemek için bir sınır netleştirilmelidir. Bu bölüm bellek **depolama katmanındaki** düzenleme algoritmalarını—hangi belleklerin seçileceğini, kümeleneceğini ve hangi biçimlere soyutlanacağını—ele alır. Bölüm 2'deki context sıkıştırma, tek bir oturum içindeki pencere sorununu çözer; iki mekanizma farklı düzeylerde çalışır. Bilginin depolanması, indekslenmesi ve getirilmesi de bu bölümün sorumluluğundadır. Bölüm 8 ise “kanıtı çevrimiçi ekle, çevrimdışı pekiştir” şeklindeki iki aşamalı kalıbı Agent davranışının evrimine geneller ve hangi operasyonel kanıtın kalıcı güncellemeleri tetiklemek için yeterli olduğunu inceler.
 
 ### Gizlilik Koruması: Günlük Temizleme (Log Sanitization)
 
@@ -266,31 +263,9 @@ Bir kullanıcı belleği sistemi inşa ederken, temel zorluk, Agent'ın kişisel
 
 Paylaşılan bir bilgi tabanı inşa etmenin temel teknolojisi Retrieval-Augmented Generation'dır (RAG). Merkezi fikir, büyük dil modellerinin düşünme ve üretme yeteneklerini bir dış bilgi tabanının genişliği ve güncelliğiyle birleştirmektir—modelin eğitim verisinin bir kesim tarihi vardır, bilgi tabanı ise her an güncellenebilir.
 
-Tipik bir RAG sistemi iki parçadan oluşur: bilgi tabanından ilgili parçaları bulan bir retriever (getirici) ve bu parçaları context olarak kullanarak bir yanıt üreten bir generator (üretici, genellikle bir LLM). Önce iki örnek üzerinden RAG'ın nasıl çalıştığına dair sezgisel bir his edinelim, ardından retriever'ın teknik ayrıntılarına derinlemesine inelim.
+Tipik bir RAG sistemi iki parçadan oluşur: bilgi tabanından ilgili parçaları bulan bir retriever (getirici) ve bu parçaları context olarak kullanarak bir yanıt üreten bir generator (üretici, genellikle bir LLM).
 
-**Örnek 1: Wikipedia Bilgi Tabanı.** Bir kullanıcı sorar: "Kuantum dolanıklığı nedir? En son deneysel gelişmeler nelerdir?" Temel modelin eğitim verisi en son deneysel sonuçları içermeyebilir. RAG süreci şöyledir:
-
-```python
-# 1. Kullanıcı sorgusu
-query = "Kuantum dolanıklığı nedir? En son deneysel gelişmeler nelerdir?"
-
-# 2. Retrieval: Wikipedia bilgi tabanından en ilgili parçaları bul
-results = retriever.search(query, top_k=3)
-# results = [
-# "Kuantum dolanıklığı, iki parçacığın kuantum durumlarının ilişkili olduğu bir kuantum mekaniği olgusudur...",
-# "2022 Nobel Fizik Ödülü, kuantum dolanıklığı deneyleri için üç bilim insanına verildi...",
-# "Bell eşitsizliği deneyleri, kuantum dolanıklığının yerel olmayan doğasını göstermiştir..."
-# ]
-
-# 3. Generation: LLM'in bir yanıt üretmesi için getirilen sonuçları context olarak kullan
-answer = llm.generate(
-    system="Kullanıcının sorusunu aşağıdaki referans materyallere dayanarak yanıtla. Materyaller yetersizse, bunu açıkça belirt.",
-    context=results,   # ← Context'e enjekte edilen getirilmiş bilgi parçaları
-    question=query
-)
-```
-
-**Örnek 2: Şirket Bilgi Tabanı.** Bir kullanıcı sorar: "Bir şey satın aldım ve iade istiyorum. Süreç nedir?":
+Önce bir şirket bilgi tabanı örneğiyle RAG'ın nasıl çalıştığını sezgisel olarak görelim: bir kullanıcı sorar: "Bir şey satın aldım ve iade istiyorum. Süreç nedir?":
 
 ```python
 query = "İade süreci"
@@ -307,6 +282,21 @@ Kalıp her iki örnekte de aynıdır: **İlgili parçaları getir → Context'e 
 
 Retriever'ın kalitesi RAG'ın etkinliğini doğrudan belirler—ilgili parçaları getiremezse, en güçlü LLM bile üzerinde çalışacak bir şeye sahip olmaz. Bu bölüm, dokümanları bilgi tabanına sokmanın ilk adımıyla—chunking (parçalama)—başlar, ardından retriever'ın iki ana teknik yoluna, dense embedding'lere (semantik anlama) ve sparse embedding'lere (anahtar kelime eşleştirme) ve bunların nasıl birleştirileceğine döner.
 
+**Hibrit RAG hattı:**
+
+```python
+offline:
+    chunks = split_documents(documents)
+    dense_index = build_dense_index(chunks)
+    sparse_index = build_sparse_index(chunks)
+
+online(query):
+    dense_hits = dense_search(dense_index, query)
+    sparse_hits = sparse_search(sparse_index, query)
+    candidates = fuse_and_deduplicate(dense_hits, sparse_hits)
+    evidence = rerank(query, candidates)
+    return LLM(query + evidence)
+```
 
 ![Şekil 3-5: RAG Sorgu Akışı: Retrieval, Augmentation ve Generation](images/fig3-5.svg)
 
@@ -388,9 +378,15 @@ Burada `TF(t,d)`, $t$ teriminin $d$ belgesinde kaç kez geçtiğini; `DF(t)`, bu
 
 BM25 (Okapi BM25), bu iki sınırlamaya yönelik klasik bir düzeltme olarak görülebilir. Nadir terimler için IDF ağırlığını korurken terim frekansı doygunluğu ve belge uzunluğu normalizasyonu ekler:
 
-$$\text{Score}(Q, D) = \sum_{i} \text{IDF}(q_i) \cdot \frac{\text{TF}(q_i, D)\,(k_1+1)}{\text{TF}(q_i, D) + k_1\left(1 - b + b \cdot \frac{|D|}{\text{avgdl}}\right)}$$
+$$\text{Score}(Q, D) = \sum_{i} \text{IDF}_{\text{BM25}}(q_i) \cdot \frac{\text{TF}(q_i, D)\,(k_1+1)}{\text{TF}(q_i, D) + k_1\left(1 - b + b \cdot \frac{|D|}{\text{avgdl}}\right)}$$
 
-Burada $q_i$ sorgudaki bir terim, $|D|$ belge uzunluğu ve $\text{avgdl}$ külliyattaki ortalama belge uzunluğudur. Şekil 3-8'de gösterildiği gibi, $k_1$ terim frekansının ne kadar hızlı doygunluğa ulaştığını kontrol eder; böylece her ek tekrarın marjinal katkısı azalır. $b$ ise uzunluk normalizasyonunun gücünü belirleyerek farklı uzunluktaki belgelerin daha adil karşılaştırılmasını sağlar. Bu nedenle 10 tekrar genellikle 5 tekrarın tam iki katından az katkı verir ve aynı TF daha uzun bir belgede daha düşük ağırlık alır. Belirli parametreler ve hesaplama Deney 3-5'te ele alınır.
+Burada $q_i$ sorgudaki bir terim, $|D|$ belge uzunluğu ve $\text{avgdl}$ külliyattaki ortalama belge uzunluğudur. $\text{IDF}_{\text{BM25}}$ ifadesinin alt simge taşımasının nedeni, bunun yukarıdaki TF-IDF'in $\text{IDF}$'i ile aynı formül olmamasıdır: BM25 daha sağlam bir varyanta geçer.
+
+$$\text{IDF}_{\text{BM25}}(t) = \ln\frac{N - \text{DF}(t) + 0.5}{\text{DF}(t) + 0.5}$$
+
+Sezgi değişmez —terim ne kadar nadirse ağırlığı o kadar büyüktür—, değişen yalnızca ölçme biçimidir. Payda toplam belge sayısı $N$ yerine terimi *içermeyen* belge sayısı $N - \text{DF}(t)$ yer alır; böylece oran, terimi içermeyen belgelerin içerenlerden kaç kat fazla olduğunu doğrudan ifade eder. Pay ve paydaya 0,5 eklenmesi sonucu yumuşatır ve formül $\text{DF}(t) = 0$ ile $\text{DF}(t) = N$ uç durumlarında da tanımlı kalır. Bedeli ise, belgelerin yarısından fazlasında geçen bir terimin ($\text{DF}(t) > N/2$) negatif ağırlık almasıdır; bu yüzden uygulamalar genellikle bir alt sınır koyar. Bu varyant olasılıksal erişim modelinden gelir ve literatürde Robertson–Spärck Jones ağırlığı olarak bilinir.
+
+Şekil 3-8'de gösterildiği gibi, $k_1$ terim frekansının ne kadar hızlı doygunluğa ulaştığını kontrol eder; böylece her ek tekrarın marjinal katkısı azalır. $b$ ise uzunluk normalizasyonunun gücünü belirleyerek farklı uzunluktaki belgelerin daha adil karşılaştırılmasını sağlar. Bu nedenle 10 tekrar genellikle 5 tekrarın tam iki katından az katkı verir ve aynı TF daha uzun bir belgede daha düşük ağırlık alır. Belirli parametreler ve hesaplama Deney 3-5'te ele alınır.
 
 
 ![Şekil 3-8: BM25 Puanlama Mekanizması](images/fig3-8.svg)
@@ -400,7 +396,7 @@ Burada $q_i$ sorgudaki bir terim, $|D|$ belge uzunluğu ve $\text{avgdl}$ külli
 >
 > Sparse retrieval'ın iç işleyişini açığa çıkarmak için, `sparse-embedding` projesi öğretici bir araç olarak sıfırdan BM25 tabanlı bir sparse vektör arama motoru uygular. Değeri performans sıkmakta değil, tam şeffaflıktadır. Zengin loglama ve görselleştirme arayüzleri aracılığıyla, tüm doküman indeksleme sürecini net biçimde gözlemleyebiliriz: metin ön işleme (tokenizasyon ve neredeyse hiç retrieval değeri taşımayan Çince durak kelimelerinin—"的" ve "了" gibi, İngilizce'deki "the" veya "of" kadar yaygın işlev kelimeleri—kaldırılması), bir ters indeks (inverted index) inşa etme ve TF ile IDF değerlerini hesaplama. Bir ters indeks, kelimelerden dokümanlara ters bir eşleme tablosudur—normal bir indeks "bir doküman verildiğinde, içerdiği kelimeleri listele" iken, bir ters indeks tam tersini yapar: "bir kelime verildiğinde, onu içeren tüm dokümanları hemen bul." Bu, bir kitabın arkasındaki terim indeksine benzer: "TCP"yi ararsınız, size 45, 112 ve 203. sayfalarda bahsedildiğini söyler.
 >
-> Bir sorgu sırasında, log BM25 hesaplamasının her adımını ayrıntılı biçimde gösterir. Yine "model damıtma" sorgusunu örnek alırsak—aşağıdaki, projeyle birlikte gelen küçük bir örnek külliyattan (N=10 doküman) bir logdur, bu yüzden isabet sayısı daha önce bahsedilen 100 makale senaryosundan çok daha küçüktür. Elle yeniden hesaplamayı kolaylaştırmak için, örnek BM25 parametrelerini k1=1,5, b=0,75 ve ortalama doküman uzunluğunu avgdl=250 kelime olarak sabitler; IDF standart formu kullanır IDF=ln((N−df+0,5)/(df+0,5)), burada df kelimeyi içeren doküman sayısıdır:
+> Bir sorgu sırasında, log BM25 hesaplamasının her adımını ayrıntılı biçimde gösterir. Yine "model damıtma" sorgusunu örnek alırsak—aşağıdaki, projeyle birlikte gelen küçük bir örnek külliyattan (N=10 doküman) bir logdur, bu yüzden isabet sayısı daha önce bahsedilen 100 makale senaryosundan çok daha küçüktür. Elle yeniden hesaplamayı kolaylaştırmak için, örnek BM25 parametrelerini k1=1,5, b=0,75 ve ortalama doküman uzunluğunu avgdl=250 kelime olarak sabitler; IDF yukarıdaki BM25 formunu kullanır: IDF=ln((N−df+0,5)/(df+0,5)), burada df kelimeyi içeren doküman sayısıdır:
 >
 > ```
 > Sorgu token'ları: ["model", "damıtma"]
@@ -431,7 +427,13 @@ Her iki yöntemin de kör noktaları vardır: dense retrieval semantiği anlar a
 ![Şekil 3-9: Hibrit Retrieval ve Reranking Boru Hattı](images/fig3-9.svg)
 
 
-Tipik bir hibrit retrieval boru hattının kendi işine sahip üç aşaması vardır. Birincisi **paralel retrieval**: sistem sorguyu dense ve sparse motorlara eş zamanlı olarak gönderir ve her biri bir aday doküman kümesi getirir. İkincisi, iki sonuç kümesini birleşik bir aday havuzunda birleştiren **sonuç füzyonudur (result fusion)**. Zorluk, iki yoldan gelen puanların doğrudan karşılaştırılabilir olmamasıdır: dense retrieval'ın benzerlik puanları (örn. kosinüs benzerliği, teorik olarak −1 ile 1 arasında değişir, ama pratikte normalleştirilmiş metin embedding'leri genellikle 0 ile 1 arasındadır) ve sparse retrieval'ın BM25 puanları (0'dan onlarca değere kadar herhangi bir değer olabilir) tamamen farklı ölçeklere ve dağılımlara sahiptir. İki yaygın füzyon yöntemi şunlardır: birincisi, her yoldan gelen puanları ayrı ayrı normalleştirip ağırlıklı bir toplam yapmak; ikincisi, Reciprocal Rank Fusion (RRF)—orijinal puanları tamamen bir kenara bırakıp yalnızca sıralamalara bakmak. Her dokümanın birleşik puanı, her sonuç kümesindeki sıralamasının yumuşatılmış terslerinin toplamıdır, yani puan = Σ 1/(k + sıra), burada k bir yumuşatma sabitidir (genellikle 60), üst sıralardaki puan farkını azaltmak için kullanılır. RRF basit ve sağlamdır, ama yalnızca sıralama bilgisini kullanır, orijinal puanlardaki zengin ilgi sinyalini bir kenara bırakır (ağırlıklı normalleştirilmiş füzyon puanları korur, maliyeti gerçekten ayarlaması zor bir ölçek hizalamasıdır). Üçüncü aşama—**Neural Reranking**—yalnızca RRF'nin bir kenara bıraktığını yamamak için orada değildir: öncesinde hangi füzyon yöntemi olursa olsun, reranking yerini daha güçlü bir eşleştirme paradigmasına geçerek kazanır. Bir cross-encoder, sorgu ve doküman arasında derin, etkileşimli bir eşleştirme yapar, her birini bağımsız olarak kodlayıp vektör aritmetiğiyle karşılaştıran retrieval aşamasının bi-encoder'ından çok daha isabetlidir. Somut olarak, birleşik havuzdan gelen ilk N adayı (diyelim 50) birer birer puanlayarak nihai sıralamayı üretir. Reranking'in füzyonun **yerini almadığına** dikkat edin: füzyon iki sonuç kümesinden birleşik aday havuzunu üretir; reranking o havuz içinde ince sıralama yapar—öncesi olmadan, sonrası hangi dokümanları puanlayacağını bile bilemezdi.
+Tipik bir hibrit retrieval boru hattının, her biri ayrı bir iş yapan üç aşaması vardır.
+
+Birincisi **paralel retrieval**'dır: sistem sorguyu dense ve sparse motorlara eş zamanlı gönderir; her biri bir aday doküman kümesi getirir.
+
+İkincisi **sonuç füzyonudur (result fusion)** ve iki sonuç kümesini birleşik bir aday havuzunda toplar. İki yoldan gelen puanlar doğrudan karşılaştırılamaz: dense retrieval'ın benzerlik puanları (örn. teorik olarak −1 ile 1 arasında değişen, normalleştirilmiş metin embedding'lerinde pratikte çoğunlukla 0 ile 1 arasında kalan kosinüs benzerliği) ile sparse retrieval'ın BM25 puanları (0'dan onlarca değere kadar herhangi bir değer alabilir) tamamen farklı ölçek ve dağılımlara sahiptir. İki yaygın yöntem vardır: her yolun puanlarını ayrı ayrı normalleştirip ağırlıklı toplamak veya Reciprocal Rank Fusion (RRF) kullanmak. RRF özgün puanları bırakıp yalnızca sıralamaya bakar; birleşik puan, her sonuç kümesindeki yumuşatılmış sıra terslerinin toplamıdır: puan = Σ 1/(k + sıra). Burada k, üst sıralar arasındaki farkı azaltan, genellikle 60 seçilen bir yumuşatma sabitidir. RRF basit ve sağlamdır, ancak yalnızca sıralama bilgisini kullanıp özgün puanlardaki zengin ilgi sinyalini kaybeder.
+
+Üçüncü aşama **Neural Reranking**'dir. Önceki füzyon yöntemi ne olursa olsun, daha güçlü bir eşleştirme paradigması kullandığı için reranking eklemeye değer. Bir cross-encoder, sorgu ile doküman arasında derin etkileşimli eşleştirme yapar; bu, ikisini ayrı ayrı kodlayıp vektör işlemleriyle karşılaştıran retrieval aşamasındaki bi-encoder'dan çok daha isabetlidir. Birleşik havuzdaki ilk N adayı (örneğin 50) tek tek puanlayarak nihai sıralamayı üretir. Reranking füzyonun **yerini almaz**: füzyon birleşik aday havuzunu üretir, reranking bu havuzu hassas biçimde sıralar.
 
 Bir benzetme: özgeçmişleri hızlıca gözden geçiren bir işe alım uzmanı bi-encoder'dır; her adayla derin bir sohbet yapan bir mülakatçı ise cross-encoder'dır. Birincisi, önceden çıkarılmış özellikler üzerinde büyük ölçekte eler; ikincisi, sorgu ile her aday dokümanın "yüz yüze" buluşmasına ve kelime kelime tartılmasına izin verir. Reranker, retrieval aşamasında kullanılan "Bi-Encoder"ın tam tersine, "Cross-Encoder" mimarisini kullanır. Bir **Bi-Encoder**, sorgu ve doküman için bağımsız vektörler üretir ve benzerliği vektör işlemleriyle hesaplar—çok hızlıdır, ama derin eşleştirme ilişkilerini yakalayamaz, devasa veriden ilk elemede uygundur. Bir **Cross-Encoder**, **sorguyu ve aday dokümanı tek bir metin parçasında birleştirir** ve modele verir, modelin kelime kelime karşılaştırma yapıp kapsamlı bir ilgi puanı çıktı vermesine izin verir[^ch3-cross-encoder]—çok daha yavaştır, ama yargıda daha isabetlidir. [BAAI/bge-reranker-v2-m3](https://huggingface.co/BAAI/bge-reranker-v2-m3) gibi yaygın kullanılan reranking modelleri bu mimariyi benimser.
 
@@ -461,37 +463,11 @@ Sektör raporları ayrıca yaygın olarak "retrieval başarısızlık oranından
 >
 > En çok göze çarpan şey, reranker'ın nihai sonuçların kalitesini ne kadar yükselttiğidir. Sistem yalnızca yeniden sıralanmış listeyi değil, her dokümanın dense ve sparse retrieval'lardaki orijinal sırasını ve reranking'den sonra nasıl hareket ettiğini de döndürür. Bu "sıra değişikliği" istatistikleri, neural reranker'ın tek bir yöntemin düşük değerlendirdiği ama aslında son derece ilgili olan dokümanları en üste nasıl yükselttiğini net biçimde gösterir. Sonuçlar bir noktayı açıkça ortaya koyuyor: hiçbir tek retrieval stratejisi her yerde güvenilir değildir. Dense, sparse ve reranking'i birleştirmek, üretim düzeyinde bir RAG sistemi inşa etmenin doğru yoludur.
 
-Şimdiye kadar getirdiğimiz her şey düz metindi. Gerçek dünya bilgisi bundan çok daha fazla biçimde yaşar.
-
-### Çok Modlu Bilgi Çıkarımı: Metnin Sınırlarının Ötesinde
-
-Bilgi tabanı boru hattında, çok modlu bilgi çıkarımı en başta—**alım ve indeksleme** aşamasında—yer alır. Metin dışı içeriğin bilgi tabanına hangi biçimde gireceğini, dolayısıyla sonrasında chunking, embedding ve retrieval'ın ne kadar bilgiden yararlanabileceğini belirler. Bilgi yalnızca metinde yaşamaz: grafikler, PDF düzenleri ve konuşma da ele alınmalıdır. Mimari olarak üç yol vardır ve temel ödünleşim sadakat ile maliyet arasındadır.
-
-#### Yerleşik Çok Modlu İşleme: Birleşik Bir Semantik Uzay
-
-**Yerleşik çok modlu işlemenin** temel teknolojik atılımı, farklı veri türlerini özelleşmiş kodlayıcılar aracılığıyla birleşik, yüksek boyutlu bir semantik uzaya eşlemektir. Görüntüleri örnek alırsak, kamuya açık dokümante edilmiş mimarilere sahip çok modlu modeller (Qwen-VL ve LLaVA gibi) tipik olarak **Vision Transformer** (ViT) tabanlı bir görsel kodlayıcı entegre eder—basitçe söylemek gerekirse, "bir görüntüyü küçük yamalara keser ve bunları 'görsel kelimeler' olarak ele alır, ardından bir Transformer ile işler" (GPT-4o ve Gemini gibi kapalı kaynak modellerin belirli mimarileri kamuya açık değildir, ama genel olarak benzer bir yaklaşımı izledikleri düşünülür). Somut olarak, ViT bir görüntüyü sabit boyutlu yamalara böler ve her birini bir cümledeki kelimelerin işlendiği gibi bir vektöre serileştirir, böylece yamalar paylaşılan bir çok modlu embedding uzayında metin kelime vektörleriyle bir arada bulunur. Transformer'ın self-attention mekanizması, metin ve görüntü token'larını eşit biçimde ele alabilir, keyfi çapraz modlu ilişkileri hesaplayabilir. Bu uçtan uca ortak işleme, eşsiz bağlamsal sadakat sağlar—model bir PDF'in sayfa düzenini, grafiklerini ve metnini doğrudan "gördüğünde", metin ve görüntüler arasındaki mekânsal ve semantik ilişkileri anlayabilir, bu da onu karmaşık düzenlere ve yüksek bilgi yoğunluğuna sahip dokümanlar için özellikle uygun kılar.
-
-#### Metne Çıkarma: Düşük Maliyetli Bir Yaklaşım
-
-**Metne çıkarma (extract to text)**, iki aşamalı bir süreçtir: önce, özelleşmiş araçlar (OCR servisleri, ses transkripsiyon servisleri gibi) metin dışı içeriği düz metne dönüştürür, bu daha sonra bir dil modeline girdi olarak verilir. Bu, bir tasarım felsefesi olarak modülerlik ve maliyet etkinliğidir: herhangi bir çok modlu görev düz metin görevi haline gelir, her dil modeliyle uyumlu hale gelir ve çıkarılan metin önbelleğe alınıp yeniden kullanılabilir. Bedeli bağlamdır—tüm düzen, grafik ve görüntü bilgisi çıkarım sırasında atılır.
-
-#### Araç Tabanlı Analiz: İhtiyaç Halinde Derinlemesine İnceleme
-
-**Çok modlu analizi bir araç olarak ele almak**, hibrit bir yaklaşımdır. Metin çıkarımıyla başlar, Agent'a başlangıç bir metin özeti sağlarken, aynı zamanda Agent'ı orijinal dosyanın derinlemesine analizi için araçlarla (örn. `analyze_image`, `analyze_pdf`) donatır. Bu "ihtiyaç halinde derinlemesine inceleme" stratejisi, başlangıç işlemenin düşük maliyetini derin analizin yüksek sadakatiyle dengeler.
-
-> **Deney 3-7 ★★: Çok Modlu Bilgi Çıkarımı: Üç Teknik Paradigmanın Karşılaştırmalı Analizi**
->
-> `multimodal-agent` projesi, üç stratejiyi birleşik bir çerçeve içinde sistematik olarak karşılaştırır ve değerlendirir. `demo.py` kullanarak, aynı çok modlu dosyayı (örn. grafikler içeren bir PDF raporu) ve aynı soruyu üç moda besler ve performans farklarını gözlemler.
->
-> Deneysel sonuçlar üçü arasındaki ödünleşimleri net biçimde gösterir: **Yerleşik Çok Modlu Mod**, görsel ve mekânsal bilginin derin anlayışı sayesinde grafikleri analiz etme ve doküman düzenlerini anlama gibi görevlerde en iyi performansı gösterir. **Metne Çıkarma Modu**, düz metin ağırlıklı dokümanlar için en uygun maliyetlidir ama görsel bilgi gerektiren sorgularda tamamen başarısız olur. **Araç Tabanlı Mod**, etkileşimli senaryolarda esneklik gösterir, çoğu başlangıç sorgusunu düşük maliyetle ele alır ve gerektiğinde tool call'lar aracılığıyla yüksek maliyetli derin analiz yapar, ama tek seferlik, uçtan uca derin anlayış gerektiren senaryolarda yerleşik mod kadar iyi performans göstermez.
->
-> Her stratejinin kendi kazanımları vardır ve evrensel bir yanıt yoktur. `multimodal-agent`'ın değeri, ödünleşimi tahmin işinden çıkarıp doğrudan ölçülebilir kılmasıdır.
-
 ## Düz Metnin Ötesinde: Bilgi Organizasyonu ve Retrieval
 
 Daha önce tanıtılan temel RAG teknikleri (dense embedding'ler, sparse embedding'ler, hibrit retrieval), "bir metin parçası verildiğinde, en ilgili olanları nasıl hızlıca buluruz" sorununu çözer. Ama daha temel bir soru şudur: **Bu metin parçalarının kendisi nasıl organize edilmelidir?** Basit chunking yöntemleri, bilginin doğasında olan yapıyı ve dokümanlar arası ilişkileri kaybeder. Bu bölüm önce bilgiyi organize etmenin daha gelişmiş yollarını tanıtır, ardından—bu kritik adımdır—**bu yöntemleri bu bölümün başında tartışılan kullanıcı belleğine geri döndürür**, kullanıcı belleği retrieval'ındaki isabet sorununu çözer.
 
-Altı konu takip ediyor. Bunlar sıkı bir merdiven değildir; her biri "bilgi nasıl organize edilir ve getirilir" sorununa farklı bir açıdan yaklaşır: bilginin nasıl organize edilmesi gerektiğini ele alan iki **yapılandırılmış indeksleme** tekniği (RAPTOR ve GraphRAG); bilgi yönetimine hafif bir yaklaşım olan OpenViking'in **dosya sistemi paradigması**; süresi dolan ve güncelleme ile temizlik gerektiren bilgi için **bilgi tabanı güncelliği ve yönetişimi**; Agent'ın kendi retrieval stratejisini seçmesine izin veren **Agentic RAG**; Agentic RAG'ın üstüne bir katman değil, en temel halkayı—chunking'i—onarmak için bir geri adım olan ve her chunk'ın kendi getirilebilirliğini iyileştiren **Contextual Retrieval**; ve son olarak, **yapılandırılmış veri kümelerinden** derin bilgi çıkarmak.
+Altı konu takip ediyor. Bunlar sıkı bir merdiven değildir; her biri "bilgi nasıl organize edilir ve getirilir" sorununa farklı bir açıdan yaklaşır: bilginin nasıl organize edilmesi gerektiğini ele alan iki **yapılandırılmış indeksleme** tekniği (RAPTOR ve GraphRAG); bilgi yönetimine hafif bir yaklaşım olan OpenViking'in **dosya sistemi paradigması**; yeni kanıtı hızla alan artımlı güncellemeler ile tüm tabanı dönemsel olarak yeniden inceleyen tam düzenlemeyi ayıran **bilginin nasıl güncellenmesi gerektiği**; Agent'ın kendi retrieval stratejisini seçmesine izin veren **Agentic RAG**; Agentic RAG'ın üstüne bir katman değil, en temel halkayı—chunking'i—onarmak için bir geri adım olan ve her chunk'ın kendi getirilebilirliğini iyileştiren **Contextual Retrieval**; ve son olarak, **yapılandırılmış veri kümelerinden** derin bilgi çıkarmak.
 
 Geleneksel RAG güçlüdür, ama temel yöntemi—"Doküman Parçalama" bölümündeki standart prosedürle dokümanları bağımsız, ilişkisiz metin parçalarına kesmek—temel bir sınırlamaya sahiptir: bu düzleştirme, bilginin kendisinin doğasında olan yapıyı göz ardı eder. Yapısal olarak karmaşık, sıkı biçimde akıl yürütülmüş dokümanlar için—teknik el kitapları, hukuki metinler, akademik makaleler—dağınık parçaları getirmek, rastgele sözlük girdileri okuyarak bir roman anlamaya çalışmaya benzer. Bir Agent'ın bir bilgi alanını gerçekten "anlaması" için, düz metin parçalarının ötesine geçmeli ve bilginin doğasında olan hiyerarşiyi ve ilişkileri yansıtan yapılandırılmış indeksler inşa etmeliyiz.
 
@@ -499,9 +475,9 @@ Daha derin bir sorun şudur: bir RAG sistemi inşa etsek bile, büyük miktarda 
 
 **Durum 1: Siyah Kedi ve Beyaz Kedi Sayma Problemi.** Bölüm 2'de, "attention'ın yumuşak bir retrieval mekanizması olduğunu ve istatistiksel bilginin önceden çıkarılması gerektiğini" göstermek için siyah kedi ve beyaz kedi sayma örneğini kullandık—100 durumun tümü context penceresine yüklense bile, model doğru sayma yapmakta zorlanır. Aynı sorun, bilgi tabanı ölçeğinde, birkaç yeni engelle birleşerek yeniden ortaya çıkar. Bilgi tabanının 100 bağımsız durum dokümanı içerdiğini (90 siyah kedi, 10 beyaz kedi, her biri bağımsız bir metin parçası) ve kullanıcının "Oran nedir?" diye sorduğunu varsayalım: Birincisi, **top-k kesme**—top-k ile sınırlı (örn. 20), çoğu durum hiç getirilmeyecektir. İkincisi, **eşit olmayan retrieval puanları**—daha büyük bir k ile bile, tek tek durumlar farklı biçimde tanımlanır, puanları dağılır ve bazıları hâlâ kaçırılır. En temel olarak, **dokümanlar arası toplama uyumsuzluğu** vardır—istatistiksel sorular "tüm dokümanlar genelinde sayma" gerektirirken, retrieval'ın doğası "en ilgili birkaçını bulmaktır", bu da doğasında olan bir çelişki yaratır. Model yalnızca eksik bir örneğe (örn. yalnızca 15 siyah kedi ve 3 beyaz kedi görerek) dayanarak yanlış sonuçlar çıkarabilir. "Toplam 100 kedi: 90 siyah kedi (%90) ve 10 beyaz kedi (%10)" gibi önceden üretilmiş bir özet indekslenirse, tek bir retrieval doğru bilgiyi verir.
 
-**Durum 2: Xfinity İndirim Kuralları Hakkında Hatalı Reasoning.** Üç izole geçmiş durum: Gazi John indirim için başarıyla başvurdu, Doktor Sarah bir indirim aldı, Öğretmen Mike'a uygun olmadığı söylendi. Bir hemşire sorduğunda, retriever, "hemşire" ve "doktor" arasındaki semantik benzerlik nedeniyle Durum B'yi öncelikli olarak getirir ve model hemşirelerin de uygun olduğunu yanlış biçimde çıkarır. Retriever, Durum C'yi (diğer mesleklerin uygun olmadığını gösteren) eş zamanlı olarak getiremez. Daha kötüsü, "hemşire"nin Durum A ("gazi") ile semantik benzerliği düşüktür, bu yüzden o durum düşük sıralanıp göz ardı edilebilir, bu da kuralın hâlâ tek taraflı anlaşılmasına yol açar. "Xfinity indirimleri yalnızca gaziler ve doktorlar için mevcuttur; diğer meslekler uygun değildir" gibi önceden çıkarılmış bir kural indekslenirse, sorulan meslek ne olursa olsun tek bir retrieval eksiksiz kuralı sağlar.
+**Durum 2: Xfinity İndirim Uygunluğunda Sınır Problemi.** Bu kez bilgi tabanı bir müşteri destek kaydı arşivi: birkaç yüz kayıt, her biri tek bir gerçek sonucu tutuyor—Gazi John'un başvurusu onaylandı, Doktor Sarah indirimi aldı, Öğretmen Mike'a uygun olmadığı söylendi ve böyle sürüp gidiyor. Her kayıt tek bir bireysel durumun sonucunu yazar; hiçbiri uygunluğun kapsamını yazmaz. Bir hemşire "ben uygun muyum?" diye sorduğunda engeller üst üste biner. Birincisi, **en yakın komşu yanlılığı**—"hemşire" semantik olarak en çok "doktor"a yakındır, bu yüzden Sarah'nın kaydı en üste çıkar ve model bu akışla hemşirelerin de uygun olduğunu çıkarır; Mike'ın kaydı tesadüfen daha üstte sıralansaydı, aynı soru tam tersi yanıtı alırdı. **Yanıtı, sorguya hangi kaydın en yakın düştüğü belirler; politikanın kendisi değil.** İkincisi, **sınır semantiğinin eksikliği**—k'yı büyütmenin çözemeyeceği bir engel: "yalnızca ..., diğer tüm meslekler uygun değildir" biçimindeki bir ifade evrensel niceleyici ve olumsuzlama taşır, tek bir kaydın içinde bulunmaz, yalnızca bütün corpus'un kapanışında (closure) vardır. Arşiv zaten "hemşire sayılır mı" sorusuna hiç yanıt vermez; dolayısıyla modeli bir avuç bireysel durumdan evrensel bir kural çıkarmaya zorlamak, baştan geçerli olmayan bir sonuç üretir. Üçüncüsü, **eksiksizlik sinyalinin yokluğu**—model kuralın tamamını görüp görmediğini anlayamaz, bu yüzden geri sormaz; elindeki birkaç kayıtla kendinden emin yanıt verir. Çözüm yine indeksleme aşamasındadır: tüm kayıt arşivini çevrimdışı baştan sona okuyun ve resmî uygunluk politikasını ölçüt alarak (retrieve edilen birkaç bireysel durumdan ekstrapolasyon yaparak değil—ki bu tam da ileride uyarılan bilgi kirliliğidir) tek bir kural kartı damıtın: "Xfinity indirimleri muvazzaf askerler ve gaziler ile hemşireler dâhil lisanslı sağlık çalışanları için geçerlidir; öğretmenler gibi diğer meslekler uygun değildir; listelenmemiş meslekler insan incelemesi gerektirir." Sınır ve geri düşüş durumu birlikte yazıldığında, hangi meslek sorulursa sorulsun tek bir retrieval eksiksiz kuralı verir—modelin artık çıkarım yapmasına gerek kalmaz, yalnızca eşleştirmesi yeterlidir.
 
-Her iki durum da aynı sonuca işaret eder: **naif RAG—ham durumları veya dokümanları işlenmeden bilgi tabanına atmak—yeterince yakın bile değildir.** İster harici bir vektör veritabanında depolanıp retrieval yoluyla context'e enjekte edilsin, ister doğrudan uzun bir context'e yerleştirilsin, bilgi çıkarımı ve yapılandırılmış ön işleme olmadan, model bu bilgiyi verimli ve güvenilir biçimde kullanamaz. Modelin attention mekanizması özünde benzerlik tabanlı yumuşak bir retrieval sistemidir, aktif olarak özetleyen, genelleyen ve bilgi hiyerarşileri kuran bir düşünme motoru değildir. Bu yüzden hesaplama, indeksleme aşamasında ham bilgiyi aktif olarak çıkarmak, soyutlamak ve yapılandırmak için yatırılmalıdır—"100 tek tek durumu" istatistiksel bir özete sıkıştırmak, "üç izole durumu" açık bir kurala damıtmak.
+Her iki durum da aynı sonuca işaret eder: **naif RAG—ham durumları veya dokümanları işlenmeden bilgi tabanına atmak—yeterince yakın bile değildir.** İster harici bir vektör veritabanında depolanıp retrieval yoluyla context'e enjekte edilsin, ister doğrudan uzun bir context'e yerleştirilsin, bilgi çıkarımı ve yapılandırılmış ön işleme olmadan, model bu bilgiyi verimli ve güvenilir biçimde kullanamaz. Modelin attention mekanizması özünde benzerlik tabanlı yumuşak bir retrieval sistemidir, aktif olarak özetleyen, genelleyen ve bilgi hiyerarşileri kuran bir düşünme motoru değildir. Bu yüzden hesaplama, indeksleme aşamasında ham bilgiyi aktif olarak çıkarmak, soyutlamak ve yapılandırmak için yatırılmalıdır—"100 tek tek durumu" istatistiksel bir özete sıkıştırmak, "yüzlerce kayda dağılmış bireysel durumları" kendi sınırını da söyleyen açık bir kurala damıtmak.
 
 ### Yapılandırılmış İndeksleme: Bilgi Getirmeden Bilgi Modellemeye
 
@@ -521,9 +497,8 @@ Yapılandırılmış indekslemenin ardındaki fikir, bir LLM'in bilgiyi indeksle
 
 **GraphRAG**, doküman bilgisini varlıklardan ve ilişkilerden oluşan bir bilgi grafı olarak modelleyer. Bir bilgi grafı, varlık-ilişki-varlık üçlüleri kullanarak bir bilgi ağı inşa eder. Bir üçlü, bir bilgi parçasını "özne-ilişki-nesne" biçiminde ifade eder, örn. (Pekin, başkentidir, Çin), (Zhang San, çalışıyor, Tencent'te). Yeterince üçlüyü bir araya dokuyun ve bir bilgi ağı elde edersiniz. Bir bilgi grafının temel avantajları iki yerde ortaya çıkar.
 
-**Çok sıçramalı ilişkisel reasoning**, bir bilgi grafının en yerine konulamaz yeteneğidir. Bir kullanıcı "Doktorumun hastanesinin adresi nedir?" diye sorduğunda, sistem "kullanıcı → doktor → hastane → adres" ilişki zincirini sırayla çözmelidir. Düz bir bellek deposunda, bu tür çok sıçramalı sorgular ya birden fazla bağımsız retrieval'ı ve ardından LLM birleştirmesini gerektirir (verimsiz ve zincirin kopmasına açık) ya da basitçe ifade edilemez. Bir bilgi grafının graf yapısı, ilişki kenarları boyunca gezinmeyi doğal olarak destekler, bu tür sorguları hem verimli hem de güvenilir kılar.
-
-**Varlık Belirsizliği Giderme (Entity Disambiguation)**, bilgi graflarının bir diğer güçlü yanıdır. Bunun daha önce dense embedding bölümünde tartışılan "çok anlamlılıktan" farklı olduğuna dikkat edin: bir cümlede "banka"nın bir nehir kıyısına mı yoksa bir finansal kuruma mı işaret ettiğini belirlemek bir Kelime Anlamı Belirsizliği Giderme (Word Sense Disambiguation) görevidir, bağlama duyarlı embedding'lerle çözülebilir. Buna karşılık, ikisi de "Dr. Zhang" adını taşıyan gerçek dünyadaki iki bireyi ayırt etmek varlık belirsizliği gidermedir—varlıkların kendisi hakkında bilgi tutmayı gerektirir. "Dört Depolama Formatı" bölümündeki, bir kullanıcı için birden fazla "Dr. Zhang" kişisini ayırt etmek için elle tasarlanmış `person` ve `relationship` alanlarını kullanan "Advanced JSON Cards"ı hatırlıyor musunuz? Bir bilgi grafında, bu belirsizlik giderme graf yapısının yerleşik bir yeteneği haline gelir: (Dr. Zhang-A, Bölüm, Diş Hekimliği) ve (Dr. Zhang-B, Bölüm, Kardiyoloji), grafta ayrı düğümlerdir, her biri kendi ilişki kenarları aracılığıyla farklı kişilere ve kurumlara bağlıdır. Belirsizlik giderme süreci ek reasoning gerektirmez.
+1. **Çok sıçramalı ilişkisel reasoning.** Bu, bir bilgi grafının en yerine konulamaz yeteneğidir. Bir kullanıcı "Doktorumun hastanesinin adresi nedir?" diye sorduğunda, sistem "kullanıcı → doktor → hastane → adres" ilişki zincirini sırayla çözmelidir. Düz bir bellek deposunda, bu tür çok sıçramalı sorgular ya birden fazla bağımsız retrieval'ı ve ardından LLM birleştirmesini gerektirir (verimsiz ve zincirin kopmasına açık) ya da basitçe ifade edilemez. Bir bilgi grafının graf yapısı, ilişki kenarları boyunca gezinmeyi doğal olarak destekler, bu tür sorguları hem verimli hem de güvenilir kılar.
+2. **Varlık Belirsizliği Giderme (Entity Disambiguation).** Bu, bilgi graflarının bir diğer güçlü yanıdır. Bunun daha önce dense embedding bölümünde tartışılan "çok anlamlılıktan" farklı olduğuna dikkat edin: bir cümlede "banka"nın bir nehir kıyısına mı yoksa bir finansal kuruma mı işaret ettiğini belirlemek bir Kelime Anlamı Belirsizliği Giderme (Word Sense Disambiguation) görevidir, bağlama duyarlı embedding'lerle çözülebilir. Buna karşılık, ikisi de "Dr. Zhang" adını taşıyan gerçek dünyadaki iki bireyi ayırt etmek varlık belirsizliği gidermedir—varlıkların kendisi hakkında bilgi tutmayı gerektirir. "Dört Depolama Formatı" bölümündeki, bir kullanıcı için birden fazla "Dr. Zhang" kişisini ayırt etmek için elle tasarlanmış `person` ve `relationship` alanlarını kullanan "Advanced JSON Cards"ı hatırlıyor musunuz? Bir bilgi grafında, bu belirsizlik giderme graf yapısının yerleşik bir yeteneği haline gelir: (Dr. Zhang-A, Bölüm, Diş Hekimliği) ve (Dr. Zhang-B, Bölüm, Kardiyoloji), grafta ayrı düğümlerdir, her biri kendi ilişki kenarları aracılığıyla farklı kişilere ve kurumlara bağlıdır. Belirsizlik giderme süreci ek reasoning gerektirmez.
 
 GraphRAG, önce metinden kilit varlıkları (kişiler, yerler, kavramlar, terimler) çıkarmak için bir LLM kullanır, ardından bu varlıklar arasındaki çeşitli ilişkileri çıkarır. Grafa dayanarak, semantik olarak sıkı varlık kümelerini bulmak ve özetler üretmek için topluluk tespit algoritmaları kullanır, bilgi içindeki doğal tematik grupları otomatik olarak keşfeder, bir zihin haritası oluşturur. Bu ağa dayalı bilgi temsili, birden fazla varlık arasındaki karmaşık ilişkileri içeren soruları yanıtlamada özellikle beceriklidir.
 
@@ -531,7 +506,7 @@ Ancak, kullanıcı belleği için **genel amaçlı** bir depolama çözümü ola
 
 Bu yüzden, pratikte önerilen strateji **katmanlı tamamlayıcılıktır**: temel bilgiyi eksiksiz doğal dilde koruyun (semantik bütünlüğü koruyarak), indeksleme ve retrieval için yapılandırılmış meta veriyle tamamlayın (sorgu verimliliğini dengeleyerek); çok sıçramalı reasoning ve hassas belirsizlik giderme gerektiren dikey senaryolarda (örn. tıbbi teşhis, hukuki dava analizi, aile ilişkisi yönetimi), doğal dil belleğiyle uyum içinde çalışan özel bir indeksleme aracı olarak bilgi graflarını kullanın.
 
-> **Deney 3-8 ★★★: Yapılandırılmış İndeksleme: RAPTOR ve GraphRAG'ın Bilgi Organizasyonu Felsefesi**
+> **Deney 3-7 ★★★: Yapılandırılmış İndeksleme: RAPTOR ve GraphRAG'ın Bilgi Organizasyonu Felsefesi**
 >
 > `structured-index` projesi, her iki yöntemi de birleşik bir çerçeve içinde tam olarak uygular, binlerce sayfaya yayılan bir Intel CPU mimarisi teknik el kitabını indekslemeye ve sorgulamaya uygulanır—yüksek düzeyde yapılandırılmış, hiyerarşik ve ilişkisel bilginin tipik bir örneği.
 >
@@ -539,13 +514,13 @@ Bu yüzden, pratikte önerilen strateji **katmanlı tamamlayıcılıktır**: tem
 >
 > RAPTOR ve GraphRAG farklı sorunları çözer: birincisi "bir kavramdan ayrıntılara inme" sorgularına uygunken, ikincisi "A ve B arasındaki ilişki" hakkındaki sorgulara uygundur. Üretim senaryolarında, bunları birleştirmek genellikle yalnızca birini seçmekten daha iyi sonuçlar verir.
 
-**Yapılandırılmış indeksleme ne zaman gereklidir?** Her senaryo RAPTOR veya GraphRAG gerektirmez. Daha önce tanıtılan hibrit retrieval yöntemleri (dense + sparse + reranking) zaten çoğu ihtiyacı kapsar. Basit bir kriter: sorgularınız öncelikle "bu bilgiyi içeren doküman parçasını bul" ise (örn. "İade politikası nedir?"), hibrit retrieval yeterlidir. Sorgular sıklıkla **dokümanlar arası sentez** (örn. "CPU'nun SSE ve AVX talimat setleri arasındaki mimari farklar nelerdir?") veya **çok düzeyli gezinme** (örn. "Genel mimariden belirli talimatlara inin") gerektiriyorsa, o zaman yapılandırılmış indeksleme yatırıma değer. Maliyeti, indeks inşası sırasında LLM çağrılarında—zaman ve para—büyük bir sıçramadır, bu yüzden yalnızca daha basit seçenekler yetersiz kaldığında yükseltin.
+**Yapılandırılmış indeksleme ne zaman gereklidir?** Her senaryo RAPTOR veya GraphRAG gerektirmez. Daha önce tanıtılan hibrit retrieval yöntemleri (dense + sparse + reranking) zaten çoğu ihtiyacı kapsar. Basit bir kriter: sorgularınız öncelikle "bu bilgiyi içeren doküman parçasını bul" ise (örn. "İade politikası nedir?"), hibrit retrieval yeterlidir. Sorgular sıklıkla **dokümanlar arası sentez** (örn. "CPU'nun SSE ve AVX talimat setleri arasındaki mimari farklar nelerdir?") veya **çok düzeyli gezinme** (örn. "Genel mimariden belirli talimatlara inin") gerektiriyorsa, yapılandırılmış indeksleme yatırıma değer. Basit hibrit retrieval'a kıyasla, yapılandırılmış indeksleme hem indeks oluştururken hem de sorgularken daha fazla LLM çağrısı gerektirir; maliyet ve gecikme belirgin biçimde artar.
 
 ### Dosya Sistemi Paradigması: Bilgiyi Dizin Yapılarıyla Organize Etmek
 
 RAPTOR ve GraphRAG, akademinin bilgi organizasyonu keşifleridir; ByteDance'in Volcano Engine'inin açık kaynak kıldığı [OpenViking](https://github.com/volcengine/OpenViking), üçüncü bir felsefe önerir: **dosya sistemi paradigması**. Context'i ne düz vektör parçaları ne de graf düğümleri olarak ele alır. Bunun yerine, tüm context'i—bellekleri, kaynakları, becerileri—her biri benzersiz bir URI'ye sahip sanal bir dosya sistemi içindeki dizinlere ve dosyalara eşler:
 
-```
+```text
 viking://
 ├── resources/          # Dışsal bilgi: dokümanlar, kod tabanları, web sayfaları
 ├── user/memories/      # Kullanıcı bellekleri: tercihler, alışkanlıklar
@@ -558,19 +533,48 @@ Burada, `viking://` bir **sanal URI'dir**—biçimsel olarak `http://` veya `fil
 
 Temel tasarım **L0/L1/L2 üç katmanlı context ihtiyaç halinde yüklemedir**. Bir kaynak yazıldığında, sistem orijinal içeriği otomatik olarak üç soyutlama düzeyine damıtır: **L0 (Özet)**, dizin ilgisini hızlıca değerlendirmek için kullanılan yaklaşık 100 token'lık tek cümlelik bir genel bakıştır; **L1 (Genel Bakış)**, Agent planlaması ve karar alması için yaklaşık 2.000 token'da temel bilgi ve kullanım senaryoları içerir; **L2 (Tam Metin)**, yalnızca derin analiz gerektiğinde ihtiyaç halinde yüklenen eksiksiz orijinal içeriktir. Her dizin, kökten yaprağa hiyerarşik bir özet yapısı oluşturarak otomatik olarak `.abstract` (L0) ve `.overview` (L1) dosyaları üretir. L0 ilgisiz olarak değerlendirilirse, L1 ve L2'nin yüklenmesine gerek yoktur—çoğu sorgu L1'de karar verilebilir, token tüketimini önemli ölçüde azaltır. Bu "özetler yerleşik, tam metin ihtiyaç halinde" yaklaşımı, Bölüm 2'de tanıtılan Skills'in kademeli açığa çıkarmasıyla özdeştir—ikisi de Agent'ın önce yalnızca hafif meta veriyi görmesine, yalnızca gerektiğinde eksiksiz içeriği katman katman çekmesine izin verir, token'ları en önemli olan yerde harcar.
 
-Bilgi için temel temsil olarak özel bir veritabanı yerine Markdown düz metnini seçmek, görünüşte sezgiye aykırı ama dikkatle düşünülmüş bir mühendislik kararıdır (Bölüm 5, açık kaynak bir Agent çerçevesi olan OpenClaw'ın benzer bir seçimini ayrıntılı olarak ele alacak). Düz metin, kullanıcıların Agent'ın bilgisini doğrudan okuyabileceği, düzenleyebileceği ve düzeltebileceği anlamına gelir; Git aracılığıyla sürüm kontrolü yapılabilir ve geri alınabilir; daha da önemlisi, `write_file` yeteneğiyle Agent bilgiyi otonom olarak kaydedip organize edebilir. Bir oturumun sonunda sistem, kullanıcı tercih güncellemelerini `user/memories/`e ve operasyon kayıtlarını `agent/memories/`e yazabilir. İlki bu bölümde ele alınan kullanıcı bilgisi yönetiminin parçası olarak kalır. İkincisi ise ancak sonuç değerlendirmesi, trajectory'ler arası genelleme ve sonraki doğrulamadan sonra Bölüm 8 anlamında deneyim öğrenmesine dönüşür; gelişigüzel tek bir operasyon doğrudan güvenilir deneyim sayılamaz.
+**Bilginin temel temsili olarak özel bir veritabanı yerine Markdown düz metnini seçmek**, görünüşte sezgiye aykırı ama dikkatle düşünülmüş bir mühendislik kararıdır. Düz metin, kullanıcıların Agent'ın bilgisini doğrudan okuyup düzenleyebilmesi ve düzeltebilmesi; Git ile sürüm kontrolü ve geri alma yapabilmesi anlamına gelir. Daha da önemlisi, `write_file` yeteneğiyle Agent bilgiyi bir çalışma dalında otonom olarak kaydedip organize edebilir, ardından aşağıdaki inceleme süreciyle ana tabana birleştirebilir. Oturum sonunda sistem, kullanıcı tercihlerinin `user/memories/`e ve operasyon kayıtlarının `agent/memories/`e yazılmasını önerebilir. İlki bu bölümdeki kullanıcı bilgisi yönetimidir. İkincisi ancak sonuç değerlendirmesi, trajectory'ler arası genelleme ve sonraki doğrulamadan sonra Bölüm 9 anlamında deneyim öğrenmesine dönüşür; gelişigüzel tek bir operasyon güvenilir deneyim sayılamaz.
 
-Ancak, bu düz metin, dosya sistemi tarzı organizasyonu benimsemenin, kolayca gözden kaçırılan ama retrieval başarısını doğrudan belirleyen bir ön koşulu vardır: **dosyalar arasında bağlantılar ve indeksler kurulmalıdır**. Daha önce bahsedilen `.abstract`/`.overview` dosyaları dikey, hiyerarşik özetlemeyi ele alır. Burada vurgulanan şey yatay ilişkilendirmedir—bilgi basitçe bir dizinde düz biçimde yerleştirilmiş, aralarında herhangi bir çapraz referans olmayan bağımsız metin dosyaları yığınına bölünürse, tüm dosyaları sırayla taramak veya vektör retrieval kullanmak dışında, Agent'ın ilgili girdiler arasında gezinmesinin neredeyse hiçbir yolu yoktur. Ne kadar çok bilgi varsa, bu dağınık dosya yığınının getirilmesi o kadar zorlaşır. Doğru yaklaşım, bilgi tabanını Wikipedia gibi organize etmektir: bir girdi başka birinden bahsettiğinde, oraya bağlantı verir, girdi sayfaları ve indeks sayfalarıyla desteklenir, böylece Agent bir kavramdan komşularına yürüyebilir—hafif dosya bağlantıları, GraphRAG'ın varlık-ilişki grafının gezinme gücünün bir kısmını satın alır. Burada önemli bir pratik fark da vardır: **farklı modellerin bu tür bağlantıları proaktif olarak kurma isteği ve yeteneği farklıdır**. Daha güçlü modeller, yeni bilgi yazarken, kendiliğinden mevcut girdilere geri başvuracak ve indeksleri koruyacaktır. Ancak, birçok model bunu proaktif olarak yapmaz, dosyaları basitçe izole biçimde ekler. Bu yüzden, bilgi yazmaktan sorumlu prompt bunu açıkça talep etmelidir—eklenen her yeni girdi için, sistem önce ilgili mevcut girdileri getirip bağlantı vermeli ve ait olduğu dizinin indeks sayfasını güncellemeli, bilginin bağlantısız adalara çürümesine izin vermek yerine, çift yönlü ulaşılabilir bir referans ağı oluşturmalıdır.
+Ancak, bu düz metin, dosya sistemi tarzı organizasyonu benimsemenin, kolayca gözden kaçırılan ama retrieval başarısını doğrudan belirleyen bir ön koşulu vardır: **dosyalar arasında bağlantılar ve indeksler kurulmalıdır**. Daha önce bahsedilen `.abstract`/`.overview` dosyaları dikey, hiyerarşik özetlemeyi ele alır. Burada vurgulanan şey yatay ilişkilendirmedir—bilgi basitçe bir dizinde düz biçimde yerleştirilmiş, aralarında herhangi bir çapraz referans olmayan bağımsız metin dosyaları yığınına bölünürse, tüm dosyaları sırayla taramak veya vektör retrieval kullanmak dışında, Agent'ın ilgili girdiler arasında gezinmesinin neredeyse hiçbir yolu yoktur. Ne kadar çok bilgi varsa, bu dağınık dosya yığınının getirilmesi o kadar zorlaşır. Doğru yaklaşım, bilgi tabanını Wikipedia gibi organize etmektir: bir girdi başka birinden bahsettiğinde, oraya bağlantı verir, girdi sayfaları ve indeks sayfalarıyla desteklenir, böylece Agent bir kavramdan komşularına yürüyebilir—hafif dosya bağlantıları, GraphRAG'ın varlık-ilişki grafının gezinme gücünün bir kısmını satın alır.
 
-### Bilgi Tabanı Güncelliği ve Yönetişimi
+Burada önemli bir pratik fark da vardır: **farklı modellerin bu tür bağlantıları proaktif olarak kurma isteği ve yeteneği farklıdır**. Daha güçlü modeller, yeni bilgi yazarken, kendiliğinden mevcut girdilere geri başvuracak ve indeksleri koruyacaktır. Ancak, birçok model bunu proaktif olarak yapmaz, dosyaları basitçe izole biçimde ekler. Bu yüzden, bilgi yazmaktan sorumlu prompt bunu açıkça talep etmelidir—eklenen her yeni girdi için, sistem önce ilgili mevcut girdileri getirip bağlantı vermeli ve ait olduğu dizinin indeks sayfasını güncellemeli, bilginin bağlantısız adalara çürümesine izin vermek yerine, çift yönlü ulaşılabilir bir referans ağı oluşturmalıdır.
 
-Önceki bölümler "bilgiyi nasıl iyi organize edip getireceğimizi" tartıştı. Ancak, bir bilgi tabanı çevrimiçi olup çalışmaya başladığında, kolayca gözden kaçırılan ama güvenilirliği doğrudan etkileyen başka bir sorun kategorisi vardır: bilginin süresi dolar, içerik geçersiz hale gelir ve genellikle birden fazla kullanıcı arasında paylaşılması gerekir. Bunlar bilgi tabanının **yönetişimi (governance)** altına girer ve özel ilgiyi hak eder.
+### Bilgi Nasıl Güncellenmelidir?
 
-**Bilgi Süresinin Dolması ve Artımlı Güncellemeler.** Bir bilgi tabanı bir kez inşa edilip bırakılan statik bir varlık değildir—şirket politikaları revize edilir, düzenlemeler güncellenir, dokümanlar değiştirilir. İdeal olarak, bir doküman eklemek veya değiştirmek yalnızca indeksi artımlı olarak güncellemeyi gerektirmeli, tüm kütüphaneyi yeniden inşa etmeyi gerektirmemelidir. Burada, indeks yapısının seçiminin pratik sonuçları vardır: Deney 3-4'teki ANNOY ve HNSW karşılaştırmasını hatırlayın—ANNOY ağaç tabanlıdır ve artımlı ekleme desteklemez; yeni bir doküman eklemek eksiksiz bir indeks yeniden inşası gerektirir, bu da onu büyük ölçüde değişmeyen içeriğe sahip statik kütüphaneler için uygun kılar. HNSW graf tabanlıdır ve yeni vektörlerin artımlı eklenmesini yerleşik olarak destekler, bu da onu sürekli yeni bilgi katmayı gerektiren dinamik senaryolar için daha uygun kılar. Sık güncellenen bir bilgi tabanı için yanlış indeksi seçin, yeniden inşa ek yükü işletme maliyetlerinizi boğar.
+Önceki bölümler bilginin nasıl temsil edileceğini, düzenleneceğini ve getirileceğini ele aldı. Ancak çalışan bir kullanıcı belleği veya paylaşılan bilgi tabanı yeni bilgi almaya devam eder. Yalnızca güncellenip düzenlenmezse içerik giderek dağılır; yalnızca dönemsel olarak yeniden yazılırsa yeni bilgi zamanında yürürlüğe girmez. Bu nedenle eksiksiz bir mekanizma iki yolu birlikte içermelidir: **olayla tetiklenen artımlı güncellemeler** ve **dönemsel olarak tetiklenen tam düzenleme**.
 
-**Geçersiz İçeriğin Tespiti ve Devre Dışı Bırakılması.** Süre dolması basitçe bir silme meselesi değildir—yeni bir sürümle değiştirilen eski bir politika kütüphanede kalırsa, bir arama sırasında yeni sürümle birlikte getirilebilir, bu da modelin çelişkili veya güncelliğini yitirmiş yanıtlar vermesine neden olabilir. Üretim sistemleri tipik olarak her chunk'a sürüm numaraları, geçerlilik/süre dolma tarihleri gibi meta veriler ekler, retrieval aşamasında süresi dolmuş içeriği filtreler veya özette açıkça işaretler (örn. "Bu girdi [tarih]de kullanımdan kaldırıldı"). Bu, daha önce bahsedilen kullanıcı belleğindeki sürümlü çelişki tespitiyle aynı fikirdir, yalnızca paylaşılan bilgi tabanı düzeyine ölçeklendirilmiştir.
+#### Kullanıcı Belleği ve Bilgi Tabanları için Artımlı Güncellemeler
 
-**Çok Kullanıcılı Paylaşım: İzinler ve Kiracı İzolasyonu.** Bir bilgi tabanı tüm kullanıcılar arasında paylaşılır, ama "tüm kullanıcılar" "tüm içerik herkese görünür" anlamına gelmez: farklı departmanlardan, kiracılardan veya izin düzeylerinden gelen kullanıcılar genellikle farklı doküman kümelerine erişebilir. Kilit ilke şudur—**retrieval, çağıranın izinlerine göre filtrelenmelidir**, yetkisiz dokümanların asla bir kullanıcının context'ine girmemesini sağlamalıdır. İzin filtrelemesini retrieval katmanına indirmek (dokümanlar getirilip context'e enjekte edildikten sonra bir inceleme adımı eklemek yerine) özellikle önemlidir: hassas içerik bir kez LLM'in context'ine girdiğinde, bunun bir biçimde nihai yanıta sızmayacağını garanti etmek zordur. Çok kiracılı sistemlerin ayrıca kiracılar arasında vektör indekslerinin ve meta verinin izole olduğundan emin olması gerekir, bir kiracının sorgusunun "çapraz kirlenerek" başka bir kiracının özel bilgisini getirmesini önlemelidir.
+Artımlı güncelleme şu soruyu yanıtlar: "Yeni bir kanıt ortaya çıktı; mevcut bilgide hangi yerel değişiklik yapılmalı?" En güvenli mühendislik yanıtı, **bilgi tabanını bir kod deposu, her bilgi değişikliğini de Pull Request (PR) olarak ele almaktır**. Bu, User as Code gibi çalıştırılabilir Python belleğiyle sınırlı değildir. Markdown bilgi tabanları, kullanıcı bellek dosyaları ve kural dokümanları da diff incelemesi, sürüm geçmişi, sorumluluk izleme ve tek adımda geri alma için Git'te tutulmalıdır. Üretimde hiçbir model incelemeyi atlayıp doğrudan ana dala veya çevrimiçi vektör indeksine yazmamalıdır.
+
+Bölüm 4, 5 ve 10'daki **Proposer-Reviewer** mekanizması, güncellemeyi dış kanıta dayalı yinelemeli bir döngüye dönüştürür:
+
+1. **Proposer Agent PR açar.** Ham kanıtta yeni gerçek, çelişki veya eski içerik bulur ve çalışma dalında mümkün olduğunca küçük ama eksiksiz bir diff önerir. Son konuşmayı dosyanın sonuna kaba biçimde eklemek yerine önce ilgili mevcut bilgiyi arar; ardından doğru girdileri ekler, siler veya değiştirir ve bağlantıları, indeksleri, zaman meta verisini ve kanıt referanslarını birlikte günceller.
+2. **Reviewer Agent bağımsız inceleme yapar.** Değişiklik öncesi bilgiyi, diff'i ve ham kanıtı—execution trajectory, özgün konuşma, iş dokümanı veya araç çıktısı gibi—alır. Her yeni iddianın kanıtla desteklenip desteklenmediğini, koşulların atlanıp atlanmadığını, başka dosyalarla çelişip çelişmediğini ve silme ya da yeniden yazmanın aşırı olup olmadığını bağımsız biçimde denetler. Reddederse "iyileştirin" demek yerine belirli kanıta ve satıra işaret eden uygulanabilir geri bildirim verir.
+3. **İki taraf yakınsayana kadar yineler.** Proposer ret gerekçesine göre diff'i değiştirir; Reviewer ham kanıta dönerek yeniden kontrol eder. PR ancak Reviewer açıkça onaylarsa birleştirilir. Azami yineleme veya maliyet bütçesi belirlenmelidir; sınır aşıldığı halde yakınsama yoksa varsayılan onay yerine insan incelemesine yükseltilir.
+4. **Yayın birleştirmeden sonra gelir.** CI önce biçim, bağlantı, meta veri ve izin etiketlerini denetler; bilgi kodla temsil ediliyorsa tip kontrollerini ve testleri de çalıştırır. Ancak bundan sonra etkilenen chunk'lar, özetler ve vektör indeksleri birleştirilmiş sürümden artımlı olarak yeniden oluşturulur. Böylece indeks yeniden üretilebilir bir türevdir; Git'teki incelenmiş bilgi ise doğruluk kaynağıdır.
+
+Bu boru hattı üç katmanı açıkça ayırmalıdır: **ham kanıt katmanı** append-only konuşmaları, trajectory'leri ve kaynak dokümanları saklar; **bilgi katmanı** damıtılmış, sürdürülebilir Markdown veya kodu tutar; **servis katmanı** belirli birleştirilmiş sürümden üretilen retrieval indekslerini barındırır. Her PR kanıt kimliklerini, bilgi tabanı sürümünü, inceleme yorumlarını ve nihai kararı kaydetmelidir; böylece üretimdeki her gerçek "hangi kanıttan geldi ve kim ne zaman onayladı?" sorusunu yanıtlayabilir.
+
+**Proposer ve Reviewer iki sabit LLM API çağrısı değil, Agent olmalıdır.** Bilgi güncelleme, önceden seçilmiş bir pasajı özetlemekten ibaret değildir. Proposer çoğu zaman ilgili diğer bellek dokümanlarını ve kuralları aramalı; Reviewer kanıtı izlemeli, birden çok dokümanı karşılaştırmalı, kontroller çalıştırmalı ve yeni ipucu bulduğunda sorgulamayı sürdürmelidir. Dosya arama, sürüm karşılaştırma, test yürütme ve kanıt retrieval araçlarına ihtiyaç duyarlar; mevcut Coding Agent'lar bunları genellikle sağlar. Her iki Agent da yalnızca üst sistemin seçtiği birkaç parçayı değil, gerektiğinde **eksiksiz bilgi tabanını ve ham kanıt deposunu** sorgulayabilmelidir. "Eksiksiz", yetkili oldukları tenant veya kullanıcı kapsamıyla sınırlıdır; inceleme gizlilik sınırını aşmamalıdır. İzlenebilirlik için çalışma trajectory'leri, araç çıktısı referansları ve inceleme geri bildirimleri de metin olarak arşivlenmelidir.
+
+**İki Agent tercihen benzer yetenekte, farklı ailelerden modeller kullanmalıdır.** Örneğin Claude Proposer, GPT Reviewer; ya da DeepSeek Proposer, Kimi Reviewer olabilir. Farklı eğitim verileri, tercihler ve reasoning alışkanlıkları aynı hatayı yapma olasılığını azaltır; benzer yetenek ise Reviewer'ın karmaşık kanıtta geride kalmasını önler. Heterojen inceleme bağımsızlığı artırır ama ham kanıtın yerini tutmaz: Reviewer, Proposer'ın sonucunu tekrarlamak yerine öncelikle kanıtı ve diff'i doğrulamalıdır. İzinler de görev ayrımını zorlamalıdır: Proposer yalnızca çalışma dalına yazabilir, Reviewer kanıtı okuyup inceleme sonucu sunabilir ve yalnızca birleştirme akışı ana dalı ve çevrimiçi indeksi güncelleyebilir.
+
+#### Kullanıcı Belleği ve Bilgi Tabanlarının Dönemsel Düzenlenmesi
+
+Artımlı güncellemeler hızlıdır ama her biri yalnızca yerel bir alan görür. Zamanla, yerel olarak doğru değişiklikler bile küresel sorunlar biriktirebilir: aynı gerçek dosyalara dağılır, eski ve yeni iddialar birlikte kalır, özetler kanıttan uzaklaşır, dizin yapısı bilgi ölçeğine uymaz. Bu yüzden sistem dönemsel **tam düzenleme** de yapmalıdır. Bu, Bölüm 9'deki "uyku öğrenmesinin" bilgi yönetimindeki somut biçimidir: yeni kanıt ve yerel güncellemeler ön plan etkileşiminde birikirken, dönemsel arka plan penceresi tüm sistemi yeniden düşünmek için geriye çekilir. Claude Code'un indeksi kapasiteye yaklaşırken ayrıntıları birleştiren veya dışarı taşıyan otomatik belleği de aynı fikri yansıtır.
+
+Süreç en az üç temel görev içerir:
+
+1. **Tekilleştir, kullanım dışı bırak ve birleştir.** Mevcut bilginin tamamını tara; semantik olarak yinelenen, yerini yenisi alan, aşırı parçalanmış veya yalnızca ifadeleri farklı girdileri belirle ve sil, birleştir ya da yeniden yaz. Bağlantıları, giriş ve indeks sayfalarını da yeniden kur; gerekirse büyük dosyaları böl, küçükleri birleştir veya dizin düzeylerini ayarla. Silinen şey sunulan bilgi temsilidir, alttaki append-only ham kanıt değildir.
+2. **Doğrulama için ham veriye dön.** Yalnızca mevcut özetlerden yeniden yazmak, ilk ihmalleri ve yanlış okumaları nesilden nesle aktarır. Düzenleme Agent'ı bilgiyi özgün konuşmalar, execution trajectory'ler, iş dokümanları ve araç çıktılarıyla bölüm bölüm karşılaştırmalı; atlanan gerçekleri, kaybolan olumsuzlukları veya zaman koşullarını ve gerçek gibi sunulan varsayımları kontrol etmelidir. Büyük depolar dizin, zaman veya konuya göre partiler halinde taranabilir, ancak "partiler" sonunda her şeyi kapsamalı; rastgele örneklemeye dönüşmemesi için kapsam kontrol listesi tutulmalıdır.
+3. **Çelişkileri çöz ve senaryoları nitele.** İfadeler çeliştiğinde sistem yalnızca en yenisini tutmamalı veya modele tahmin ettirmemelidir. Her iddiayı özgün kaynağına kadar izleyip farklı zaman, kişi, bölge, görev veya önkoşullarda ayrı ayrı geçerli olup olmadığını belirlemelidir. İkisi de geçerliyse ikisini de tutup uygulanma alanlarını yazmalıdır. Kanıt yetersizse kesin sonuca zorlamak yerine çelişkiyi koruyup doğrulanmak üzere işaretlemelidir.
+
+Dönemsel düzenleme kapsamlı olsa da çıktısı ana tabanın üstüne doğrudan yazılmamalıdır. Proposer Agent yeniden düzenleme diff'ini bir dalda sunar; farklı aileden Reviewer Agent bunu ham kanıtla karşılaştırır. Büyük diff'ler dizin veya konuya göre birden fazla PR'a bölünebilir, ancak tek bir düzenleme planı ve kapsam kontrol listesi paylaşmalıdır. Tüm PR'lar geçtikten sonra sistem türetilmiş indeksi yeniden kurar ve yeni yapının önceden bulunabilir bilgiyi görünmez yapmadığını doğrulamak için temsili retrieval ve soru-yanıt örneklerini tekrar oynatır. Düzenleme haftalık veya aylık çalışabilir ya da yeni girdi, çelişki sayısı veya retrieval kalitesindeki düşüş eşik aşınca tetiklenebilir.
+
+**Geçersiz İçeriğin Tespiti ve Devre Dışı Bırakılması.** Yeni sürümle değiştirilen eski bir politika kütüphanede kalırsa, yeni sürümle birlikte getirilip çelişkili veya eski yanıtlar üretebilir. Üretim sistemleri her chunk'a sürüm numarası ve geçerlilik ya da sona erme tarihi ekler, süresi dolan içeriği retrieval sırasında filtreler veya özette açıkça işaretler (örn. "Bu girdi [tarih]de kullanımdan kaldırıldı"). Bu, kullanıcı belleğindeki sürümlü çelişki tespitinin paylaşılan bilgi tabanına ölçeklenmiş halidir.
+
+**Çok Kullanıcılı Paylaşım: İzinler ve Tenant İzolasyonu.** Bilgi tabanının paylaşılması her dokümanın herkese görünmesi demek değildir. Farklı departman, tenant veya izin düzeyleri farklı doküman kapsamlarına sahiptir. Temel ilke, yetkisiz dokümanların context'e hiç girmemesi için **retrieval'ın çağıranın izinlerine göre filtrelenmesidir**. Filtre retrieval katmanında uygulanmalıdır: hassas içerik LLM context'ine girdikten sonra yanıta sızmayacağını garanti etmek zordur. Çok tenant'lı sistemler, bir tenant'ın sorgusunun diğerinin özel bilgisini getirmemesi için vektör indekslerini ve meta veriyi de izole etmelidir.
 
 ### Agentic RAG: Araçlaştırılmış Bilgi Getirmeye Doğru Bir Paradigma Değişimi
 
@@ -596,7 +600,7 @@ Agentic RAG, Agent'ın kendi kararları aracılığıyla arama ile düşünmeyi 
 ![Şekil 3-13: Agentic RAG Sistem Mimarisi](images/fig3-13.svg)
 
 
-> **Deney 3-9 ★★: Agentic RAG ve Non-Agentic RAG'ın Karşılaştırmalı Çalışması**
+> **Deney 3-8 ★★: Agentic RAG ve Non-Agentic RAG'ın Karşılaştırmalı Çalışması**
 >
 > `agentic-rag` projesi, iki mod arasında serbestçe geçiş yapabilen ve çeşitli bilgi tabanı backend'lerine (`retrieval-pipeline`, `structured-index` vb. dahil) bağlanabilen eksiksiz bir Agent sistemi inşa eder, kapsamlı bir ablation study'yi (yani bir bileşeni sistematik olarak değiştirip devre dışı bırakarak genel etkiye katkısını gözlemlemek) mümkün kılar. Deney, basitten karmaşığa uzanan hukuki sorular içeren özel olarak inşa edilmiş bir Çin hukuki soru-cevap veri kümesi etrafında döner.
 >
@@ -609,9 +613,9 @@ Agentic RAG, Agent'ın kendi kararları aracılığıyla arama ile düşünmeyi 
 >
 > Karşılaştırma, agentic RAG'ın değerinin yalnızca "soruları yanıtlamakta" değil "problemleri çözmekte" yattığını güçlü biçimde ortaya koyar. Zor problemlerde sağlamlık ve yanıt kalitesi için bir miktar yanıt hızından ödün verir—ve bu deneyin cezalandırma senaryosunda, pasif boru hattından aktif kaşife geçiş, çok sıçramalı doğrulukta önemli bir kazanç olarak doğrudan kendini gösterir.
 
-Artık temel retrieval'dan yapılandırılmış indekslemeye ve agentic RAG'a kadar eksiksiz yığını elimizde tutuyoruz. Bu bölümün ilk yarısının açık bıraktığı soruları hatırlayın: kullanıcı bellekleri binlere biriktiğinde, tam olarak ilgili birkaçını nasıl getiririz ve çelişkili kayıtları nasıl ayırt ederiz? Şimdi **bu bilgi tabanı tekniklerini geri döndürüp** bölümün başındaki kullanıcı belleğine yöneltme zamanı. Aşağıdaki Deney 3-10 ve 3-12, bu bölümün başında kurulan üç seviyeli değerlendirme çerçevesini (ve Deney 3-1'deki değerlendirme kümesini) kullanarak bu tekniklerin kullanıcı belleği retrieval'ındaki isabet ve çelişki sorunlarını seviye seviye çözüp çözemediğini test edecek.
+Artık temel retrieval'dan yapılandırılmış indekslemeye ve agentic RAG'a kadar eksiksiz yığını elimizde tutuyoruz. Bu bölümün ilk yarısının açık bıraktığı soruları hatırlayın: kullanıcı bellekleri binlere biriktiğinde, tam olarak ilgili birkaçını nasıl getiririz ve çelişkili kayıtları nasıl ayırt ederiz? Şimdi **bu bilgi tabanı tekniklerini geri döndürüp** bölümün başındaki kullanıcı belleğine yöneltme zamanı. Aşağıdaki Deney 3-9 ve 3-11, bu bölümün başında kurulan üç seviyeli değerlendirme çerçevesini (ve Deney 3-1'deki değerlendirme kümesini) kullanarak bu tekniklerin kullanıcı belleği retrieval'ındaki isabet ve çelişki sorunlarını seviye seviye çözüp çözemediğini test edecek.
 
-> **Deney 3-10 ★★: Agentic RAG ile Kullanıcı Belleği İnşa Etmek**
+> **Deney 3-9 ★★: Agentic RAG ile Kullanıcı Belleği İnşa Etmek**
 >
 > Agentic RAG'ı dış doküman bilgi tabanlarından uzaklaştırıp Agent'ın kendisine yönlendirin, ve ona güçlü, getirilebilir bir uzun vadeli bellek inşa edebilirsiniz. Temel fikir: Agent'ın kullanıcıyla eksiksiz konuşma geçmişini kendi başına bir bilgi tabanı olarak ele almak. Bu şekilde, Agent geçmiş etkileşimleri "hatırlayabilir" ve gerektiğinde bu "bellekleri" aktif olarak getirerek mevcut bağlamı daha iyi anlayabilir ve kişiselleştirilmiş hizmetler sunabilir. Bu bölümde daha önce tartışılan bellek için **temsil ve yönetim stratejilerinden** (Advanced JSON Cards'ın yapılandırılmış tasarımı gibi) farklı olarak, bu deney **retrieval teknolojisinin bellek hatırlama yeteneklerini nasıl güçlendirdiğine** odaklanır.
 >
@@ -626,7 +630,7 @@ Artık temel retrieval'dan yapılandırılmış indekslemeye ve agentic RAG'a ka
 >
 > Ancak, daha karmaşık ikinci seviye görevler için, bu yaklaşımın sınırlamaları ortaya çıkar. `layer2` dizinindeki `12_contradictory_financial_instructions.yaml` kullanım durumunda, eş önce bir transfer ayarlar, koca daha sonra başka bir aramada tutarı ve tarihi değiştirir ve son olarak eş tekrar arayıp değiştirir. İndekslenmiş konuşma chunk'ları izole ve bağlamdan yoksun olduğundan, sistem retrieval sırasında üç **bağımsız ama çelişkili** transfer talimatı görebilir, bu da hangisinin nihayetinde geçerli olduğunu belirlemeyi zorlaştırır, kullanıcıya kafa karıştırıcı veya yanlış bilgi sunma potansiyeli taşır. **Üçüncü seviyeye (proaktif hizmet)** ulaşmak için—bir oturumdaki bilgi (örn. yeni ayırtılan bir uçuş) ile aylar önceki başka bir oturumdaki bilgi (örn. süresi dolmak üzere olan bir pasaport) arasındaki gizli bağlantıları keşfetmek—yalnızca parçalanmış konuşma geçmişini getirmek yeterinden çok uzaktır.
 
-Bu sınırlamaların kök nedeni, geleneksel chunking yöntemlerinin doğasında olan kusurlarda yatar. Bir sonraki bölüm, bu sorunu temelden çözebilecek bir teknolojiyi—Contextual Retrieval'ı—tanıtır; bu daha sonra Deney 3-12'de kullanıcı belleği senaryosuna uygulanacaktır.
+Bu sınırlamaların kök nedeni, geleneksel chunking yöntemlerinin doğasında olan kusurlarda yatar. Bir sonraki bölüm, bu sorunu temelden çözebilecek bir teknolojiyi—Contextual Retrieval'ı—tanıtır; bu daha sonra Deney 3-11'de kullanıcı belleği senaryosuna uygulanacaktır.
 
 ### RAG Tekniği: Contextual Retrieval
 
@@ -644,19 +648,19 @@ Bu, Bölüm 2'deki "Contextual Compression"dan net biçimde ayırt edilmelidir. 
 
 Yöntemin zarafeti, her iki retrieval modunu da aynı anda güçlendirmesidir. BM25 gibi sparse retrieval için, bağlam ön eki zengin, hassas biçimde eşleştirilebilir anahtar kelimeler ekler ("ACME", "2025 2. Çeyrek"). Vektör embedding'leri aracılığıyla dense retrieval için, ön ek kilit semantik arka planı enjekte eder, böylece ortaya çıkan vektör chunk'ın gerçek anlamını çok daha isabetli biçimde yansıtır.
 
-> **Deney 3-11 ★★: Contextual Retrieval: RAG'da Bağlam Kaybı Sorununu Çözmek**
+> **Deney 3-10 ★★: Contextual Retrieval: RAG'da Bağlam Kaybı Sorununu Çözmek**
 >
 > `contextual-retrieval` projesi, kontrollü bir karşılaştırma yoluyla, Contextual Retrieval'ın geleneksel chunking üzerinde ne kadar iyileşme sağladığını nicelleştirir. Paralel olarak iki bilgi tabanı inşa eder: biri geleneksel bağlamsız chunking kullanır, diğeri LLM tarafından üretilen bağlam ön eklerine dayalı gelişmiş bir yöntem kullanır. `compare_retrieval_methods` fonksiyonu, aynı sorguyla her iki bilgi tabanında eş zamanlı retrieval yapılmasına ve sonuç farklarının yan yana karşılaştırılmasına izin verir.
 >
 > Bir kullanıcı belirli bir bağlam gerektiren bir sorgu girdiğinde, örneğin "ACME Corporation'ın son gelir artışı nedir?", fark hemen belirgin hale gelir. **Bağlamsız** bilgi tabanında, sorgu "gelir artışı" anahtar kelimelerini içeren ama farklı şirketlerden, farklı yıllardan, hatta genel sektör analizinden gelen birçok metin bloğuyla eşleşebilir, bu da düşük ilgi ve yüksek gürültüye yol açar. **Bağlama duyarlı** bilgi tabanında, her metin bloğu hassas bir "kimlik etiketine" sahip olduğundan, sorgu yalnızca anahtar kelimeleri içeren değil, aynı zamanda sorgunun niyetiyle eşleşen bir bağlam ön ekine ("ACME Corporation", "son") sahip metin bloklarına doğru biçimde yönlendirilir. Deney logları, bağlama duyarlı retrieval sonuçlarının bağlamsız sonuçlardan önemli ölçüde daha yüksek puan aldığını ve döndürülen metin bloklarının çok daha isabetli olduğunu net biçimde gösteriyor.
 >
-> Bu performans iyileştirmesinin maliyeti, indeksleme aşamasındaki ek LLM çağrılarıdır. Ancak, bu prompt caching (Bölüm 2'de tanıtılan istekler arası önbellekleme mekanizması, aynı ön ek için tekrarlanan çağrılar orijinalin yaklaşık 1/10'una mal olur) aracılığıyla tamamen kontrol edilebilir, milyon doküman token'ı başına yaklaşık 1 dolara mal olur. Anthropic araştırmasına göre, bu tekniği BM25 ile birleştirmek retrieval başarısızlık oranını ("Retrieval Kalitesi Nasıl Ölçülür?"de bahsedilen top-20 kaçırma oranı, 1 − recall@20) %49 azaltabilir ve bir reranker ile birleştirildiğinde %67 azaltabilir. Deney güçlü bir gerekçe sunar: üretim düzeyinde RAG inşa ederken, bilginin daha akıllı, bağlama duyarlı ön işlemesine yatırım yapmak, orantısız bir getirisi olan bir mühendislik kararıdır.
+> Bu performans iyileştirmesinin maliyeti, indeksleme aşamasındaki ek LLM çağrılarıdır. Ancak, bu prompt caching (Bölüm 2'de tanıtılan istekler arası önbellekleme mekanizması, aynı ön ek için tekrarlanan çağrılar orijinalin yaklaşık 1/10'una mal olur) aracılığıyla tamamen kontrol edilebilir, milyon doküman token'ı başına yaklaşık 1 dolara mal olur. Anthropic araştırmasına göre, bu tekniği BM25 ile birleştirmek retrieval başarısızlık oranını %49 azaltabilir ve bir reranker ile birleştirildiğinde %67 azaltabilir. Deney güçlü bir gerekçe sunar: üretim düzeyinde RAG inşa ederken, bilginin daha akıllı, bağlama duyarlı ön işlemesine yatırım yapmak, orantısız bir getirisi olan bir mühendislik kararıdır.
 
 Bu, Contextual Retrieval'ı doküman bilgi tabanlarında doğrular. Aynı tekniği kullanıcı belleği senaryosuna döndürmek bize bir sonraki deneyi verir.
 
-> **Deney 3-12 ★★★: Contextual Retrieval ile Kullanıcı Belleğini Güçlendirmek**
+> **Deney 3-11 ★★★: Contextual Retrieval ile Kullanıcı Belleğini Güçlendirmek**
 >
-> Contextual Retrieval'ı kullanıcı belleğine uygulamak, parçalanmış konuşma geçmişinin acı noktalarının anahtarıdır. İzole bir "Tamam, bunu ayırtalım" hiçbir bilgi taşımaz; yalnızca öncesindeki bağlamın "Şangay'dan Seattle'a 500 dolarlık tek yönlü bir bilet" olduğunu bildiğinizde bir anlam kazanır. Bu deney, Deney 3-10'un çerçevesi üzerine inşa edilir, konuşma geçmişini indekslemeden önce kritik bir "bağlam üretimi" adımı ekler—her konuşma chunk'ı için kilit arka plan bilgisi içeren bir ön ek özeti üretmek üzere bir LLM çağırmak.
+> Contextual Retrieval'ı kullanıcı belleğine uygulamak, parçalanmış konuşma geçmişinin acı noktalarının anahtarıdır. İzole bir "Tamam, bunu ayırtalım" hiçbir bilgi taşımaz; yalnızca öncesindeki bağlamın "Şangay'dan Seattle'a 500 dolarlık tek yönlü bir bilet" olduğunu bildiğinizde bir anlam kazanır. Bu deney, Deney 3-9'un çerçevesi üzerine inşa edilir, konuşma geçmişini indekslemeden önce kritik bir "bağlam üretimi" adımı ekler—her konuşma chunk'ı için kilit arka plan bilgisi içeren bir ön ek özeti üretmek üzere bir LLM çağırmak.
 >
 > Bu bağlamla güçlendirilmiş bellek deposu, **gerçek çelişkileri** ele alırken kesin bir avantaj gösterir. `layer2` dizinindeki `12_contradictory_financial_instructions.yaml`'daki senaryoya dönersek, bağlam güçlendirmesinden sonra, üç ilgili konuşma chunk'ı `[Eş Patricia Thompson ilk banka transferini ayarlıyor]`, `[Koca James Thompson önceki banka transferini değiştiriyor]` ve `[Eş, kocanın değişikliğinden sonra transferi tekrar değiştiriyor]` gibi ön eklere sahip olur. Zaman, kişi ve niyeti içeren bağlam, Agent'a talimat önceliğini ve nihai geçerliliği değerlendirmek için kritik ipuçları sağlar.
 >
@@ -673,8 +677,6 @@ Burada bölümün iki ipliği—ilk yarıdan kullanıcı belleği, ikinci yarıd
 
 ### Veri Kümelerinden Derin Bilgi Çıkarmak: Bilgi Getirmeden Bilgi Keşfine
 
-RAG, "mevcut dokümanlar nasıl getirilir" sorununu çözer. Ancak, gerçek dünya senaryolarında, çok değerli bilgi doküman formunda mevcut değildir—yapılandırılmış verinin istatistiksel kalıpları içinde gizlidir. Bu bölüm, RAG'a bir tamamlayıcı olarak, bu tür örtük bilginin veri kümelerinden nasıl çıkarılacağını tanıtır.
-
 Şimdiye kadar tartıştığımız RAG teknikleri, bilginin yapılandırılmamış veya yarı yapılandırılmış doküman formunda var olduğu önermesine dayanmaktadır. Ancak, birçok profesyonel alanda, bilgi daha çok örtüktür ve dağıtılmıştır, devasa miktarda yapılandırılmış dava verisi içine gömülüdür. Örneğin hukuk alanında, bir kararı belirleyen "bilgi" yalnızca kısmen yasalarda yazılıdır; çok daha fazlası, yargıçların binlerce emsal üzerinden karmaşık, hatta çelişkili faktörleri—suç motivasyonu, zarar derecesi, gönüllü teslim olma, sosyal etki—nasıl tarttığında yaşar. Bu, kıdemli bir doktorun "sezgisine" benzer: yalnızca ders kitabı teorisi değil, sayısız vakanın tortusu.
 
 Bu tür veri kümelerinden öğrenmek yeni bir RAG paradigması gerektirir. Basit metin retrieval'ı yeterli olmayacaktır; sistem verinin içine girmeli, orada gömülü örtük bilgiyi çıkarmak ve bir Agent'ın anlayıp uygulayabileceği yapılandırılmış karar mantığına dönüştürmek için istatistiksel analiz ve kalıp tanıma kullanmalıdır. Özünde, bu "Bilgi Getirmeden (Information Retrieval)" "Bilgi Keşfine (Knowledge Discovery)" bir sıçramadır.
@@ -689,39 +691,55 @@ Süreç iki aşamadan oluşur:
 ![Şekil 3-15: Yapılandırılmış Bilgi Çıkarımı Boru Hattı](images/fig3-15.svg)
 
 
-> **Deney 3-13 ★★★: Yapılandırılmış Veriden Örtük Bilgi Çıkarmak: Bir Hukuki Emsal Analizi Vaka Çalışması**
+> **Deney 3-12 ★★★: Yapılandırılmış Veriden Örtük Bilgi Çıkarmak: Bir Hukuki Emsal Analizi Vaka Çalışması**
 >
 > `structured-knowledge-extraction` projesi, büyük ölçekli CAIL2018 Çin ceza kararı veri kümesine dayanarak, emsallerden "karar deneyimi" öğrenen akıllı bir hukuki danışman inşa eder.
 >
 > Deneyin özü, yenilikçi veri odaklı bilgi mühendisliği yaklaşımında yatar. Önceden tanımlanmış katı bir veri şeması kullanmak yerine, **bilgi çıkarımı** aşaması "aşağıdan yukarıya" bir faktör keşif stratejisi kullanır—LLM'e yüzlerce örnek davayı analiz ettirip kararı etkileyen olası tüm kilit faktörleri serbestçe listeleterek, proje ekibi insan önseline değil verinin kendisine daha uygun modüler bir veri şeması inşa edebildi. Şema, tüm davalara uygulanabilir bir "çekirdek şema" (gönüllü teslim olma ve tazminat gibi durumlar) artı hırsızlık veya kasıtlı yaralama gibi belirli suçlamalar için "genişletilmiş şemalar" (ilgili tutar ve yaralanma düzeyi gibi alanlar) içerir.
 >
-> **Faktör analizi** aşamasında, yapay zekanın doğrudan cezayı tahmin etmesini sağlamak yerine (bu bir "kara kutu" yaratırdı—bir yanıt verir ama nedenini açıklayamaz), dava bilgisi önce bilgisayarların iyi ele aldığı sayısal bir formata çevrilir. Çeviri yöntemi sezgiseldir: "suç türü" gibi birden fazla seçeneği olan alanlar için, her seçenek bağımsız bir anahtar bit alır—Hırsızlık = [1,0,0], Soygun = [0,1,0], Dolandırıcılık = [0,0,1] (1, 2, 3 kullanılmamasının nedeni, sayıların büyüklüğünün algoritmanın "dolandırıcılık hırsızlıktan üç kat daha ciddi" diye düşünmesine neden olmasıdır, oysa anahtar bitler yalnızca "hangi kategoriyi" belirtir, büyüklük ilişkisi ima etmez). "Gönüllü teslim olma" veya "tazminat" gibi evet/hayır sorular için, 1 evet, 0 hayır anlamına gelir. Böylece, her dava bir sayı dizisine dönüşür ve ardından verideki doğal "dava prototiplerini" bulmak için kümeleme algoritmaları kullanılır. Örneğin, kasıtlı yaralama davalarında, "silahsız küçük bir kavga hafif yaralanmaya yol açtı" veya "silahlı, önceden planlanmış bir çete ciddi yaralanmaya neden oldu" gibi tipik kalıplar otomatik olarak kümelenebilir. Bu kümeleri tanımlayan kilit özellikleri analiz ederek, veri odaklı bir "Faktör Önem Hiyerarşisi Modeli" inşa edilir.
+> **Faktör analizi** aşamasında, yapay zekanın doğrudan cezayı tahmin etmesini sağlamak yerine (bu bir "kara kutu" yaratırdı—bir yanıt verir ama nedenini açıklayamaz), dava bilgisi önce bilgisayarların iyi ele aldığı sayısal bir formata çevrilir. Çeviri yöntemi sezgiseldir: "suç türü" gibi birden fazla seçeneği olan alanlar için, her seçenek bağımsız bir anahtar bit alır—Hırsızlık = [1,0,0], Soygun = [0,1,0], Dolandırıcılık = [0,0,1] (1, 2, 3 kullanılmamasının nedeni, sayıların büyüklüğünün algoritmanın "dolandırıcılık hırsızlıktan üç kat daha ciddi" diye düşünmesine neden olmasıdır, oysa anahtar bitler yalnızca "hangi kategoriyi" belirtir, büyüklük ilişkisi ima etmez). "Gönüllü teslim olma" veya "tazminat" gibi evet/hayır sorular için, 1 evet, 0 hayır anlamına gelir. Böylece, her dava bir sayı dizisine dönüşür ve ardından verideki doğal "dava prototiplerini" bulmak için kümeleme algoritmaları kullanılır. Örneğin, kasıtlı yaralama davalarının tamamı birlikte kümelendiğinde algoritma bunları çatışmanın nedeni, eylemin biçimi ve yaralanmanın ağırlığı gibi özelliklere göre birbirine benzeyen dava gruplarına ayırır; her grup tipik bir kalıba karşılık gelir; örneğin "küçük bir tartışmadan çıkan silahsız kavgada mağdurun hafif yaralanması" ya da "önceden planlanmış silahlı bir çetenin saldırısında mağdurun ağır yaralanması". Bu kümeleri tanımlayan kilit özellikleri analiz ederek, veri odaklı bir "Faktör Önem Hiyerarşisi Modeli" inşa edilir.
 >
 > Nihayetinde, bu "Faktör Önem Hiyerarşisi Modeli", Agent'ın **konuşmalı bilgi toplamasının** temel yönlendiricisi haline gelir. Bir kullanıcı bir davayı tanımladığında, Agent tüm kilit karar faktörlerini tamamlamak için bu modeli kullanarak önem sırasına göre yönlendirici sorular sorar akıllıca. Bilgi toplama tamamlandığında, Agent bilgi tabanından en benzer dava prototipini getirir ve prototipin istatistiksel verilerine (örn. tipik ceza aralığı) dayanarak bol emsallerle desteklenmiş, veri odaklı bir analiz ve açıklama sunar.
 >
 > Bu deney bir şeyi gösteriyor: bir Agent, bilgi tabanını yalnızca retrieval için statik bir depo olarak ele almak zorunda değildir—önce veriyi "okuyabilir", yapılandırılmış karar mantığını damıtabilir ve ardından o mantığa dayanarak soruları yanıtlayabilir.
 
+### Sınır Araştırması: Çok Modlu Bellek
+
+Bir yüzün görünümünü veya bir insanın sesini kelimelerle anlatmak zordur; bunlar bu bölümde daha önce tanıtılan metin belleği mekanizmalarıyla saklanamaz. Context sınırlarını aşarak bu tür çok modlu bellekleri korumak hâlâ bir araştırma sınırıdır.
+
+**Yaklaşım 1: Ham çok modlu veriyi ve metin açıklamasını saklamak.** Örneğin Agent tanımadığı bir yüz gördüğünde bir araçla yüzü görüntüden kırpabilir, görüntü dosyası olarak kaydedebilir ve metinle açıklayıp indeksleyebilir; görüntüye Markdown'dan referans da verebilir. Daha sonra bir yüzü tanıması gerektiğinde metin açıklamalarıyla aday görüntüleri getirir, özgün görüntüleri okur ve aynı kişiyi gösterip göstermediklerine karar verir.
+
+**Yaklaşım 2: Çok modlu embedding'leri context'e sıkıştırmak.** İlk yaklaşım hâlâ metin açıklamalarına dayanır ve metnin ifade edemediği bilgiyi kaybetmeye devam eder. İkinci yaklaşımda Agent, tanımadığı yüzü kırptıktan sonra embedding'ini hesaplar ve context'te saklar. Ayrılmış bir context bölgesi yüz ve ses izi gibi çok sayıda çok modlu öğenin embedding'lerini tutar. Retrieval sırasında Agent tüm bu öğelere her zaman attention uygulayıp en ilgili olanı seçebilir. Metin açıklamasına kıyasla **her yüz veya ses izi genellikle yalnızca tek bir embedding gerektirir ve context'te tek token kaplar**. Böylece 1.000 token'lık bir bölge 1.000 yüz saklayabilir.
+
+**Yaklaşım 3: Çok modlu embedding'leri model parametrelerine sıkıştırmak.** Doğal bir fikir, her kullanıcıya özel LoRA eğitmek gibi yöntemlerle bilgiyi model ağırlıklarına yazmaktır. Bu fact-LoRA'lar doğrudan sorulduğunda gerçekleri neredeyse kusursuz tekrarlar, ancak dondurulmuş omurga geçici bir adaptöre nasıl başvuracağını öğrenmediği için gerçekler üzerinde **dolaylı reasoning** yapamaz. Bir gerçeği saklamak ile modele onu ne zaman kullanacağını öğretmek farklı problemlerdir. User as Engram[^engram] bunu LoRA eğitmeden çözer: çok modlu embedding'i Engram modelindeki kullanılmayan bir **hash N-gram yuvasına** yazar. Bu modeller pre-training sırasında hash tablosu lookup'larıyla belleği getirmeyi ve context-aware bir kapıyla retrieval'ın ne zaman uygun olduğuna karar vermeyi öğrenir; yeni yazılan gerçekler gerektiğinde hatırlanır. İkinci yaklaşıma göre Engram depolama daha fazla ölçeklenir, ancak Engram destekli önceden eğitilmiş model gerektirir ve doğruluğu daha düşük olabilir.
+
+[^engram]: Bu yöntem kullanıcı başına LoRA eğitmek yerine, kullanıcı gerçeklerini gradyan güncellemesi olmadan önceden eğitilmiş bir Engram modelinin hash N-gram yuvalarına cerrahi hassasiyetle ekler. Bkz. Li, Bojie. *User as Engram: Internalizing Per-User Memory as Local Parametric Edits.* arXiv:2606.19172, 2026.
+
 ## Bölüm Özeti
 
 Bu bölüm, AI Agent'ın kalıcı bellek sistemini iki ölçekte inşa etti: birey için kullanıcı belleği ve herkes için paylaşılan bir bilgi tabanı.
 
+Kitabın bütünsel yapısı açısından bu bölüm, Bölüm 1'deki keşif döngüsünün **öneri** kesitini kurar: bir kanıtı en küçük, incelenebilir ve geri alınabilir tek bir değişikliğe dönüştürmek—sistemin bütününün iyileşip iyileşmediğine karar vermek değil.
+
 **Kullanıcı belleği** için, atomik gerçeklerden (Simple Notes) bağlamsallaştırılmış bilgi yönetimine (Advanced JSON Cards) kadar dört kademeli stratejiyi keşfettik, bilgi temsilindeki basitlik ile ifade gücü arasındaki temel gerilimi ortaya koyduk. Mem0 ve Memobase gibi çerçeveler mühendislik odaklı bellek yönetimi sağlar ve gizlilik koruması hassas bilgiyi her aşamada güvende tutar.
 
-**Bilgi edinimi** için, temel yığın şöyle işler: doküman chunking retrieval birimlerini işaretler, dense embedding'ler semantiği yakalar, sparse embedding'ler anahtar kelimeleri eşleştirir, sonuç füzyonu adayları tek bir havuzda birleştirir, neural reranking nihai hassasiyet geçişini yapar ve recall@k gibi metrikler her şeyin ne kadar iyi çalıştığını ölçer. Çok modlu çıkarım, sistemin erişimini düz metinden grafiklere ve doküman düzenlerine genişletir.
+**Bilgi edinimi** için, temel yığın şöyle işler: doküman chunking retrieval birimlerini işaretler, dense embedding'ler semantiği yakalar, sparse embedding'ler anahtar kelimeleri eşleştirir, sonuç füzyonu adayları tek bir havuzda birleştirir, neural reranking nihai hassasiyet geçişini yapar ve recall@k gibi metrikler her şeyin ne kadar iyi çalıştığını ölçer.
 
 **Bilgi anlayışı** için, düz doküman chunking'in ötesine geçtik: RAPTOR'un hiyerarşik özetler ağacı ve GraphRAG'ın varlık-ilişki ağı bilgiye yapı kazandırır; Contextual Retrieval, chunking'in neden olduğu semantik kaybı köküne kadar onarır; ve Agentic RAG, pasif "getir-üret" boru hattını Agent tarafından yönetilen aktif, yinelemeli bir keşfe dönüştürür. Aynı teknikler kullanıcı belleğine de uygulanır, nihayetinde bir **iki katmanlı bellek mimarisinde** birleşir: context'te yerleşik Advanced JSON Cards "genel bakışı" sağlar, Contextual Retrieval ise "ayrıntıları" ihtiyaç halinde sağlar. Üst üste yığıldığında, bu iki katman oturumlar arası hatırlama doğruluğunu ve çelişki çözümünü keskin biçimde iyileştirir—ve bölümün başındaki üç seviyeli çerçevenin en üst düzeyi olan "proaktif hizmeti" gerçekten destekleyen şey budur.
 
-Bu bölüm ve önceki bölüm Context'i ele alır—biri tek bir oturum içinde, diğeri birden fazla oturum boyunca. Bu bölümün öncelikle pekiştirdiği şey, kullanıcılar ve dünya hakkındaki bildirimsel bilgidir. Bölüm 8 aynı çıkarım ve retrieval altyapısını yeniden kullanır, ancak onu operasyonel başarı ve başarısızlıklarla desteklenen davranış bilgisine uygular: “Agent hangi koşullarda ne yapmalıdır?” Bir sonraki bölüm Tools'a döner: Agent'ların araç tasarımı, MCP birlikte çalışabilirlik standardı ve olay güdümlü mimariler aracılığıyla dış dünyayla nasıl etkileşime girdiğini inceler.
+**Bilgi güncelleme** için sistemin iki ritme ihtiyacı vardır: artımlı güncellemeler yeni kanıtı hızla alır; dönemsel düzenleme ise tekilleştirmek, kullanım dışı bırakmak, birleştirmek, yeniden yapılandırmak, ihmalleri kontrol etmek ve senaryoları nitelemek için eksiksiz bilgiye ve ham veriye döner. Bilgi Markdown veya Python olarak temsil edilsin, Proposer Agent kanıta dayalı bir diff sunmalı ve heterojen Reviewer Agent bunu bağımsız olarak denetlemelidir. PR ancak onaydan sonra birleştirilmeli, türetilmiş indeksler de bundan sonra yeniden oluşturulmalıdır.
+
+Bu bölüm ve önceki bölüm Context'i ele alır—biri tek bir oturum içinde, diğeri birden fazla oturum boyunca. Bu bölümün öncelikle pekiştirdiği şey, kullanıcılar ve dünya hakkındaki bildirimsel bilgidir. Bölüm 9 aynı çıkarım ve retrieval altyapısını yeniden kullanır, ancak onu başarılı ve başarısız çalıştırmalarla desteklenen davranış bilgisine uygular: “Agent hangi koşullarda ne yapmalıdır?” Bir sonraki bölüm Tools'a döner: Agent'ların araç tasarımı, MCP birlikte çalışabilirlik standardı ve olay güdümlü mimariler aracılığıyla dış dünyayla nasıl etkileşime girdiğini inceler.
 
 ## Düşünce Soruları
 
 
 1.  ★★ Bir kullanıcı belleği sisteminde, aynı kullanıcı farklı oturumlarda çelişkili bilgi sağladığında (örn. iki farklı ev adresinden bahsetmek), bellek sistemi bu çelişkiyi nasıl ele almalıdır?
 2.  ★★ Contextual Retrieval, orijinal dokümandan gelen bağlamı her chunk'a ekler. Ancak, orijinal dokümanın kendisi yapısal olarak dağınıksa veya çelişkili bilgi içeriyorsa, bu yöntem hataları yayabilir hatta büyütebilir. Retrieval aşamasında bir "bilgi kalitesi" sinyalini nasıl tanıtırdınız?
-3.  ★★★ Agentic RAG, Agent'ın ne zaman arama yapacağına, ne arayacağına ve aramaya devam edip etmeyeceğine aktif olarak karar vermesine izin verir. Ama model neyi bilmediğini bilmiyorsa, bir aramayı doğru biçimde tetikleyemez. Bu "üst biliş (metacognition)" sorunu nasıl çözülebilir?
-4.  ★★ Çok modlu bilgi çıkarımı, retrieval'dan önce grafikleri metin açıklamalarına dönüştürür. Bu "çeviri" süreci, görsel bilgideki mekânsal ilişkileri kaybedebilir. Salt metin açıklamasının tam olarak aktaramayacağı belirli bir grafik bilgisi örneği verin ve o bilgiyi korumak için bir şema tasarlayın.
-5.  ★★★ Rich Sutton'ın "Acı Ders"i, genel yöntemlerin (arama ve öğrenme) nihayetinde elle hazırlanmış özelliklerden daha iyi performans göstereceğini savunur. Bu bölümde inşa edilen tüm bilgi sistemi (chunking stratejileri, indeks yapıları, retrieval boru hatları) kendisi bir "elle hazırlanmış tasarım" biçimi midir? Model yetenekleri yeterince güçlü hale gelirse, bu tasarımlar basitçe "her şeyi girdi olarak vermekle" değiştirilebilir mi?
-6.  ★★★ Model yetenekleri iyileştikçe, alana özgü bilgi tabanlarının hâlâ önemli olacağını düşünüyor musunuz? Gelecekteki güçlü bir temel model, bir alan bilgi tabanındaki tüm bilgiyi potansiyel olarak içerebilir mi, böylece buna olan ihtiyacı ortadan kaldırabilir mi?
-7.  ★ RAPTOR, aşağıdan yukarıya hiyerarşik özetleme yoluyla bir ağaç indeksi inşa ederken, GraphRAG varlık ilişkileri yoluyla graf yapılı bir indeks inşa eder. Bu iki yapılandırılmış indeks, her biri hangi tür sorguları yanıtlamada iyidir?
-8.  ★★ Dosya sistemi paradigması, bilgiyi bir dosya sistemine benzer hiyerarşik bir yapıya organize eder. Geleneksel vektör veritabanı RAG'ına kıyasla, bu yaklaşım hangi senaryolarda avantajlıdır?
-9.  ★★★ Yapılandırılmış veriden (örn. hukuki karar veritabanları) "karar faktörlerini" ve "faktör önem hiyerarşilerini" otomatik olarak keşfetmek, özünde Agent'ın veriden kural çıkarsamasını içerir. Bu veri odaklı bilgi çıkarımı, insan uzmanlar tarafından elle hazırlanan kuralların kalitesine ulaşabilir mi?
+3.  ★★ Çok modlu bilgi çıkarımı, retrieval'dan önce grafikleri metin açıklamalarına dönüştürür. Bu "çeviri" süreci, görsel bilgideki mekânsal ilişkileri kaybedebilir. Salt metin açıklamasının tam olarak aktaramayacağı belirli bir grafik bilgisi örneği verin ve o bilgiyi korumak için bir şema tasarlayın.
+4.  ★★★ Rich Sutton'ın "Acı Ders"i, genel yöntemlerin (arama ve öğrenme) nihayetinde elle hazırlanmış özelliklerden daha iyi performans göstereceğini savunur. Bu bölümde inşa edilen tüm bilgi sistemi (chunking stratejileri, indeks yapıları, retrieval boru hatları) kendisi bir "elle hazırlanmış tasarım" biçimi midir? Model yetenekleri yeterince güçlü hale gelirse, bu tasarımlar basitçe "her şeyi girdi olarak vermekle" değiştirilebilir mi?
+5.  ★★★ Model yetenekleri iyileştikçe, alana özgü bilgi tabanlarının hâlâ önemli olacağını düşünüyor musunuz? Gelecekteki güçlü bir temel model, bir alan bilgi tabanındaki tüm bilgiyi potansiyel olarak içerebilir mi, böylece buna olan ihtiyacı ortadan kaldırabilir mi?
+6.  ★ RAPTOR, aşağıdan yukarıya hiyerarşik özetleme yoluyla bir ağaç indeksi inşa ederken, GraphRAG varlık ilişkileri yoluyla graf yapılı bir indeks inşa eder. Bu iki yapılandırılmış indeks, her biri hangi tür sorguları yanıtlamada iyidir?
+7.  ★★ Dosya sistemi paradigması, bilgiyi bir dosya sistemine benzer hiyerarşik bir yapıya organize eder. Geleneksel vektör veritabanı RAG'ına kıyasla, bu yaklaşım hangi senaryolarda avantajlıdır?
+8.  ★★★ Yapılandırılmış veriden (örn. hukuki karar veritabanları) "karar faktörlerini" ve "faktör önem hiyerarşilerini" otomatik olarak keşfetmek, özünde Agent'ın veriden kural çıkarsamasını içerir. Bu veri odaklı bilgi çıkarımı, insan uzmanlar tarafından elle hazırlanan kuralların kalitesine ulaşabilir mi?
+9. ★★★ Markdown tabanlı bir kullanıcı belleği kütüphanesi için hem artımlı güncelleme hem dönemsel düzenleme akışları tasarlayın. Reviewer ve Proposer aynı modeli kullanır ve yalnızca Proposer'ın seçtiği konuşma parçalarını görürse hangi hatalar yine de birleştirilebilir? Model bağımsızlığı, kanıt kapsamı ve araç izinleri açısından iyileştirmeleri açıklayın.

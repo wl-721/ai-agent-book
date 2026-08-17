@@ -15,7 +15,7 @@ Commit = tuple[str, int]
 def source_path_for_page(src_uri: str, root: Path = REPO_ROOT) -> Path:
     """Return the tracked source represented by an assembled page URI."""
     relative = PurePosixPath(src_uri)
-    parts = relative.parts
+    parts = [p for p in relative.parts if p != "/"]
 
     # build_site.sh promotes book/chapterN.md to book/chapterN/index.md so
     # navigation.indexes can make the chapter section itself clickable.
@@ -74,7 +74,12 @@ def git_commit_range(
         return latest, latest
 
     creation_lines = _git_log(common + ["--diff-filter=A", "--", relative])
-    created = _parse_commit(creation_lines[-1]) if creation_lines else _fallback_commit()
+    valid_creation_commits = [
+        commit
+        for commit in map(_parse_commit, creation_lines)
+        if not any(commit[0].startswith(prefix) for prefix in ignored_commits)
+    ]
+    created = valid_creation_commits[-1] if valid_creation_commits else latest
     return latest, created
 
 

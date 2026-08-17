@@ -54,13 +54,13 @@
 | :--: | --- | --- | :--: | :--: |
 | 1 | 🚀 **ஏஜென்ட் அடிப்படைகள்** | **Agent = LLM + Context + Tools**; Harness பொறியியலே உண்மையான போட்டித் திறன் | [படி](../../book-ta/chapter1.ta.md) | [4](../../chapter1/README.ta.md) |
 | 2 | 🎯 **சூழல் பொறியியல்** | சூழல் ஏஜெண்டின் திறனின் மேல் வரம்பைத் தீர்மானிக்கிறது: KV Cache, prompt engineering, Agent Skills, சூழல் சுருக்கம் | [படி](../../book-ta/chapter2.ta.md) | [9](../../chapter2/README.ta.md) |
-| 3 | 📚 **பயனர் நினைவகம் & அறிவுத் தளம்** | பயனரை அமர்வுகளுக்கு குறுக்கே நினைவில் வைத்தல் + வெளிப்புற அறிவு: பயனர் நினைவகம், RAG, கட்டமைக்கப்பட்ட குறியீடு, அறிவு வரைபடம் | [படி](../../book-ta/chapter3.ta.md) | [13](../../chapter3/README.ta.md) |
-| 4 | 🛠️ **கருவிகள்** | கருவிகள் ஏஜெண்டின் கைகள்: MCP நெறிமுறை, உணர்வு/செயலாக்கம்/ஒத்துழைப்பு, நிகழ்வு-இயக்கிய ஏஜென்ட், முனைப்பான கருவி கண்டுபிடிப்பு | [படி](../../book-ta/chapter4.ta.md) | [7](../../chapter4/README.ta.md) |
-| 5 | 💻 **Coding Agent & குறியீடு உருவாக்கம்** | குறியீடு "புதிய கருவியை உருவாக்கும் கருவி"; உற்பத்தி தர Coding Agent முழுமையாக | [படி](../../book-ta/chapter5.ta.md) | [12](../../chapter5/README.ta.md) |
+| 3 | 📚 **பயனர் நினைவகம் & அறிவுத் தளம்** | பயனரை அமர்வுகளுக்கு குறுக்கே நினைவில் வைத்தல் + வெளிப்புற அறிவு: பயனர் நினைவகம், RAG, கட்டமைக்கப்பட்ட குறியீடு, அறிவு வரைபடம் | [படி](../../book-ta/chapter3.ta.md) | [12](../../chapter3/README.ta.md) |
+| 4 | 🛠️ **கருவிகள்** | கருவிகள் ஏஜெண்டின் கைகள்: MCP நெறிமுறை, உணர்வு/செயலாக்கம்/ஒத்துழைப்பு, நிகழ்வு-இயக்கிய ஏஜென்ட், முனைப்பான கருவி கண்டுபிடிப்பு | [படி](../../book-ta/chapter4.ta.md) | [8](../../chapter4/README.ta.md) |
+| 5 | 💻 **Coding Agent & குறியீடு உருவாக்கம்** | குறியீடு "புதிய கருவியை உருவாக்கும் கருவி"; உற்பத்தி தர Coding Agent முழுமையாக | [படி](../../book-ta/chapter5.ta.md) | [13](../../chapter5/README.ta.md) |
 | 6 | 🎯 **ஏஜென்ட் மதிப்பீடு** | செயல்திறனை ஒப்பிடக்கூடிய சமிக்ஞையாக மாற்று: சூழல்கள், அளவீடுகள், புள்ளியியல் முக்கியத்துவம், மதிப்பீடு-இயக்கிய தேர்வு | [படி](../../book-ta/chapter6.ta.md) | [12](../../chapter6/README.ta.md) |
 | 7 | 🧠 **மாதிரி பிந்தைய பயிற்சி** | Pre-training/SFT/RL மூன்று நிலைகள்: SFT vs RL, கருவி அழைப்பை உள்ளடக்குதல், மாதிரி செயல்திறன் | [படி](../../book-ta/chapter7.ta.md) | [16](../../chapter7/README.ta.md) |
-| 8 | 🔄 **ஏஜென்ட் சுய-பரிணாமம்** | எடைகளை மாற்றாமல் வளர்தல்: அனுபவத்திலிருந்து கற்றல், பயனரிலிருந்து உருவாக்குநர் | [படி](../../book-ta/chapter8.ta.md) | [7](../../chapter8/README.ta.md) |
-| 9 | 🎙️ **பல்முக & நிகழ்நேர இடைவினை** | உரையிலிருந்து குரல், GUI, பௌதீக உலகம்: மூன்று குரல் முன்னுதாரணங்கள், Computer Use, ரோபோட்டிக்ஸ் | [படி](../../book-ta/chapter9.ta.md) | [7](../../chapter9/README.ta.md) |
+| 8 | 🔄 **ஏஜென்ட் சுய-பரிணாமம்** | எடைகளை மாற்றாமல் வளர்தல்: அனுபவத்திலிருந்து கற்றல், பயனரிலிருந்து உருவாக்குநர் | [படி](../../book-ta/chapter8.ta.md) | [9](../../chapter8/README.ta.md) |
+| 9 | 🎙️ **பல்முக & நிகழ்நேர இடைவினை** | உரையிலிருந்து குரல், GUI, பௌதீக உலகம்: மூன்று குரல் முன்னுதாரணங்கள், Computer Use, ரோபோட்டிக்ஸ் | [படி](../../book-ta/chapter9.ta.md) | [12](../../chapter9/README.ta.md) |
 | 10 | 🤝 **பல-ஏஜென்ட் ஒத்துழைப்பு** | கூட்டு நுண்ணறிவு > தனிப்பட்டது: ஒத்துழைப்பு கட்டமைப்பு, சூழல் பகிர்வு/தனிமைப்படுத்தல், "ஏஜென்ட் சமூகம்" | [படி](../../book-ta/chapter10.ta.md) | [7](../../chapter10/README.ta.md) |
 
 
@@ -70,7 +70,7 @@
 
 ## 💻 துணை சோதனைகளை இயக்குதல்
 
-பொதுவான அடிப்படை பதிப்பு **Python 3.10+**. களஞ்சியத்தின் மூல அடைவிலிருந்து அத்தியாயம் வாரியாக சார்புகளை நிறுவவும்; வேறு அத்தியாயத்திற்கு `ch1` என்பதை `ch2` முதல் `ch10` வரை மாற்றவும்:
+பொதுவாக ஆதரிக்கப்படும் வரம்பு **Python 3.11–3.13**. களஞ்சியத்தின் மூல அடைவிலிருந்து அத்தியாயம் வாரியாக சார்புகளை நிறுவவும்; வேறு அத்தியாயத்திற்கு `ch1` என்பதை `ch2` முதல் `ch10` வரை மாற்றவும்:
 
 ```bash
 # பரிந்துரை: மீண்டும் உருவாக்கக்கூடிய அத்தியாய சூழலுக்கு commit செய்யப்பட்ட uv.lock-ஐ பயன்படுத்தவும்
@@ -92,7 +92,7 @@ uv run python chapter1/context/main.py
 - `uv` நிறுவ [அதிகாரப்பூர்வ வழிகாட்டியைப்](https://docs.astral.sh/uv/getting-started/installation/) பார்க்கவும். `pip` தொடர்ந்து ஆதரிக்கப்படுகிறது, ஆனால் lockfile-ஐ பயன்படுத்தாது.
 - மாற்றக் காலத்தில் ஒவ்வொரு சோதனையின் `requirements.txt` தொடர்ந்து செயல்படும்; தனிப்பட்ட திட்டங்கள் மற்றும் சிறப்பு பதிப்பு கட்டுப்பாடுகளுக்கு இது ஏற்றது.
 - `all` என்பது CPU-க்கு ஏற்ற பரந்த தொகுப்பு; எல்லா சோதனைகளும் அதில் அடங்காது. `uv sync` ஒவ்வொரு முறையும் தற்போதைய தேர்வுடன் exact sync செய்கிறது, எனவே special extra-களை ஒரே கட்டளையில் சேர்க்கவும்: `uv sync --locked --extra ch2 --extra vllm` அல்லது `uv sync --locked --extra ch7 --extra unsloth`; pip-க்கு `python -m pip install -e ".[ch2,vllm]"`.
-- browser, CUDA, FFmpeg, Ollama, Playwright browser மற்றும் வெளிப்புற களஞ்சியங்கள் போன்ற system dependency-களுக்கு ஒவ்வொரு சோதனையின் README-ஐ பின்பற்றவும். சில browser மற்றும் memory சோதனைகளுக்கு Python 3.11+ தேவை; அத்தியாயம் 8-இல் சேர்க்கப்பட்ட சில third-party component-களுக்கு Python 3.12+ தேவை.
+- browser, CUDA, FFmpeg, Ollama, Playwright browser மற்றும் வெளிப்புற களஞ்சியங்கள் போன்ற system dependency-களுக்கு ஒவ்வொரு சோதனையின் README-ஐ பின்பற்றவும். அத்தியாயம் 8-இல் சேர்க்கப்பட்ட சில third-party component-களுக்கு Python 3.12+ தேவை.
 
 ## 🔑 API விசைகள்
 
@@ -148,13 +148,13 @@ git clone https://github.com/PRIME-RL/SimpleVLA-RL.git                 chapter7/
 # அத்தியாயம் 9 · உலாவி தானியக்கம் & Claude எடுத்துக்காட்டுகள்
 git clone https://github.com/browser-use/browser-use.git               chapter9/browser-use
 git clone https://github.com/anthropics/claude-quickstarts.git         chapter9/claude-quickstarts
-git clone https://github.com/Vector-Wangel/XLeRobot.git chapter9/XLeRobot && git -C chapter9/XLeRobot fetch origin 3d14695e40c9c68229c0aacffca6053c75cd3eb6 && git -C chapter9/XLeRobot checkout --detach 3d14695e40c9c68229c0aacffca6053c75cd3eb6 && test "$(git -C chapter9/XLeRobot rev-parse HEAD)" = "3d14695e40c9c68229c0aacffca6053c75cd3eb6"  # Exp 9-8/9-9 shared
-git clone https://github.com/Grigorij-Dudnik/RoboCrew.git chapter9/RoboCrew && git -C chapter9/RoboCrew fetch origin c749148f29bd14e61347f9fc3530c343fff0d994 && git -C chapter9/RoboCrew checkout --detach c749148f29bd14e61347f9fc3530c343fff0d994 && test "$(git -C chapter9/RoboCrew rev-parse HEAD)" = "c749148f29bd14e61347f9fc3530c343fff0d994"  # Exp 9-9; RoboCrew v0.3.1
-git clone https://github.com/StoneT2000/lerobot-sim2real.git chapter9/lerobot-sim2real && git -C chapter9/lerobot-sim2real fetch origin 87d6c1d969f6e0ca4dc5697940804e231118a63a && git -C chapter9/lerobot-sim2real checkout --detach 87d6c1d969f6e0ca4dc5697940804e231118a63a && test "$(git -C chapter9/lerobot-sim2real rev-parse HEAD)" = "87d6c1d969f6e0ca4dc5697940804e231118a63a"  # Exp 9-10
+git clone https://github.com/Vector-Wangel/XLeRobot.git chapter9/XLeRobot && git -C chapter9/XLeRobot fetch origin 3d14695e40c9c68229c0aacffca6053c75cd3eb6 && git -C chapter9/XLeRobot checkout --detach 3d14695e40c9c68229c0aacffca6053c75cd3eb6 && test "$(git -C chapter9/XLeRobot rev-parse HEAD)" = "3d14695e40c9c68229c0aacffca6053c75cd3eb6"  # Exp 9-7/9-9 shared
+git clone https://github.com/Grigorij-Dudnik/RoboCrew.git chapter9/RoboCrew && git -C chapter9/RoboCrew fetch origin c749148f29bd14e61347f9fc3530c343fff0d994 && git -C chapter9/RoboCrew checkout --detach c749148f29bd14e61347f9fc3530c343fff0d994 && test "$(git -C chapter9/RoboCrew rev-parse HEAD)" = "c749148f29bd14e61347f9fc3530c343fff0d994"  # Exp 9-8/9-9; RoboCrew v0.3.1
+git clone https://github.com/StoneT2000/lerobot-sim2real.git chapter9/lerobot-sim2real && git -C chapter9/lerobot-sim2real fetch origin 87d6c1d969f6e0ca4dc5697940804e231118a63a && git -C chapter9/lerobot-sim2real checkout --detach 87d6c1d969f6e0ca4dc5697940804e231118a63a && test "$(git -C chapter9/lerobot-sim2real rev-parse HEAD)" = "87d6c1d969f6e0ca4dc5697940804e231118a63a"  # Exp 9-11
 
 # அத்தியாயம் 10 · இரட்டை-ஏஜென்ட் கட்டமைப்பு (TalkAct-ஆக தனியாக உருவாகியது) + Stanford AI Town
 git clone https://github.com/19PINE-AI/TalkAct.git                     chapter10/use-computer-while-calling
-git clone https://github.com/joonspk-research/generative_agents.git    chapter10/generative_agents             # Exp 10-7 Stanford AI Town
+git clone https://github.com/joonspk-research/generative_agents.git    chapter10/generative_agents             # Exp 10-5 Stanford AI Town
 ```
 
 > ஏதேனும் திட்ட README குறிப்பிட்ட commit-ஐ குறிப்பிட்டால், மறு உருவாக்கத்திற்கு அந்த பதிப்பிற்கு `git checkout` செய்யவும். அத்தியாயம் 10 `use-computer-while-calling` தனியாக பராமரிக்கப்படும் [19PINE-AI/TalkAct](https://github.com/19PINE-AI/TalkAct)-ஆக வளர்ந்துள்ளது; இந்த களஞ்சியம் அந்த அடைவை உள்ளடக்காது—மேலே உள்ள clone கட்டளையைப் பயன்படுத்தி அதைப் பெறவும்.

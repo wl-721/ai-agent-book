@@ -1,7 +1,7 @@
 # Agentic RAG System / Agentic RAG 系统
 
-> Companion material for *AI Agents in Depth*, Chapter 3 — **Experiment 3-9**: ReAct agentic vs non-agentic RAG on Chinese legal Q&A; offline multi-hop evidence recall.  
-> 配套《深入理解 AI Agent》第 3 章 **实验 3-9**：ReAct 式 Agentic vs 非 Agent 式 RAG 司法问答；离线多跳证据召回对比。
+> Companion material for *AI Agents in Depth*, Chapter 3 — **Experiment 3-8**: ReAct agentic vs non-agentic RAG on Chinese legal Q&A; offline multi-hop evidence recall.  
+> 配套《深入理解 AI Agent》第 3 章 **实验 3-8**：ReAct 式 Agentic vs 非 Agent 式 RAG 司法问答；离线多跳证据召回对比。
 
 ← [Chapter 3 index / 返回第 3 章目录](../README.md)
 
@@ -23,7 +23,7 @@ hashes are written under `validation/runs/<run-id>/`; the auditable pointer is
 
 - **Agentic RAG (ReAct)**: iterative reason + tool search  
 - **Non-agentic RAG**: single retrieve + answer (for compare)  
-- **LLM providers**: Kimi/Moonshot, Doubao, SiliconFlow, OpenAI, OpenRouter, Groq, Together, DeepSeek  
+- **LLM providers**: Alibaba Cloud Model Studio / Bailian (Qwen), Kimi/Moonshot, Doubao, SiliconFlow, OpenAI, OpenRouter, Groq, Together, DeepSeek
 - **Knowledge bases**:  
   - **Offline BM25** (built-in, zero deps) over bundled `laws/` — no server/API for retrieval  
   - Local retrieval pipeline (`../retrieval-pipeline`)  
@@ -58,6 +58,8 @@ cd chapter3/agentic-rag
 MOONSHOT_API_KEY=...
 ARK_API_KEY=...
 SILICONFLOW_API_KEY=...
+DASHSCOPE_API_KEY=...  # Alibaba Cloud Model Studio / Bailian (Qwen)
+# DASHSCOPE_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 OPENAI_API_KEY=...
 OPENROUTER_API_KEY=...
 GROQ_API_KEY=...
@@ -102,7 +104,7 @@ Real output (measured; 21372 law chunks / 288 docs):
   复杂题                              8%          100%        1.0 → 1.5
 ```
 
-Reading (aligned with Exp. 3-9): **easy questions ~tied at 100%**; **hard/poorly phrased: 8% → 100%**. Metric is pure retrieval **evidence recall** (upper bound on answer quality). Gold statutes are confirmed present in `laws/`.
+Reading (aligned with Exp. 3-8): **easy questions ~tied at 100%**; **hard/poorly phrased: 8% → 100%**. Metric is pure retrieval **evidence recall** (upper bound on answer quality). Gold statutes are confirmed present in `laws/`.
 
 > Offline mode uses pre-labeled `subqueries` for “agent decomposed search” to isolate **retrieval strategy**; real systems generate subqueries in the ReAct loop. End-to-end answer quality: `evaluation/evaluate.py` (needs API key).
 
@@ -154,6 +156,7 @@ python main.py --batch queries.txt --mode non-agentic
 python main.py --provider openai --model gpt-5.6-luna
 python main.py --provider doubao --model doubao-seed-1-6-thinking-250715
 python main.py --provider siliconflow --query "你好"
+python main.py --provider dashscope --model qwen3.7-plus --query "你好"
 ```
 
 Interactive: type questions; `quit`/`exit`; `clear` history; `mode` switch agentic/non-agentic.

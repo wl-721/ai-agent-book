@@ -213,7 +213,12 @@ cp env.example .env
 > (`base_url=https://openrouter.ai/api/v1`) and maps the model id to
 > `provider/model` form (`gpt-*` → `openai/…`, `claude-*` →
 > `anthropic/claude-opus-4.8`). Existing `OPENAI_BASE_URL`/`OPENAI_MODEL`
+
 > overrides are preserved.
+
+For direct Alibaba Cloud Model Studio / Bailian (Qwen), set
+`LLM_PROVIDER=dashscope` (or `qwen`/`bailian`) and `DASHSCOPE_API_KEY`; the
+default model is `qwen3.7-plus`. Set `DASHSCOPE_BASE_URL` for international keys.
 
 #### 3. Run Quick Start
 
@@ -1093,7 +1098,7 @@ MIT License - 详见 LICENSE 文件
 
 ## Notes / 说明
 
-- Related experiment: [active-tool-discovery](../active-tool-discovery/) (Experiment 4-6, embedding-based `discover_tools`).  
-- 相关实验：[active-tool-discovery](../active-tool-discovery/)（实验 4-6，基于嵌入的 `discover_tools`）。  
+- Related experiment: [active-tool-discovery](../active-tool-discovery/) (Experiment 4-7, embedding-based `discover_tools`).  
+- 相关实验：[active-tool-discovery](../active-tool-discovery/)（实验 4-7，基于嵌入的 `discover_tools`）。  
 - Offline path is fully deterministic without API keys.  
 - 离线路径完全确定性，无需 API Key。

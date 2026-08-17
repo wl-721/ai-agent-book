@@ -55,13 +55,13 @@
 | :--: | --- | --- | :--: | :--: |
 | 1 | 🚀 **Основы агентов** | Парадигма «модель как агент» + **Агент = LLM + Контекст + Инструменты**; harness-инженерия — вот настоящее преимущество | [Читать](../../book-ru/chapter1.md) | [4](../../chapter1/README.ru.md) |
 | 2 | 🎯 **Инженерия контекста** | Контекст ограничивает возможности агента: KV Cache, инженерия промптов, Agent Skills, сжатие контекста | [Читать](../../book-ru/chapter2.md) | [9](../../chapter2/README.ru.md) |
-| 3 | 📚 **Память пользователя и базы знаний** | Кросс-сессионная память + внешние знания: пользовательская память, RAG, структурированные индексы, графы знаний | [Читать](../../book-ru/chapter3.md) | [13](../../chapter3/README.ru.md) |
-| 4 | 🛠️ **Инструменты** | Инструменты — руки агента: протокол MCP, инструменты восприятия/исполнения/сотрудничества, событийные асинхронные агенты, активное обнаружение инструментов | [Читать](../../book-ru/chapter4.md) | [7](../../chapter4/README.ru.md) |
-| 5 | 💻 **Кодинг-агент и генерация кода** | Код — «инструмент, создающий новые инструменты»; промышленный кодинг-агент целиком | [Читать](../../book-ru/chapter5.md) | [12](../../chapter5/README.ru.md) |
+| 3 | 📚 **Память пользователя и базы знаний** | Кросс-сессионная память + внешние знания: пользовательская память, RAG, структурированные индексы, графы знаний | [Читать](../../book-ru/chapter3.md) | [12](../../chapter3/README.ru.md) |
+| 4 | 🛠️ **Инструменты** | Инструменты — руки агента: протокол MCP, инструменты восприятия/исполнения/сотрудничества, событийные асинхронные агенты, активное обнаружение инструментов | [Читать](../../book-ru/chapter4.md) | [8](../../chapter4/README.ru.md) |
+| 5 | 💻 **Кодинг-агент и генерация кода** | Код — «инструмент, создающий новые инструменты»; промышленный кодинг-агент целиком | [Читать](../../book-ru/chapter5.md) | [13](../../chapter5/README.ru.md) |
 | 6 | 🎯 **Оценка агентов** | Превращаем качество в сравнимые сигналы: среды, метрики, статзначимость, выбор на основе оценки | [Читать](../../book-ru/chapter6.md) | [12](../../chapter6/README.ru.md) |
 | 7 | 🧠 **Постобучение модели** | Три стадии предобучение/SFT/RL: когда выбирать SFT, а когда RL, внедрение вызова инструментов, эффективность выборки | [Читать](../../book-ru/chapter7.md) | [16](../../chapter7/README.ru.md) |
-| 8 | 🔄 **Самоэволюция агента** | Рост без изменения весов: обучение на опыте, от пользователя инструментов к их создателю | [Читать](../../book-ru/chapter8.md) | [7](../../chapter8/README.ru.md) |
-| 9 | 🎙️ **Мультимодальность и реальное время** | От текста к голосу, GUI, физическому миру: три голосовые парадигмы, Computer Use, робототехника | [Читать](../../book-ru/chapter9.md) | [7](../../chapter9/README.ru.md) |
+| 8 | 🔄 **Самоэволюция агента** | Рост без изменения весов: обучение на опыте, от пользователя инструментов к их создателю | [Читать](../../book-ru/chapter8.md) | [9](../../chapter8/README.ru.md) |
+| 9 | 🎙️ **Мультимодальность и реальное время** | От текста к голосу, GUI, физическому миру: три голосовые парадигмы, Computer Use, робототехника | [Читать](../../book-ru/chapter9.md) | [12](../../chapter9/README.ru.md) |
 | 10 | 🤝 **Многоагентное взаимодействие** | Коллективный интеллект > индивидуального: фреймворки сотрудничества, разделение/изоляция контекста, эмерджентное «общество агентов» | [Читать](../../book-ru/chapter10.md) | [7](../../chapter10/README.ru.md) |
 
 > 💡 **Читать** = читать текст главы на GitHub (markdown); **N** = число сопутствующих проектов, кликните для кода. Типы проектов (✅ автономный / 📖 воспроизведение / 🚧 проектный) поясняются в README каждой главы.
@@ -70,7 +70,7 @@
 
 ## 💻 Запуск сопутствующих экспериментов
 
-Общая базовая версия — **Python 3.10+**. Устанавливайте зависимости по главам из корня репозитория; для другой главы замените `ch1` на `ch2` — `ch10`:
+Общий поддерживаемый диапазон — **Python 3.11–3.13**. Устанавливайте зависимости по главам из корня репозитория; для другой главы замените `ch1` на `ch2` — `ch10`:
 
 ```bash
 # Рекомендуется: воспроизводимое окружение главы из сохранённого uv.lock
@@ -92,7 +92,7 @@ uv run python chapter1/context/main.py
 - Установку `uv` описывает [официальное руководство](https://docs.astral.sh/uv/getting-started/installation/). `pip` по-прежнему поддерживается, но не использует lock-файл.
 - Файлы `requirements.txt` отдельных экспериментов остаются рабочими на время миграции, особенно для изолированных проектов и особых ограничений версий.
 - `all` — широкий CPU-дружественный набор, а не буквально все эксперименты. `uv sync` каждый раз точно синхронизирует текущий выбор, поэтому специальные extra нужно объединять в одной команде, например `uv sync --locked --extra ch2 --extra vllm` или `uv sync --locked --extra ch7 --extra unsloth`; для pip это `python -m pip install -e ".[ch2,vllm]"`.
-- Системные зависимости — браузеры, CUDA, FFmpeg, Ollama, браузеры Playwright и внешние репозитории — устанавливайте по README конкретного эксперимента. Некоторым браузерным экспериментам и экспериментам с памятью нужен Python 3.11+, а некоторым встроенным сторонним компонентам главы 8 — Python 3.12+.
+- Системные зависимости — браузеры, CUDA, FFmpeg, Ollama, браузеры Playwright и внешние репозитории — устанавливайте по README конкретного эксперимента. Некоторым встроенным сторонним компонентам главы 8 нужен Python 3.12+.
 
 ## 🔑 API-ключи
 
@@ -148,13 +148,13 @@ git clone https://github.com/PRIME-RL/SimpleVLA-RL.git                 chapter7/
 # Глава 9 · Автоматизация браузера и примеры Claude
 git clone https://github.com/browser-use/browser-use.git               chapter9/browser-use
 git clone https://github.com/anthropics/claude-quickstarts.git         chapter9/claude-quickstarts
-git clone https://github.com/Vector-Wangel/XLeRobot.git chapter9/XLeRobot && git -C chapter9/XLeRobot fetch origin 3d14695e40c9c68229c0aacffca6053c75cd3eb6 && git -C chapter9/XLeRobot checkout --detach 3d14695e40c9c68229c0aacffca6053c75cd3eb6 && test "$(git -C chapter9/XLeRobot rev-parse HEAD)" = "3d14695e40c9c68229c0aacffca6053c75cd3eb6"  # Exp 9-8/9-9 shared
-git clone https://github.com/Grigorij-Dudnik/RoboCrew.git chapter9/RoboCrew && git -C chapter9/RoboCrew fetch origin c749148f29bd14e61347f9fc3530c343fff0d994 && git -C chapter9/RoboCrew checkout --detach c749148f29bd14e61347f9fc3530c343fff0d994 && test "$(git -C chapter9/RoboCrew rev-parse HEAD)" = "c749148f29bd14e61347f9fc3530c343fff0d994"  # Exp 9-9; RoboCrew v0.3.1
-git clone https://github.com/StoneT2000/lerobot-sim2real.git chapter9/lerobot-sim2real && git -C chapter9/lerobot-sim2real fetch origin 87d6c1d969f6e0ca4dc5697940804e231118a63a && git -C chapter9/lerobot-sim2real checkout --detach 87d6c1d969f6e0ca4dc5697940804e231118a63a && test "$(git -C chapter9/lerobot-sim2real rev-parse HEAD)" = "87d6c1d969f6e0ca4dc5697940804e231118a63a"  # Exp 9-10
+git clone https://github.com/Vector-Wangel/XLeRobot.git chapter9/XLeRobot && git -C chapter9/XLeRobot fetch origin 3d14695e40c9c68229c0aacffca6053c75cd3eb6 && git -C chapter9/XLeRobot checkout --detach 3d14695e40c9c68229c0aacffca6053c75cd3eb6 && test "$(git -C chapter9/XLeRobot rev-parse HEAD)" = "3d14695e40c9c68229c0aacffca6053c75cd3eb6"  # Exp 9-7/9-9 shared
+git clone https://github.com/Grigorij-Dudnik/RoboCrew.git chapter9/RoboCrew && git -C chapter9/RoboCrew fetch origin c749148f29bd14e61347f9fc3530c343fff0d994 && git -C chapter9/RoboCrew checkout --detach c749148f29bd14e61347f9fc3530c343fff0d994 && test "$(git -C chapter9/RoboCrew rev-parse HEAD)" = "c749148f29bd14e61347f9fc3530c343fff0d994"  # Exp 9-8/9-9; RoboCrew v0.3.1
+git clone https://github.com/StoneT2000/lerobot-sim2real.git chapter9/lerobot-sim2real && git -C chapter9/lerobot-sim2real fetch origin 87d6c1d969f6e0ca4dc5697940804e231118a63a && git -C chapter9/lerobot-sim2real checkout --detach 87d6c1d969f6e0ca4dc5697940804e231118a63a && test "$(git -C chapter9/lerobot-sim2real rev-parse HEAD)" = "87d6c1d969f6e0ca4dc5697940804e231118a63a"  # Exp 9-11
 
 # Глава 10 · Архитектура двух агентов (теперь отдельный проект TalkAct) + Stanford AI Town
 git clone https://github.com/19PINE-AI/TalkAct.git                     chapter10/use-computer-while-calling
-git clone https://github.com/joonspk-research/generative_agents.git    chapter10/generative_agents             # Эксп. 10-7: Stanford AI Town
+git clone https://github.com/joonspk-research/generative_agents.git    chapter10/generative_agents             # Эксп. 10-5: Stanford AI Town
 ```
 
 > Если README проекта указывает конкретный коммит, сделайте `git checkout` на эту версию для воспроизводимости. `use-computer-while-calling` из главы 10 вырос в самостоятельно поддерживаемый [19PINE-AI/TalkAct](https://github.com/19PINE-AI/TalkAct); этот каталог в репозиторий не входит — получите его командой клонирования выше.

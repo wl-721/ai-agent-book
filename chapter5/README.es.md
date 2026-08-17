@@ -4,6 +4,16 @@
 
 ← [Volver al README principal](../docs/es/README.md) · 📖 [Leer texto del capítulo](../book-es/chapter5.es.md)
 
+## Cómo leer los experimentos
+
+El texto usa skeletons breves para explicar el flujo de control; el directorio de experimentos contiene adaptadores SDK completos, registros, pruebas y evidencias de aceptación. No hace falta leer cada archivo línea por línea.
+
+- **Starter:** Empieza por el objetivo, el comando mínimo y la aceptación; comienza con [coding-agent](coding-agent/);
+- **Builder:** Sigue el punto de entrada, el bucle central, el esquema de estado/mensajes, las herramientas y el verificador.
+- **Maintainer:** Después revisa pruebas, manifiestos, fallos, rollback y adaptadores de proveedores.
+
+En la primera pasada puedes omitir credenciales, presentación y compatibilidad de proveedores; vuelve al reproducir una cifra.
+
 ## Proyectos Complementarios
 
 | Exp. | Proyecto | Tipo | Descripción |
@@ -19,7 +29,8 @@
 | 5-9 | [dynamic-form](dynamic-form/) | ✅ | Generación dinámica de formularios HTML interactivos para completar información faltante |
 | 5-10 | [erp-agent](erp-agent/) | ✅ | Conversión de lenguaje natural a SQL en modo artefacto para evitar transferencia innecesaria de datos |
 | 5-11 | [conversational-ui](conversational-ui/) | ✅ | Personalización de UI por lenguaje natural modificando código React con actualización HMR vía Vite |
-| 5-12 | [coding-agent](coding-agent/) | ✅ | Asistente de código basado en Claude con 17 herramientas implementadas en Python puro sin dependencias de CLI |
+| 5-12 | [permission-embedded-data-objects](permission-embedded-data-objects/) | ✅ | Almacén de objetos sobre PostgreSQL que aplica autorización, validación e integridad referencial bajo código de aplicación generado dinámicamente |
+| 5-13 | [coding-agent](coding-agent/) | ✅ | Asistente de código basado en Claude con 17 herramientas implementadas en Python puro sin dependencias de CLI |
 
 ## Tipos de Proyectos
 

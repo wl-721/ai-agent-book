@@ -1,4 +1,4 @@
-"""Real-browser workers and central coordinator for Experiment 10-6."""
+"""Real-browser workers and central coordinator for Experiment 10-4."""
 
 from __future__ import annotations
 
@@ -119,6 +119,14 @@ class WorkerAgent:
     async def run(self):
         assigned = await self.sub.get()
         while assigned.type != "task_assigned":
+            if assigned.type == "terminate":
+                self._termination_reason = assigned.payload.get("reason", "cascade")
+                self.terminate.set()
+                await self.report(TaskState.TERMINATED, f"安全点响应终止：{self._termination_reason}")
+                await self.bus.send(self.id, "coordinator", "ack", {
+                    "acked": "terminate", "source": self.site.name,
+                })
+                return
             assigned = await self.sub.get()
         signal_task = asyncio.create_task(self._signals())
         try:
@@ -217,6 +225,7 @@ class Coordinator:
         self._settled = False
         self.winner: Optional[str] = None
         self.profile: Optional[dict] = None
+        self.expected_loser_acks: Optional[set[str]] = None
         self.duplicate_hits: List[str] = []
         self.acks: set[str] = set()
         self.errors: Dict[str, str] = {}
@@ -234,6 +243,15 @@ class Coordinator:
                 self.duplicate_hits.append(worker_id)
                 return
             self._settled, self.winner, self.profile = True, worker_id, profile
+            # Only workers still running when the winner settles receive the
+            # terminate broadcast and therefore owe an acknowledgement.
+            self.expected_loser_acks = {
+                worker.id
+                for worker in self.workers
+                if worker.id != worker_id
+                and worker.id not in self.not_found
+                and worker.id not in self.errors
+            }
             await self.bus.send("coordinator", BROADCAST, "terminate", {
                 "reason": f"target_found_by_{worker_id}", "winner": worker_id,
             })
@@ -274,11 +292,7 @@ class Coordinator:
         for error in self.errors.values():
             kind = error.split(":", 1)[0]
             failure_types[kind] = failure_types.get(kind, 0) + 1
-        expected_acks = {worker.id for worker in self.workers}
-        if self.winner:
-            expected_acks.discard(self.winner)
-        else:
-            expected_acks.clear()
+        expected_acks = self.expected_loser_acks or set()
         missing_acks = expected_acks - self.acks
         return {
             "outcome": "found" if self.winner else "not_found",

@@ -4,6 +4,16 @@
 
 ← [Kembali ke README utama](../docs/id/README.md) · 📖 [Baca bab](../book-id/chapter3.md)
 
+## Cara Membaca Eksperimen
+
+Teks utama memakai skeleton mekanisme singkat untuk menjelaskan alur kontrol; direktori eksperimen berisi adapter SDK lengkap, log, pengujian, dan bukti penerimaan. Anda tidak perlu membaca setiap berkas baris demi baris.
+
+- **Starter:** Mulai dari tujuan, perintah minimum, dan syarat penerimaan; awali dengan [user-memory](user-memory/) / [retrieval-pipeline](retrieval-pipeline/);
+- **Builder:** Telusuri titik masuk, loop inti, skema status/pesan, alat, dan verifier.
+- **Maintainer:** Terakhir, baca pengujian, manifest bukti, penanganan kegagalan, rollback, dan adapter provider.
+
+Pada pembacaan pertama, lewati kredensial, presentasi, dan kompatibilitas provider; kembali saat mereproduksi angka.
+
 ## Proyek Pendamping
 
 | Eksperimen | Proyek | Jenis | Deskripsi |
@@ -15,13 +25,12 @@
 | 3-4 | [dense-embedding](dense-embedding/) | ✅ | Membandingkan indeks approximate nearest neighbor ANNOY dan HNSW. |
 | 3-5 | [sparse-embedding](sparse-embedding/) | ✅ | Mengimplementasikan mesin pencarian sparse berbasis BM25 dari awal. |
 | 3-6 | [retrieval-pipeline](retrieval-pipeline/) | ✅ | Menggabungkan dense retrieval, sparse retrieval, dan neural reranking. |
-| 3-7 | [multimodal-agent](multimodal-agent/) | ✅ | Membandingkan tiga strategi pemrosesan multimodal dalam satu framework. |
-| 3-8 | [structured-index](structured-index/) | ✅ | Membandingkan RAPTOR dan GraphRAG sebagai pendekatan pengindeksan terstruktur. |
-| 3-9 | [agentic-rag](agentic-rag/) | ✅ | Membandingkan RAG tradisional dengan Agentic RAG yang melakukan retrieval iteratif. |
-| 3-10 | [agentic-rag-for-user-memory](agentic-rag-for-user-memory/) | ✅ | Menerapkan Agentic RAG untuk mengambil riwayat percakapan lintas sesi. |
-| 3-11 | [contextual-retrieval](contextual-retrieval/) | ✅ | Menambahkan prefix context pada chunk untuk mengurangi kegagalan retrieval. |
-| 3-12 | [contextual-retrieval-for-user-memory](contextual-retrieval-for-user-memory/) | ✅ | Menggabungkan Advanced JSON Cards dan Contextual RAG menjadi memori dua lapis. |
-| 3-13 | [structured-knowledge-extraction](structured-knowledge-extraction/) | ✅ | Mengekstraksi faktor keputusan dan prototipe kasus dari dataset putusan hukum. |
+| 3-7 | [structured-index](structured-index/) | ✅ | Membandingkan RAPTOR dan GraphRAG sebagai pendekatan pengindeksan terstruktur. |
+| 3-8 | [agentic-rag](agentic-rag/) | ✅ | Membandingkan RAG tradisional dengan Agentic RAG yang melakukan retrieval iteratif. |
+| 3-9 | [agentic-rag-for-user-memory](agentic-rag-for-user-memory/) | ✅ | Menerapkan Agentic RAG untuk mengambil riwayat percakapan lintas sesi. |
+| 3-10 | [contextual-retrieval](contextual-retrieval/) | ✅ | Menambahkan prefix context pada chunk untuk mengurangi kegagalan retrieval. |
+| 3-11 | [contextual-retrieval-for-user-memory](contextual-retrieval-for-user-memory/) | ✅ | Menggabungkan Advanced JSON Cards dan Contextual RAG menjadi memori dua lapis. |
+| 3-12 | [structured-knowledge-extraction](structured-knowledge-extraction/) | ✅ | Mengekstraksi faktor keputusan dan prototipe kasus dari dataset putusan hukum. |
 
 ## Jenis Proyek
 

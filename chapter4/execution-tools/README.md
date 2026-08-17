@@ -1,9 +1,19 @@
 # Execution Tools MCP Server / 执行工具 MCP 服务器
 
-> Companion code for *AI Agents in Depth*, Chapter 4 — **Experiment 4-2 ★★**. MCP execution tools with LLM approval, auto-verification, and long-output truncation/persist.  
-> 配套《深入理解 AI Agent》第 4 章 **实验 4-2 ★★**。带 LLM 事前审批、自动校验、长输出截断与持久化的执行工具 MCP 服务器。
+> Companion code for *AI Agents in Depth*, Chapter 4 — **Experiment 4-3 ★★**. MCP execution tools with LLM approval, auto-verification, and long-output truncation/persist.  
+> 配套《深入理解 AI Agent》第 4 章 **实验 4-3 ★★**。带 LLM 事前审批、自动校验、长输出截断与持久化的执行工具 MCP 服务器。
 
 ← [Chapter 4 index / 返回第 4 章目录](../README.md)
+
+## Code map
+
+- **Run first:** `python cli.py demo` (offline end-to-end path).
+- **Start here:** `cli.py::cmd_demo` constructs `ExecutionTools`; `execution_tools.py::ExecutionTools` is the shared execution surface.
+- **Core behavior:** `file_tools.py::FileTools`, `terminal_controller.py::TerminalController` and `multilang_executor.py::LanguageExecutor` implement validation, execution and output handling.
+- **State / protocol:** `experiment_protocol.json`, workspace boundaries, approval flags and structured tool-result fields.
+- **Verifier:** `test_execution_tools.py`, `test_file_tools.py`, `test_terminal_controller.py` and `run_experiment_4_3.py` acceptance gates.
+- **Experiment variable:** approval, syntax verification, long-output summarization/truncation and sandbox settings.
+- **Skip on first pass:** MCP transport, calendar/GitHub integrations and provider-specific LLM adapters.
 
 ---
 
@@ -11,7 +21,7 @@
 
 An MCP (Model Context Protocol) server that provides comprehensive execution tools with built-in safety mechanisms for AI agents.
 
-This project corresponds to Experiment 4-2 in the book’s “Execution Tools” section. It focuses on layered safety (input validation, permission control, LLM pre-approval), automatic syntax verification and feedback loops, and truncation plus persistence of long outputs. Recommended start: `python cli.py demo`.
+This project corresponds to Experiment 4-3 in the book’s “Execution Tools” section. It focuses on layered safety (input validation, permission control, LLM pre-approval), automatic syntax verification and feedback loops, and truncation plus persistence of long outputs. Recommended start: `python cli.py demo`.
 
 ### Features
 
@@ -70,6 +80,9 @@ PROVIDER=kimi
 
 # API Keys (set the one for your provider)
 KIMI_API_KEY=your_kimi_key
+# DashScope / Bailian (Qwen)
+# PROVIDER=dashscope  # qwen and bailian are accepted aliases
+# DASHSCOPE_API_KEY=your_dashscope_key
 # SILICONFLOW_API_KEY=your_siliconflow_key
 # DOUBAO_API_KEY=your_doubao_key
 # OPENROUTER_API_KEY=your_openrouter_key
@@ -93,6 +106,7 @@ AUTO_VERIFY_CODE=true
 
 **Supported Providers:**
 - `siliconflow`: Qwen/Qwen3-235B-A22B-Thinking-2507
+- `dashscope` / `qwen` / `bailian`: qwen3.7-plus (Alibaba Cloud Model Studio)
 - `doubao`: doubao-seed-1-6-thinking-250715  
 - `kimi`/`moonshot`: kimi-k3
 - `openrouter`: google/gemini-3.5-flash (or openai/gpt-5.6-luna, anthropic/claude-sonnet-4.6)
@@ -210,7 +224,7 @@ The server implements a layered architecture:
 
 ### Real desktop and Android environments
 
-The exact Experiment 4-2 runner includes two action probes instead of treating
+The exact Experiment 4-3 runner includes two action probes instead of treating
 installed packages as execution evidence:
 
 - `virtual_desktop_execute` starts a bounded Xvfb display and headful Chromium,
@@ -225,11 +239,11 @@ The AndroidWorld image is external and is not vendored. With a populated image
 available locally, start an API-33 emulator with KVM and run the campaign:
 
 ```bash
-docker run -d --name exp4-2-android --privileged --device /dev/kvm \
+docker run -d --name exp4-3-android --privileged --device /dev/kvm \
   -p 127.0.0.1:5000:5000 android_world_patched:populated3
 
-python run_experiment_4_2.py \
-  --android-container exp4-2-android \
+python run_experiment_4_3.py \
+  --android-container exp4-3-android \
   --github-head-branch <pushed-experiment-branch> \
   --github-base-branch <base-branch>
 ```
@@ -251,7 +265,7 @@ See `examples.py` for comprehensive usage examples.
 
 为 AI Agent 提供带内置安全机制的综合执行工具 MCP（Model Context Protocol）服务器。
 
-本项目对应书中第 4 章「执行工具」一节的实验 4-2，聚焦执行工具的安全机制：
+本项目对应书中第 4 章「执行工具」一节的实验 4-3，聚焦执行工具的安全机制：
 分层安全防护（输入验证、权限控制、LLM 事前审批）、自动语法验证与反馈闭环、
 以及长输出的截断与持久化。推荐从 `python cli.py demo` 开始。
 
@@ -312,6 +326,9 @@ PROVIDER=kimi
 
 # API Keys (set the one for your provider)
 KIMI_API_KEY=your_kimi_key
+# DashScope / Bailian (Qwen)
+# PROVIDER=dashscope  # qwen and bailian are accepted aliases
+# DASHSCOPE_API_KEY=your_dashscope_key
 # SILICONFLOW_API_KEY=your_siliconflow_key
 # DOUBAO_API_KEY=your_doubao_key
 # OPENROUTER_API_KEY=your_openrouter_key
@@ -335,6 +352,7 @@ AUTO_VERIFY_CODE=true
 
 **支持的 Provider：**
 - `siliconflow`：Qwen/Qwen3-235B-A22B-Thinking-2507
+- `dashscope` / `qwen` / `bailian`：qwen3.7-plus（阿里云百炼 / Model Studio）
 - `doubao`：doubao-seed-1-6-thinking-250715  
 - `kimi`/`moonshot`：kimi-k3
 - `openrouter`：google/gemini-3.5-flash（或 openai/gpt-5.6-luna、anthropic/claude-sonnet-4.6）

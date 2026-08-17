@@ -118,21 +118,26 @@ code_interpreter 实际执行，不得口算或声称运行了代码。"""
 
     @staticmethod
     def _output_text(response: Dict[str, Any]) -> str:
+        if not isinstance(response, dict):
+            return ""
         chunks: List[str] = []
         for item in response.get("output") or []:
-            if item.get("type") != "message":
+            if not isinstance(item, dict) or item.get("type") != "message":
                 continue
             for content in item.get("content") or []:
-                if content.get("type") == "output_text" and content.get("text"):
+                if isinstance(content, dict) and content.get("type") == "output_text" and content.get("text"):
                     chunks.append(content["text"])
         return "\n".join(chunks).strip()
 
     @staticmethod
     def _tool_items(response: Dict[str, Any]) -> List[Dict[str, Any]]:
+        if not isinstance(response, dict):
+            return []
         return [
             item
             for item in response.get("output") or []
-            if item.get("type") in {
+            if isinstance(item, dict)
+            and item.get("type") in {
                 "web_search_call",
                 "code_interpreter_call",
                 "hosted_tool_call",
@@ -142,10 +147,16 @@ code_interpreter 实际执行，不得口算或声称运行了代码。"""
     @staticmethod
     def _citations(response: Dict[str, Any]) -> List[Dict[str, Any]]:
         citations = []
+        if not isinstance(response, dict):
+            return citations
         for item in response.get("output") or []:
+            if not isinstance(item, dict):
+                continue
             for content in item.get("content") or []:
+                if not isinstance(content, dict):
+                    continue
                 for annotation in content.get("annotations") or []:
-                    if annotation.get("type") in {
+                    if isinstance(annotation, dict) and annotation.get("type") in {
                         "url_citation",
                         "container_file_citation",
                     }:
@@ -153,12 +164,14 @@ code_interpreter 实际执行，不得口算或声称运行了代码。"""
             # DashScope reports sources on the web_search_call item itself
             # instead of url_citation annotations; normalize them here.
             if item.get("type") == "web_search_call":
-                action = item.get("action") or {}
-                for source in action.get("sources") or []:
-                    if source.get("url"):
-                        citations.append(
-                            {"type": "url_citation", "url": source["url"]}
-                        )
+                action = item.get("action")
+                if isinstance(action, dict):
+                    for source in action.get("sources") or []:
+                        url = source if isinstance(source, str) else (source.get("url") if isinstance(source, dict) else None)
+                        if url:
+                            citations.append(
+                                {"type": "url_citation", "url": url}
+                            )
         return citations
 
     def _post_responses(
@@ -267,10 +280,10 @@ code_interpreter 实际执行，不得口算或声称运行了代码。"""
             if stream_events:
                 turn["stream_event_counts"] = stream_events
             self.api_turns.append(turn)
-            if status_code >= 400 or response.get("error"):
-                error = response.get("error") or {
+            if not isinstance(response, dict) or status_code >= 400 or response.get("error"):
+                error = (response.get("error") if isinstance(response, dict) else None) or {
                     "type": "http_error",
-                    "message": response.get("raw_text") or json.dumps(response)[:500],
+                    "message": (response.get("raw_text") if isinstance(response, dict) else None) or (json.dumps(response)[:500] if response is not None else "Empty response"),
                 }
                 return {
                     "success": False,
@@ -280,7 +293,7 @@ code_interpreter 实际执行，不得口算或声称运行了代码。"""
                     "raw_response": response,
                     "tool_calls": [],
                     "citations": [],
-                    "usage": response.get("usage") or {},
+                    "usage": (response.get("usage") if isinstance(response, dict) else {}) or {},
                     "model": self.model,
                     "provider": self.provider,
                     "base_url": self.base_url,

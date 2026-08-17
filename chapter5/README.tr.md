@@ -4,6 +4,16 @@
 
 ← [Ana README'ye dön](../README.tr.md) · 📖 [Bölüm metnini oku](../book-tr/chapter5.tr.md)
 
+## Deneyler nasıl okunur
+
+Metin, kontrol akışını açıklamak için kısa mekanizma skeleton'ları kullanır; deney dizininde tam SDK adaptörleri, günlükler, testler ve kabul kanıtı bulunur. Her dosyayı satır satır okumanız gerekmez.
+
+- **Starter:** Hedef, en kısa komut ve kabul koşullarıyla başlayın; önce [coding-agent](coding-agent/);
+- **Builder:** Giriş noktasını, ana döngüyü, durum/mesaj şemasını, araçları ve doğrulayıcıyı izleyin.
+- **Maintainer:** Son olarak testleri, kanıt manifestlerini, hata işlemeyi, rollback yollarını ve sağlayıcı adaptörlerini okuyun.
+
+İlk okumada kimlik bilgisi yükleme, sunum katmanı ve sağlayıcı uyumluluğunu atlayıp sayıları yeniden üretirken dönün.
+
 ## Eşlik Eden Projeler
 
 | Proje | Tür | Açıklama |
@@ -20,6 +30,7 @@
 | [dynamic-form](dynamic-form/) | ✅ | Eksik bir istekle karşılaştığında Agent tek tek soru sormaz. Bunun yerine, kullanıcının eksik tüm bilgiyi tek seferde doldurmasına izin veren, basamaklı mantığa sahip kendi kendine yeten bir HTML formu dinamik olarak üretir. Ön uç, form verisini JSON'a toplayıp Agent'a geri döndürerek görevin devam etmesini sağlar. |
 | [erp-agent](erp-agent/) | ✅ | Çince doğal dil sorgularını veritabanı yürütmesi için SQL'e çevirir, ortaya çıkan tabloyu doğrudan sunar. Çekirdek, artifact örüntüsüdür: LLM yalnızca SQL artifact'ını üretir, veriyi kendisi taşımaz; bu, token tasarrufu sağlar ve elle hesaplama hatalarını önler. On binlerce satırlık sonuç kümeleri bile anında döndürülebilir. |
 | [conversational-ui](conversational-ui/) | ✅ | Kullanıcılar doğal dilde UI özelleştirme istekleri (renk/font/metin/yerleşim) önerir. Agent, React ön uç kaynak kodunu özerk olarak bulup değiştirir. Vite'ın Hot Module Replacement (HMR) özelliğinden yararlanarak değişiklikler anında etkili olur, çok turlu yinelemeli özelleştirmeyi destekler. |
+| [permission-embedded-data-objects](permission-embedded-data-objects/) | ✅ | PostgreSQL üzerindeki nesne deposu, dinamik olarak üretilen uygulama kodunun altında yetkilendirme, doğrulama ve referans bütünlüğünü zorunlu kılar. |
 
 ## Proje Türleri
 

@@ -1,4 +1,4 @@
-# Experiment 3-12: Contextual Retrieval for User Memory / 实验 3-12：利用上下文感知检索增强用户记忆
+# Experiment 3-11: Contextual Retrieval for User Memory / 实验 3-11：利用上下文感知检索增强用户记忆
 
 > Companion material for *AI Agents in Depth*, Chapter 3 — dual-layer memory: Contextual RAG + Advanced JSON Cards.  
 > 配套《深入理解 AI Agent》第 3 章——双层记忆：上下文感知 RAG + Advanced JSON Cards。
@@ -142,10 +142,12 @@ Create a `.env` file:
 MOONSHOT_API_KEY=your_api_key_here
 ARK_API_KEY=your_api_key_here
 SILICONFLOW_API_KEY=your_api_key_here
+DASHSCOPE_API_KEY=your_dashscope_api_key_here
+# DASHSCOPE_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 OPENAI_API_KEY=your_api_key_here
 
 # Default Provider
-LLM_PROVIDER=kimi  # Options: kimi, doubao, siliconflow, openai
+LLM_PROVIDER=kimi  # Options: dashscope/qwen/bailian, kimi, doubao, siliconflow, openai
 
 # Model Settings
 LLM_MODEL=kimi-k3  # or another model
@@ -415,10 +417,12 @@ cd chapter3/contextual-retrieval-for-user-memory
 MOONSHOT_API_KEY=your_api_key_here
 ARK_API_KEY=your_api_key_here
 SILICONFLOW_API_KEY=your_api_key_here
+DASHSCOPE_API_KEY=your_dashscope_api_key_here
+# DASHSCOPE_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 OPENAI_API_KEY=your_api_key_here
 
 # Default Provider
-LLM_PROVIDER=kimi  # Options: kimi, doubao, siliconflow, openai
+LLM_PROVIDER=kimi  # Options: dashscope/qwen/bailian, kimi, doubao, siliconflow, openai
 
 # Model Settings
 LLM_MODEL=kimi-k3  # 或其他模型

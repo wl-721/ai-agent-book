@@ -4,6 +4,16 @@
 
 ← [Vissza a magyar főoldalhoz](../docs/hu/README.md) · 📖 [A fejezet olvasása](../book-hu/chapter5.md)
 
+## Hogyan olvassuk a kísérleteket?
+
+A törzsszöveg rövid mechanizmus-skeletonokkal magyarázza a vezérlési folyamatot; a kísérleti könyvtárakban találhatók a teljes SDK-adapterek, naplók, tesztek és átvételi bizonyítékok. Nem kell minden fájlt sorról sorra elolvasni.
+
+- **Starter:** Kezdje a céllal, a minimális paranccsal és az átvételi feltételekkel; induljon innen: [coding-agent](coding-agent/);
+- **Builder:** Kövesse a belépési pontot, a fő ciklust, az állapot-/üzenetsémát, az eszközöket és az ellenőrzőt.
+- **Maintainer:** Végül olvassa el a teszteket, a bizonyíték-manifeszteket, a hibakezelést, a visszaállítási útvonalakat és a provider-adaptereket.
+
+Első olvasáskor átugorható a hitelesítő adatok betöltése, a megjelenítési réteg és a provider-kompatibilitás; a számok reprodukálásakor térjen vissza.
+
 ## Kapcsolódó projektek
 
 | Kísérlet | Projekt | Típus | Leírás |
@@ -19,7 +29,8 @@
 | 5-9 | [dynamic-form](dynamic-form/) | ✅ | Dinamikus HTML-űrlapot készít a hiányos kérés összes szükséges adatának egyszeri tisztázására. |
 | 5-10 | [erp-agent](erp-agent/) | ✅ | SQL-artefaktumot készít ERP-lekérdezésekhez anélkül, hogy a teljes adathalmazt átvezetné az LLM-en. |
 | 5-11 | [conversational-ui](conversational-ui/) | ✅ | Természetes nyelv alapján módosít React-felületet, és HMR-rel azonnal alkalmazza a változásokat. |
-| 5-12 | [agent-creator](agent-creator/) | ✅ | Egy ellenőrzött referencia alapján, illetve nulláról létrehozott ágenseket hasonlít össze. |
+| 5-12 | [permission-embedded-data-objects](permission-embedded-data-objects/) | ✅ | PostgreSQL-alapú objektumtár, amely a dinamikusan generált alkalmazáskód alatt kényszeríti ki a jogosultságot, az ellenőrzést és a referenciális integritást. |
+| 5-13 | [agent-creator](agent-creator/) | ✅ | Egy ellenőrzött referencia alapján, illetve nulláról létrehozott ágenseket hasonlít össze. |
 
 ## Projekttípusok
 

@@ -1,23 +1,39 @@
-# Capítulo 9 · Multimodalidad e Interacción en Tiempo Real
+# Capítulo 9 · Auto-Evolución del Agente
 
-> Extensión del texto a la voz, GUI y mundo físico: tres paradigmas de voz, Computer Use, robótica
+> Crecimiento sin cambiar pesos: aprendizaje a partir de la experiencia, de usuario de herramientas a creador de herramientas
 
 ← [Volver al README principal](../docs/es/README.md) · 📖 [Leer texto del capítulo](../book-es/chapter9.es.md)
+
+## Cómo leer los experimentos
+
+El texto usa skeletons breves para explicar el flujo de control; el directorio de experimentos contiene adaptadores SDK completos, registros, pruebas y evidencias de aceptación. No hace falta leer cada archivo línea por línea.
+
+- **Starter:** Empieza por el objetivo, el comando mínimo y la aceptación; comienza con [trajectory-verifier](trajectory-verifier/);
+- **Builder:** Sigue el punto de entrada, el bucle central, el esquema de estado/mensajes, las herramientas y el verificador.
+- **Maintainer:** Después revisa pruebas, manifiestos, fallos, rollback y adaptadores de proveedores.
+
+En la primera pasada puedes omitir credenciales, presentación y compatibilidad de proveedores; vuelve al reproducir una cifra.
 
 ## Proyectos Complementarios
 
 | Exp. | Proyecto | Tipo | Descripción |
 | :--: | --- | :--: | --- |
-| 9-1 | [live-audio](live-audio/) | ✅ | La [evidencia real de una ronda](live-audio/backend/validation/real_pipeline_20260729_localwhisper_ark_fish/evidence.json) completa micrófono → Silero VAD → Whisper local → LLM ARK en streaming → Fish S1; los cinco hashes de medios/modelos coinciden, aunque no representa carga concurrente o de producción |
-| 9-2 | [phone-agent](phone-agent/) | 🚧 | Se implementaron los brazos directo y ReAct del SDK oficial `pine-voice`, pero no hay un número E.164 autorizado con un participante que haya dado su consentimiento; la [prevalidación](phone-agent/validation/preflight.json) registra que no se marcó ni existe transcripción |
-| 9-3 | [streaming-speech](streaming-speech/) | ✅ | La [aceptación local canónica](streaming-speech/validation/runs/exp9-3-qwen2audio-whisper-provenance-20260730-v3/manifest.json) ejecuta estrictamente prefijos incrementales Qwen2-Audio y VAD de 600 ms + Whisper; 8/8 puertas de ejecución y procedencia pasan, aunque los resultados solo reproducen 2/6 casos |
-| 9-4 | [end-to-end-speech](end-to-end-speech/) | ✅ | MiniCPM-o 4.5, con revisión fijada, se ejecutó localmente en una RTX PRO 6000: end-to-end y self-cascade obtuvieron 3/4 con fallos semánticos/paralingüísticos complementarios; se conservaron audio real de 24kHz y evidencia de aceptación. |
-| 9-5 | [controllable-tts](controllable-tts/) | ✅ | Biblioteca real Fish Audio S1 con 4×3×2=24 audios de referencia y medios A/B/C; tres evaluaciones reales ciegas y equilibradas de Voxtral sitúan a C en primer lugar y separan el estado de aceptación de los resultados negativos |
-| 9-6 | `claude-quickstarts/computer-use-demo/` | 📖 | Corresponde a Anthropic Computer Use Demo, no a toda la colección de *quickstarts*: escritorio Ubuntu en contenedor y bucle de Agent con Computer Use de Claude |
-| 9-7 | `browser-use/` | 📖 | *Checkout* externo de `browser-use/browser-use`; la tarea abre Google, consulta el clima de San Francisco e inspecciona la trayectoria de acciones del Agent visual |
-| 9-8 | [xlerobot-teleoperation](xlerobot-teleoperation/) | 📖 | Ruta externa de reproducción del [commit fijado de XLeRobot](https://github.com/Vector-Wangel/XLeRobot/tree/3d14695e40c9c68229c0aacffca6053c75cd3eb6) para teleoperación con teclado, Xbox, Joy-Con y VR; solo se validaron el código y una prevalidación sin actuadores |
-| 9-9 | [gemini-xlerobot-navigation](gemini-xlerobot-navigation/) | 📖 | Ruta externa con [XLeRobot fijado](https://github.com/Vector-Wangel/XLeRobot/tree/3d14695e40c9c68229c0aacffca6053c75cd3eb6) y [RoboCrew v0.3.1 fijado](https://github.com/Grigorij-Dudnik/RoboCrew/tree/c749148f29bd14e61347f9fc3530c343fff0d994), usando estrictamente `gemini-robotics-er-1.5-preview`, anotaciones angulares y tres herramientas de movimiento |
-| 9-10 | [rgb-sim2real-grasping](rgb-sim2real-grasping/) | 📖 | Ruta externa del flujo RGB→PPO→SO-100 de cinco etapas del [commit fijado de `lerobot-sim2real`](https://github.com/StoneT2000/lerobot-sim2real/tree/87d6c1d969f6e0ca4dc5697940804e231118a63a); las etapas 3–4 pueden ejecutarse solo con GPU, mientras que la etapa 1 reinicia el robot real |
+| 8-1 | [trajectory-verifier](trajectory-verifier/) | ✅ | Diagnóstico de trayectorias con evidencias basadas en resultados del entorno y reglas |
+| 8-2 | [gaia-experience](gaia-experience/) | ✅ | Comparación de trayectorias exitosas y fallidas para generar documentación de experiencia |
+| 8-3 | [prompt-auto-optimization](prompt-auto-optimization/) | ✅ | Generación de parches mínimos de prompts a partir de trayectorias fallidas con control de versión |
+| 8-4 | [browser-use-rpa](browser-use-rpa/) | ✅ | Compilación de trayectorias de navegador en flujos de trabajo con predicados de estado |
+| 8-5 | [self-modifying-agent](self-modifying-agent/) | ✅ | Parches de código de reintento/disyuntor activados por fallos repetidos con regresión y despliegue |
+| 8-6 | [hermes-self-evolution](hermes-self-evolution/) | 📖 | Da a Hermes el libro y su propio código; elige una mejora, se modifica y convierte cada rechazo del Reviewer en otra ronda de aprendizaje hasta ser aceptado |
+| 8-7 | [self-evolution-eval](self-evolution-eval/) | ✅ | Evaluación 8-7 de evolución a largo plazo en cuatro etapas: aprendizaje, transferencia, reglas y retención |
+| 8-8 | [harness-safety-gate](harness-safety-gate/) | ✅ | Puerta de confirmación para operaciones de alto riesgo |
+| 8-9 | [ai-style-skill](ai-style-skill/) | ✅ | Convierte comentarios de escritura en un Skill verificable; el capítulo conecta la Skill de comillas curvas con datos sintéticos auditados y posentrenamiento, y separa los fallos de tokenizer/Harness en la copia exacta |
+
+## Casos Complementarios
+
+| Exp. | Proyecto | Relación |
+| :--: | --- | --- |
+| 7-8 | [prompt-distillation](prompt-distillation/) | Proyecto cruzado de destilación de prompts y aprendizaje parametrizado (Capítulo 7) |
+| — | [self-evolving-tools](self-evolving-tools/) | Descubrimiento, encapsulación y reutilización de herramientas estilo Alita |
 
 ## Tipos de Proyectos
 
@@ -25,4 +41,4 @@
 | :--: | --- | --- |
 | ✅ | **Autónomo** | Código completo en este repositorio, se ejecuta tras configurar la Clave API |
 | 📖 | **Guía de Reproducción** | Documento detallado que depende de **repositorios externos** para realizar `git clone` |
-| 🚧 | **En curso** | Existe una implementación, pero faltan la ejecución real, participantes autorizados, hardware o evidencia de aceptación que exige el texto |
+| 🚧 | **Documento de Diseño** | Solo arquitectura/plan de implementación, el código ejecutable aún está en desarrollo |

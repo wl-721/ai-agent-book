@@ -4,6 +4,16 @@
 
 ← [Kembali ke README utama](../docs/id/README.md) · 📖 [Baca bab](../book-id/chapter5.md)
 
+## Cara Membaca Eksperimen
+
+Teks utama memakai skeleton mekanisme singkat untuk menjelaskan alur kontrol; direktori eksperimen berisi adapter SDK lengkap, log, pengujian, dan bukti penerimaan. Anda tidak perlu membaca setiap berkas baris demi baris.
+
+- **Starter:** Mulai dari tujuan, perintah minimum, dan syarat penerimaan; awali dengan [coding-agent](coding-agent/);
+- **Builder:** Telusuri titik masuk, loop inti, skema status/pesan, alat, dan verifier.
+- **Maintainer:** Terakhir, baca pengujian, manifest bukti, penanganan kegagalan, rollback, dan adapter provider.
+
+Pada pembacaan pertama, lewati kredensial, presentasi, dan kompatibilitas provider; kembali saat mereproduksi angka.
+
 ## Proyek Pendamping
 
 | Eksperimen | Proyek | Jenis | Deskripsi |
@@ -19,7 +29,8 @@
 | 5-9 | [dynamic-form](dynamic-form/) | ✅ | Menghasilkan formulir HTML dinamis untuk mengklarifikasi permintaan yang belum lengkap. |
 | 5-10 | [erp-agent](erp-agent/) | ✅ | Menghasilkan artefak SQL untuk kueri ERP tanpa memindahkan seluruh data melalui LLM. |
 | 5-11 | [conversational-ui](conversational-ui/) | ✅ | Memodifikasi UI React berdasarkan bahasa alami dan menerapkan perubahan dengan HMR. |
-| 5-12 | [agent-creator](agent-creator/) | ✅ | Membandingkan pembuatan Agent dari referensi tervalidasi dengan pembuatan dari nol. |
+| 5-12 | [permission-embedded-data-objects](permission-embedded-data-objects/) | ✅ | Penyimpanan objek berbasis PostgreSQL yang menegakkan otorisasi, validasi, dan integritas referensial di bawah kode aplikasi yang dibuat secara dinamis. |
+| 5-13 | [agent-creator](agent-creator/) | ✅ | Membandingkan pembuatan Agent dari referensi tervalidasi dengan pembuatan dari nol. |
 
 ## Jenis Proyek
 
