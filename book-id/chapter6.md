@@ -23,9 +23,7 @@ Bab-bab sebelumnya memperluas **isi** kedua ruang tersebut; bab ini memperluas *
 
 Proposisi inti bab ini dapat dipadatkan menjadi satu kalimat: **sistem giliran adalah asumsi yang ditinggalkan pelatihan, bukan sifat lingkungan.**
 
-Korpus pelatihan model hampir seluruhnya bergiliran—pertanyaan diikuti jawaban, panggilan tool diikuti hasil tool, satu pihak selesai bicara barulah pihak lain membuka mulut. Maka kebijakan yang dipelajari model mengandaikan dunia akan menunggunya. Lingkungan nyata tidak menunggu: surel tiba saat ia sedang berpikir, pengguna menyela di tengah kalimat, halaman sudah berubah di antara dua tangkapan layar, cangkir tersenggol saat lengan robot sedang menjangkau. **Empat subbab dalam bab ini adalah proses asumsi itu dilonggarkan satu per satu pada empat skala waktu.**
-
-Mari lihat dulu posisinya:
+Korpus pelatihan model hampir seluruhnya berbasis giliran—pertanyaan diikuti jawaban, panggilan tool diikuti hasil tool, satu pembicara selesai lebih dulu sebelum yang lain mulai. Jadi kebijakan yang dipelajari model mengasumsikan dunia akan menunggunya. Lingkungan nyata tidak menunggu model untuk bereaksi: surel datang saat ia sedang berpikir, pengguna menyela di tengah kalimat, halaman sudah berubah di antara dua tangkapan layar, dan cangkir tersenggol saat lengan sedang menjangkaunya.
 
 | Skala | Skenario | Perubahan di sisi observasi | Perubahan di sisi aksi |
 |---|---|---|---|
@@ -355,9 +353,7 @@ ASR dapat menghasilkan transkrip sementara saat pengguna berbicara, LLM mengirim
 
 Front-end VAD + ASR menimbulkan akumulasi latensi karena menunggu hening, kehilangan keraguan, emosi, backchannel, dan suara lingkungan, serta memutus konteks nama atau alamat email. Model streaming sejati membutuhkan encoder kausal/ber-chunk dan decoding inkremental; encoder Whisper menunggu segmen audio lengkap. Model audio berbasis LLM dapat mengeluarkan teks dan event semantik, tetapi simulasi prefix bukan jaminan performa kausal. Marker speak_start/end, interrupt, emotion, laugh, sigh, dan noise mempertahankan sinyal nonteks.
 
-Jika tujuannya hanya menentukan apakah pengguna sudah selesai berbicara, penilaian akhir giliran dapat ditanamkan langsung ke recognizer streaming. Label pelatihan hanya boleh memakai informasi yang terlihat pada saat keputusan dibuat; jika tidak, informasi masa depan akan menghasilkan penilaian yang tidak dapat direproduksi secara online[^ch6-11]. Jalur ini lebih ringan daripada LLM audio lengkap.
-
-[^ch6-11]: Diagnosis penanaman penilaian giliran ke recognizer dan masalah label dengan informasi masa depan lihat Li, Bojie dan Noah Shi. *The Trade-off Was in the Labels: Causal Supervision for Turn-Aware Streaming ASR.* 2026 (akan terbit).
+Jika tujuannya hanya menentukan apakah pengguna sudah selesai berbicara, penilaian akhir giliran dapat ditanamkan langsung ke recognizer streaming. Label pelatihan hanya boleh memakai informasi yang terlihat pada saat keputusan dibuat; jika tidak, informasi masa depan akan menghasilkan penilaian yang tidak dapat direproduksi secara online. Jalur ini lebih ringan daripada LLM audio lengkap.
 
 > **Eksperimen 6-4 ★: Mensimulasikan persepsi suara streaming dengan Qwen2-Audio**
 >
@@ -365,9 +361,7 @@ Jika tujuannya hanya menentukan apakah pengguna sudah selesai berbicara, penilai
 
 ### Paradigma 2 · Model omnimodal end-to-end (Omni)
 
-Cascade dapat kehilangan emosi, intonasi, dan suara lingkungan ketika audio menjadi teks. Omni mendengar, menjawab, dan berbicara dengan satu model, tetapi lebih mahal untuk dilatih, di-debug, dan diganti. Keunggulannya terutama latensi dan informasi nonteks, bukan akurasi yang pasti lebih tinggi. Self-cascade dapat memperbaiki kesalahan persepsi bila teks cukup; bila jawaban bergantung pada kecepatan, emosi, atau lingkungan, bottleneck teks menghapus bukti[^ch6-13]. Omni tetap mengasumsikan giliran dan dapat mengira jeda di tengah angka sebagai akhir.
-
-[^ch6-13]: Pengukuran lintas-modal lengkap tentang kapan keunggulan akurasi cascade dan end-to-end berbalik: Li, Bojie dan Noah Shi. *The Cascade Gap: When and Why Self-Cascades Help Multimodal Agents.* 2026 (akan terbit).
+Cascade dapat kehilangan emosi, intonasi, dan suara lingkungan ketika audio menjadi teks. Omni mendengar, menjawab, dan berbicara dengan satu model, tetapi lebih mahal untuk dilatih, di-debug, dan diganti. Keunggulannya terutama latensi dan informasi nonteks, bukan akurasi yang pasti lebih tinggi. Self-cascade dapat memperbaiki kesalahan persepsi bila teks cukup; bila jawaban bergantung pada kecepatan, emosi, atau lingkungan, bottleneck teks menghapus bukti. Omni tetap mengasumsikan giliran dan dapat mengira jeda di tengah angka sebagai akhir.
 
 ![Gambar 6-9: Perbandingan model suara omnimodal end-to-end](images/fig6-9.svg)
 
@@ -420,11 +414,14 @@ Model terpadu paling erat mewujudkan "berpikir sambil berbicara", dengan biaya b
 
 ### Sintesis suara yang lebih manusiawi
 
-TTS yang terlalu halus dan tanpa jeda terdengar seperti mesin. LLM dapat mengeluarkan THINKING, EMO:happy, dan SPEED:0.8x; TTS memetakannya ke jeda, prosodi, kecepatan, tawa, dan helaan napas. Pada Fish Audio S1, konfigurasi multi-referensi mendapat nilai tertinggi dalam tiga sesi dengar buta yang seimbang (kemiripan layanan pelanggan manusia 4,67/5), tetapi kelompok tanpa marker mengungguli referensi tunggal sehingga urutan lengkap tidak tereplikasi.
+TTS tradisional dapat mengungkap identitas mesinnya karena terlalu mulus dan terlalu sedikit berhenti. Jeda, kata pengisi, dan pengulangan sesekali menandakan ketidakpastian dan proses berpikir dalam ucapan manusia.
+
+LLM utama dapat mengeluarkan marker kontrol selain teks, seperti **THINKING**, **EMO:happy**, dan **SPEED:0.8x**; TTS memetakannya menjadi jeda, prosodi, kecepatan bicara, tawa, helaan napas, dan audio nonverbal lainnya. Implementasinya dapat berupa TTS yang dilatih untuk memahami marker kontrol, atau voice cloning dengan klip referensi untuk berbagai emosi dan gaya.
 
 > **Eksperimen 6-6 ★★: TTS berbasis token kontrol dengan Fish Audio**
 >
-> Bandingkan tanpa marker, satu referensi, dan beberapa referensi; lapisan eksekusi memilih emosi, kecepatan, dan gaya. Pustaka 24 referensi, media A/B/C, dan bukti penerimaan ada di [chapter6/controllable-tts](../chapter6/controllable-tts/).
+> Gunakan Fish Audio S1 untuk membangun pustaka suara multi-referensi dan bandingkan tiga konfigurasi: tanpa marker kontrol, satu klip referensi, dan beberapa klip referensi. Lapisan eksekusi memilih emosi, kecepatan bicara, dan gaya yang cocok dari marker.
+
 
 ## Computer Use: Agen Otomatisasi GUI
 
@@ -459,9 +456,9 @@ Implementasi referensi Anthropic membagi kemampuan interaksi lengkap menjadi tig
 
 > **Eksperimen 6-7 ★: Menjalankan Computer Use (Jalur Referensi Anthropic atau Jalur Model Terbuka)**
 >
-> Jalur A menggunakan Demo Anthropic Computer Use. Kontainernya mengemas lingkungan desktop Ubuntu lengkap, termasuk browser, terminal, dan tool umum lainnya. Frontend menerima tugas, sedangkan backend mengirim instruksi dan tangkapan layar ke Claude, lalu menjalankan tindakan mouse, keyboard, terminal, atau pengeditan yang dikembalikan model. Jalur ini ditujukan untuk memahami protokol tool `computer` native; tidak semua pembaca diwajibkan memiliki akses ke Anthropic API.
+> Jalur A menggunakan Anthropic Computer Use Demo. Kontainernya mengemas lingkungan desktop Ubuntu lengkap, termasuk browser, terminal, dan tool umum lainnya. Frontend menerima tugas, sedangkan backend mengirim instruksi dan tangkapan layar ke Claude, lalu mengeksekusi aksi mouse, keyboard, terminal, atau pengeditan yang dikembalikan oleh model.
 >
-> Jalur B memakai kode contoh di [`chapter6/computer-use-open-model`](../chapter6/computer-use-open-model/). Secara default, jalur ini menjalankan browser-use dengan Qwen3-VL 32B Instruct open-weight melalui API hosted OpenRouter, atau dengan mengarahkan `OPEN_MODEL_BASE_URL` ke vLLM/SGLang self-hosted maupun endpoint kompatibel lain.
+> Jalur B menggunakan kode contoh di [`chapter6/computer-use-open-model`](../chapter6/computer-use-open-model/). Secara default, jalur ini menjalankan browser-use dengan model open-weight Qwen3-VL 32B Instruct melalui OpenRouter API yang di-host, atau melalui vLLM/SGLang yang di-host sendiri dan sistem serupa.
 
 ### Visual Grounding
 
@@ -705,7 +702,7 @@ mengindra terus-menerus
 
 Keempatnya juga berbagi primitive yang sama—wake-up, safe point, pembatalan, preemption, dan pemisahan cepat/lambat.
 
-Bab ini merampungkan kepingan terakhir bagian "membangun Agent": ruang observasi dan ruang aksi kini telah terbentang pada tiga arah sekaligus—isi, modalitas, dan waktu. Tiga bab berikutnya beralih ke persoalan lain: bagaimana kita tahu semuanya dibangun dengan benar, dan bagaimana membuatnya terus membaik.
+Bab ini merampungkan kepingan terakhir bagian “membangun Agent”: ruang observasi dan ruang aksi kini telah terbentang pada tiga arah sekaligus—isi, modalitas, dan waktu. Selanjutnya, Bab 7 menjawab cara menentukan apakah sistem telah dibangun dengan benar; Bab 8 membahas cara memperbarui parameter model melalui post-training; dan Bab 9 menyusun trajectory runtime, evaluasi, serta berbagai media pembaruan menjadi loop evolusi berkelanjutan. Bab 10 lalu beralih dari fondasi Agent tunggal yang lengkap ini ke kolaborasi multi-Agent.
 
 [^ch6-16]: Meta AI, “Introducing the V-JEPA 2 world model and new benchmarks for physical reasoning,” 2025-06-11. https://ai.meta.com/blog/v-jepa-2-world-model-benchmarks/; V-JEPA 2 technical report：arXiv:2506.09985, https://arxiv.org/abs/2506.09985
 [^ch6-21]: Jack Parker-Holder and Shlomi Fruchter, Google DeepMind, “Genie 3: A new frontier for world models,” 2025-08-05. https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/; Zachary Lin et al. *Cosmos World Foundation Model Platform for Physical AI.* arXiv:2501.03575, 2025. https://arxiv.org/abs/2501.03575 。
