@@ -275,6 +275,7 @@ def _run_single(args):
     # dry-run 只组装请求体、不联网，因此无需真实 API Key
     api_key, base_url, model = Config.resolve(args.backend, args.model)
     api_key = api_key or ("DRYRUN-PLACEHOLDER" if args.dry_run else "")
+    print("baseUrl: " + base_url + " model: " + model)
 
     agent = GPT5NativeAgent(
         api_key=api_key,
