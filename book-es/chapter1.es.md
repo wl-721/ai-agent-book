@@ -381,6 +381,23 @@ El patrón de workflow tiene dos ventajas fundamentales. La primera es el **cont
 
 La principal limitación de un workflow es su **falta de flexibilidad**. Cuando se presenta una situación no contemplada por el proceso predefinido (por ejemplo, si el usuario quiere cambiar el vuelo durante la fase de pago o si el vuelo se cancela de repente y es necesario recomendar alternativas), la ruta fija de nodos no puede adaptarse con flexibilidad y solo puede seguir una rama predefinida para excepciones o devolver el control a una persona.
 
+Veamos el ejemplo de workflow más sencillo: la **generación de imágenes a partir de texto**. La necesidad del usuario suele ser una frase en lenguaje cotidiano, por ejemplo «dibújame la escena de trabajo de los programadores cuando la AGI se haga realidad»; pero los modelos de generación de imágenes a partir de texto como Stable Diffusion solo aceptan prompts con un estilo concreto—etiquetas en inglés separadas por comas, términos de calidad y prompts negativos. Por eso el workflow dispone dos nodos fijos entre el usuario y el modelo de generación de imágenes:
+
+1. **Reescritura del prompt**—usar un LLM para reescribir la necesidad expresada en lenguaje natural al formato de prompt habitual del modelo de generación de imágenes. En el ejemplo anterior, «la escena de trabajo de los programadores cuando la AGI se haga realidad» es una necesidad muy amplia, por lo que el LLM debe reflexionar con cuidado (por ejemplo, «una vez realizada la AGI los programadores ya no tendrán que escribir código, así que hay que dibujar a un programador tomando el sol en la playa mientras dirige a empleados de IA mediante una interfaz cerebro-computadora») y después ofrecer una descripción concreta de la escena.
+2. **Generación de la imagen**—invocar el modelo de generación de imágenes a partir de texto con el prompt reescrito para obtener la imagen.
+
+La ruta de ejecución está fijada en el código. El nodo LLM de este workflow hace de **traductor**: convierte el lenguaje humano al formato de entrada que la herramienta entiende, y existe porque el modelo de generación de imágenes «no entiende el lenguaje humano». A este código de Harness que parchea las deficiencias de capacidad de una herramienta (o de un modelo) puede llamársele **capa de adaptación**.
+
+Pero si se sustituye la herramienta de generación de imágenes por un modelo multimodal con capacidad de **generación nativa de imágenes**, como Nano Banana 2 o GPT-Image 2, la reescritura del prompt deja de ser necesaria. Sea cual sea la redacción del usuario, el propio modelo la entiende y genera la imagen directamente.
+
+> **Experimento 1-4 ★: Comparación entre el workflow de generación de imágenes a partir de texto y la generación nativa de imágenes**
+>
+> Hacer que una misma necesidad expresada en lenguaje cotidiano recorra dos rutas. **Ruta de workflow**: el LLM primero reescribe la necesidad en un prompt al estilo de Stable Diffusion y luego invoca el modelo de generación de imágenes para producir la imagen; **ruta nativa**: enviar la frase tal cual a un modelo multimodal con generación nativa de imágenes (como GPT-Image 2), que produce la imagen directamente en una sola llamada.
+>
+> Conviene comparar: en qué se convierte la necesidad original tras el nodo de reescritura del prompt, y cuál de las dos rutas produce una imagen más fiel a la necesidad original. Merece la pena comparar dos clases de necesidades: unas concretas y descriptivas (por ejemplo, con el texto de un cartel especificado) y otras amplias (como la escena de trabajo con AGI anterior), para las que la ruta de workflow puede conservar ventajas propias.
+
+Este experimento muestra que **las partes del Harness que parchean las deficiencias de capacidad del modelo acaban siendo internalizadas por el propio modelo a medida que este se vuelve más potente**. Solo en el primer capítulo de este libro, esto ya ha ocurrido varias veces: los ejemplos few-shot y los trucos de prompting como «pensemos paso a paso» fueron internalizados por el ajuste de instrucciones y los modelos de razonamiento; la reparación de formatos de salida y la tolerancia de errores en el parseo de JSON fueron internalizadas por la salida estructurada y la invocación nativa de herramientas; y la reescritura de prompts de la generación de imágenes a partir de texto fue absorbida por las capacidades nativas de comprensión y generación multimodal del modelo. En cada ronda de internalización, lo que desaparece es el código de capa de adaptación dedicado a la «traducción» y al «andamiaje».
+
 #### Agente autónomo: decisiones autónomas y dinámicas
 
 Cuando la ruta fija de un workflow no puede satisfacer las necesidades, se requiere un **Agente autónomo** (Autonomous Agent). La diferencia fundamental entre un Agente autónomo y un workflow es la siguiente: la ruta de ejecución no está predefinida, sino que el Agente la decide en tiempo real basándose en la **retroalimentación del entorno**.
@@ -407,7 +424,7 @@ La siguiente tabla presenta los principales frameworks/plataformas de Agentes di
 
 | Framework/plataforma | Posicionamiento principal | Modelo de orquestación | Modalidad de desarrollo | Escenarios de aplicación |
 |---------------|---------------|-------------------|---------------|--------------------------------|
-| **OpenAI Agents SDK** | Biblioteca ligera para el desarrollo de Agentes | Autónomo (bucle de herramientas) | Prioridad al código | Prototipado rápido, aplicaciones con un único Agente |
+| **Codex Harness** | Runtime de Agente de código abierto que impulsa Codex | Autónomo | Prioridad al código, integrable en su propia aplicación | Coding Agents, integrar un Agente en su propio producto |
 | **Claude Agent SDK** | Framework de producción para el desarrollo de Agentes | Autónomo (bucle de herramientas + subagentes) | Prioridad al código | Tareas autónomas complejas, Coding Agents |
 | **LangChain / LangGraph** | Framework de propósito general para aplicaciones con LLM | Workflow + autónomo | Prioridad al código | Razonamiento encadenado complejo, workflows de varios pasos |
 | **n8n** | Automatización visual de workflows | Workflow + autónomo | Low-code (arrastrar y soltar visualmente) | Automatización empresarial, equipos no técnicos |
@@ -416,6 +433,10 @@ La siguiente tabla presenta los principales frameworks/plataformas de Agentes di
 | **OpenClaw** | Agente personal integral de código abierto | Autónomo + basado en eventos | Configuración + código (autoalojado) | Asistente personal, Deep Research, Computer Use, integración de mensajería multiplataforma |
 | **DeepSeek Harness** | Framework de autoevolución de Agentes | Todo es un plugin | Código primero, fácil de personalizar | Desarrolladores e investigadores de Agentes |
 | **Pi** | Framework mínimo de Coding Agent | Autónomo | Código primero, fácil de personalizar | Desarrolladores de Agentes |
+
+Las dos primeras filas merecen una aclaración aparte. Codex es el producto Coding Agent de OpenAI (aplicación, CLI, extensión de IDE), y Codex Harness es la capa de runtime que impulsa todas esas formas[^ch1-codex-harness]. Codex Harness ofrece tres vías de integración: `codex exec` se adapta a tareas puntuales en scripts y CI; el Codex SDK, al código de aplicaciones de terceros que inicia, reanuda y procesa tareas en streaming; y app-server proporciona, mediante el protocolo JSON-RPC, sesiones persistentes, flujos de eventos y devoluciones de llamada de aprobación, lo que encaja con integrar el Agente directamente en un producto. Claude Agent SDK y Claude Code guardan una relación similar, con la diferencia de que lo que Claude abre al exterior es la interfaz del SDK: la implementación del Harness en sí no es de código abierto.
+
+[^ch1-codex-harness]: OpenAI. "Codex as a platform: build on the open agent harness", agosto de 2026.
 
 Los frameworks de Agentes evolucionan con rapidez. Para cuando lea este libro, algunos quizá ya estén obsoletos y otros nuevos se hayan popularizado. Por eso no es importante aprender la API de un framework concreto. Al elegir, la cuestión clave no es su complejidad, sino si ofrece una capa de abstracción lo bastante fina para permitirle centrarse en la lógica de negocio.
 

@@ -396,6 +396,23 @@ Mẫu quy trình công việc có hai ưu điểm cốt lõi. Đầu tiên là *
 
 Hạn chế chính của quy trình làm việc là **thiếu tính linh hoạt**. Khi phát sinh một tình huống không nằm trong quy trình đặt trước (ví dụ: người dùng tạm thời muốn thay đổi vé trong quá trình thanh toán hoặc chuyến bay bị hủy đột ngột và cần đề xuất phương án thay thế), đường dẫn nút cố định không thể được xử lý linh hoạt và lựa chọn duy nhất là lấy nhánh xử lý ngoại lệ đặt trước hoặc trả lại quyền kiểm soát cho con người.
 
+Hãy lấy một ví dụ quy trình làm việc đơn giản nhất: **sinh ảnh từ văn bản** (text-to-image). Nhu cầu của người dùng thường chỉ là một câu nói đời thường, chẳng hạn "giúp tôi vẽ cảnh làm việc của lập trình viên sau khi AGI được hiện thực"; nhưng các mô hình sinh ảnh từ văn bản như Stable Diffusion chỉ chấp nhận lời nhắc theo một phong cách nhất định — các thẻ tiếng Anh phân tách bằng dấu phẩy, từ chất lượng, lời nhắc phủ định. Vì vậy, quy trình làm việc cần bố trí hai nút cố định giữa người dùng và mô hình sinh ảnh:
+
+1. **Viết lại lời nhắc** — dùng LLM viết lại nhu cầu ngôn ngữ tự nhiên của người dùng thành định dạng lời nhắc mà mô hình sinh ảnh từ văn bản quen thuộc. Với ví dụ trên, "cảnh làm việc của lập trình viên sau khi AGI được hiện thực" là một nhu cầu rất mơ hồ, nên LLM còn cần suy nghĩ kỹ (chẳng hạn "sau khi AGI được hiện thực, lập trình viên không cần viết mã nữa, vì vậy nên vẽ một lập trình viên đang phơi nắng trên bãi biển, điều khiển các nhân viên AI qua giao diện não-máy tính"), rồi đưa ra mô tả cảnh cụ thể.
+2. **Sinh ảnh** — dùng lời nhắc đã viết lại để gọi mô hình sinh ảnh từ văn bản và nhận được hình ảnh.
+
+Đường dẫn thực thi được mã hóa cứng bằng mã. Nút LLM trong quy trình làm việc này đảm nhiệm vai trò **dịch thuật**, tức chuyển lời nói của con người thành định dạng đầu vào mà công cụ có thể hiểu; nó tồn tại vì mô hình sinh ảnh từ văn bản "không hiểu lời nói của con người". Loại mã Harness chuyên vá những điểm yếu về năng lực của công cụ (hoặc mô hình) này, có thể gọi là **lớp thích ứng**.
+
+Nhưng nếu thay công cụ sinh ảnh bằng một mô hình đa phương thức có năng lực **sinh ảnh gốc**, chẳng hạn Nano Banana 2, GPT-Image 2, thì không cần viết lại lời nhắc nữa. Bất kể người dùng diễn đạt thế nào, mô hình tự mình có thể hiểu và trực tiếp tạo ra hình ảnh.
+
+> **Thử nghiệm 1-4 ★: So sánh giữa quy trình làm việc sinh ảnh từ văn bản và sinh ảnh gốc**
+>
+> Cho cùng một nhu cầu bằng lời nói đời thường đi qua hai tuyến đường. **Tuyến quy trình làm việc**: LLM trước tiên viết lại nhu cầu thành lời nhắc kiểu Stable Diffusion, rồi gọi mô hình sinh ảnh từ văn bản để tạo ảnh; **tuyến gốc**: gửi nguyên câu đó cho một mô hình đa phương thức hỗ trợ sinh ảnh gốc (chẳng hạn GPT-Image 2), chỉ một lần gọi là tạo ảnh trực tiếp.
+>
+> Hãy so sánh: nút viết lại lời nhắc đã biến nhu cầu ban đầu thành dạng nào, và ảnh của hai tuyến, bên nào sát với nhu cầu ban đầu hơn. Đáng chia thành hai loại nhu cầu để đối chiếu: một loại mô tả cụ thể (chẳng hạn đã chỉ định nội dung chữ trên poster); loại kia mơ hồ (chẳng hạn cảnh làm việc AGI ở trên) — với loại nhu cầu này, tuyến quy trình làm việc vẫn có thể có ưu thế riêng.
+
+Thử nghiệm này cho thấy: **những phần trong Harness dùng để vá điểm yếu năng lực của mô hình sẽ dần bị chính mô hình nội hóa khi mô hình mạnh lên**. Chỉ riêng trong Chương 1 của cuốn sách này, chuyện như vậy đã xảy ra nhiều lần: các ví dụ few-shot, những mẹo lời nhắc kiểu "hãy suy nghĩ từng bước một", đã được tinh chỉnh theo chỉ dẫn (instruction tuning) và các mô hình suy luận nội hóa; việc sửa định dạng đầu ra, dung sai khi phân tích cú pháp JSON, đã được đầu ra có cấu trúc và gọi công cụ gốc nội hóa; việc viết lại lời nhắc của sinh ảnh từ văn bản, đã bị năng lực hiểu và sinh đa phương thức gốc của mô hình "ăn" mất. Mỗi vòng nội hóa, thứ bị xóa sổ đều là những đoạn mã lớp thích ứng kiểu "dịch thuật" và "giàn giáo" (scaffolding).
+
 #### Agent tự động: Ra quyết định tự chủ năng động
 
 Khi đường dẫn cố định của quy trình làm việc không thể đáp ứng nhu cầu, chúng tôi cần **Agent tự trị**(Agent tự trị). Sự khác biệt cốt lõi giữa Agent tự trị và quy trình làm việc là đường dẫn thực thi không được xác định trước mà Agent được xác định trong thời gian thực dựa trên **phản hồi môi trường**.
@@ -424,7 +441,7 @@ Bảng sau đây sắp xếp khung/nền tảng Agent chính thống hiện nay 
 
 | Khung/Nền tảng | Định vị cốt lõi | Chế độ phối hợp | Phương pháp phát triển | Kịch bản áp dụng |
 |-----------|---------|---------|---------|---------|
-|**SDK OpenAI Agents**| Thư viện phát triển Agent nhẹ | Tự động (chu kỳ công cụ) | Code-first | Tạo mẫu nhanh, ứng dụng Agent đơn lẻ |
+|**Codex Harness**| Runtime Agent mã nguồn mở vận hành Codex | Tự chủ | Ưu tiên mã, có thể nhúng vào ứng dụng của bạn | Coding Agent, nhúng Agent vào sản phẩm của mình |
 |**SDK Claude Agent**| Khung phát triển Agent cấp sản xuất | Tự động (vòng lặp công cụ + phụ Agent) | Code-first | Nhiệm vụ tự trị phức tạp, Coding Agent |
 |**LangChain / LangGraph**| Khung ứng dụng phổ quát LLM | Quy trình làm việc + quyền tự chủ | Code-first | Tư duy chuỗi phức tạp, quy trình làm việc nhiều bước |
 |**n8n**| Tự động hóa quy trình làm việc trực quan | Quy trình làm việc + quyền tự chủ | Low-code (kéo và thả trực quan) | Tự động hóa kinh doanh, đội ngũ phi kỹ thuật |
@@ -433,6 +450,10 @@ Bảng sau đây sắp xếp khung/nền tảng Agent chính thống hiện nay 
 |**OpenClaw**| Agent cá nhân toàn diện mã nguồn mở | Tự chủ + theo sự kiện | Cấu hình + mã (tự lưu trữ) | Trợ lý cá nhân, Nghiên cứu sâu, Computer Use, tích hợp tin nhắn đa nền tảng |
 | **DeepSeek Harness** | Framework tự tiến hóa cho Agent | Mọi thứ đều là plugin | Ưu tiên mã, dễ tùy biến | Nhà phát triển Agent, nhà nghiên cứu |
 | **Pi** | Framework Coding Agent tối giản | Tự chủ | Ưu tiên mã, dễ tùy biến | Nhà phát triển Agent |
+
+Hai hàng đầu tiên trong bảng đáng được làm rõ riêng. Codex là sản phẩm Coding Agent của OpenAI (App, CLI, tiện ích mở rộng IDE), còn Codex Harness chính là lớp runtime vận hành tất cả những hình thái đó[^ch1-codex-harness]. Codex Harness cung cấp ba lối tích hợp: `codex exec` phù hợp với các tác vụ một lần trong script và CI; Codex SDK phù hợp với mã ứng dụng bên thứ ba cần khởi động, khôi phục và xử lý tác vụ theo luồng; còn app-server cung cấp phiên làm việc bền vững, luồng sự kiện và callback phê duyệt qua giao thức JSON-RPC, phù hợp để đưa Agent thẳng vào sản phẩm. Claude Agent SDK và Claude Code cũng có quan hệ tương tự, khác ở chỗ thứ được mở ra bên phía Claude là giao diện SDK, còn bản thân phần triển khai Harness thì không mã nguồn mở.
+
+[^ch1-codex-harness]: OpenAI. "Codex as a platform: build on the open agent harness", tháng 8 năm 2026.
 
 Các framework Agent phát triển rất nhanh. Khi bạn đọc cuốn sách này, một số framework có thể đã lỗi thời và những cái mới đã trở nên phổ biến. Vì vậy, học API của một framework cụ thể không phải điều quan trọng. Khi lựa chọn, điều cốt yếu không nằm ở độ phức tạp của framework mà ở việc lớp trừu tượng của nó có đủ mỏng để bạn tập trung vào logic nghiệp vụ hay không.
 

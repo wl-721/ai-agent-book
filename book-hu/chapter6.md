@@ -74,7 +74,7 @@ A Heartbeat időszakos pollozásával – mondjuk 5 perces időközökkel – a 
 
 A PineClaw megoldása egy "Channel (Csatorna) mechanizmus" bevezetése – egy valós idejű eseménycsatorna létrehozása az OpenClaw Gateway-e és a Pine API között. Amikor kulcsfontosságú események történnek, mint például a hívás kapcsolódása, a felhasználói bemenet szükségessége vagy a hívás vége, az üzenet azonnal push-elődik az OpenClaw Agenthez. Az Agent azonnal feldolgozza és értesíti a felhasználót, a válaszidőt percekről másodpercekre csökkentve.
 
-Ez az eset feltárja az eseményvezérelt architektúra alapvető értékét az Agent keretrendszerek számára: **az igazi "proaktív szolgáltatáshoz" nem csak az kell, hogy az Agent időszakosan ellenőrizze a világot, hanem az is, hogy a világ aktívan értesíteni tudja az Agentet.** Az összes bemenet – felhasználói üzenetek, eszköz visszatérések, külső visszahívások, ütemezett triggerek – egységesítése egy eseményfolyammá, és az Agent gondolkodásának és cselekvéseinek egy eseményhurokon keresztüli vezérlése az építészeti alap e cél eléréséhez. Ezen architektúra alatt először a két, közvetlenül az eseményekhez kapcsolódó eszközkategóriát mutatjuk be, valamint az Agent független cselekvéseit támogató virtuális identitást és izolált végrehajtási környezetet, mielőtt az eseménykezelő mechanizmus konkrét tervezését tárgyalnánk.
+Ez az eset feltárja az eseményvezérelt architektúra alapvető értékét az Agent keretrendszerek számára: **az igazi "proaktív szolgáltatáshoz" nem csak az kell, hogy az Agent időszakosan ellenőrizze az eseményeket, hanem az is, hogy az események aktívan értesíteni tudják az Agentet.** Az összes bemenet – felhasználói üzenetek, eszköz visszatérések, külső visszahívások, ütemezett triggerek – egységesítése egy eseményfolyammá, és az Agent gondolkodásának és cselekvéseinek egy eseményhurokon keresztüli vezérlése az építészeti alap e cél eléréséhez. Ezen architektúra alatt először a két, közvetlenül az eseményekhez kapcsolódó eszközkategóriát mutatjuk be, valamint az Agent független cselekvéseit támogató virtuális identitást és izolált végrehajtási környezetet, mielőtt az eseménykezelő mechanizmus konkrét tervezését tárgyalnánk.
 
 ### Eseményindított Eszközök
 
@@ -312,14 +312,12 @@ Az OpenAI GPT-Live bemutatója három paradigmát különböztet meg: kaszkád, 
 | Paradigma | Szerkezet | Előny | Korlát |
 | --- | --- | --- | --- |
 | Kaszkád | VAD → ASR → LLM → TTS | Átlátható, cserélhető, hibakereshető modulok | Késleltetés halmozódik, a paralingvisztikai jel elveszik |
-| Végponttól végpontig Omni | Egy modell hallgat, gondolkodik és beszél | Kisebb késleltetés, jobb hangszín- és környezethang-megőrzés | Továbbra is köralapú, drága a tanítás és a hibakeresés |
-| Teljes duplex | Folyamatosan hallgat, beszél és dönt | Átfedő beszéd és természetes megszakítás | Bonyolultabb tanítás, vezérlés és értékelés |
+| Végponttól végpontig Omni | Natív hangbemenet és -kimenet, köralapú interakció | Kisebb késleltetés, jobb hangszín- és környezethang-megőrzés | Továbbra is köralapú, drága a tanítás és a hibakeresés |
+| Teljes duplex | Natív hangbemenet és -kimenet, folyamatos hallgatás, beszéd és döntés | Átfedő beszéd és természetes megszakítás | Bonyolultabb tanítás, vezérlés és értékelés |
 
 A közös cél az „egymás után beszélünk” feltételezés és a VAD szólójoggal kapcsolatos találgatásának meghaladása. A kaszkád és az Omni még körökre bont; a teljes duplexben a modell folyamatosan dönti el, ki beszél.
 
 [^ch6-12]: OpenAI. *Introducing GPT-Live.* 2026-07-08. https://openai.com/index/introducing-gpt-live/. A háromosztatú besorolás a ChatGPT Voice három generációjának összefoglalásából származik; az Omni a „turn-based voice models” kategóriának felel meg.
-
-Amikor egy kaszkádrendszer soros végrehajtásról streamingre vált, nem az a legfontosabb, hogy minden függvény `async` legyen, hanem hogy **az inkrementális eredmények érvénytelenné válhassanak és megszakíthatók legyenek**.
 
 ### Paradigma 1 · Kaszkádolt csővezeték
 
@@ -346,9 +344,20 @@ Rövid válasznál is sorosan összeadódik a VAD, ASR, LLM és TTS várakozása
 
 #### A sorostól a streaming észlelésig
 
-Az ASR beszéd közben ideiglenes átiratot adhat, az LLM az első felolvasható mondatot átadhatja a TTS-nek, a TTS pedig hangblokkokat küldhet. Ettől a három szakasz nem lesz teljesen párhuzamos; előreindításkor a későbbi átirat változását törléssel, újraindítással vagy visszagörgetéssel kell kezelni.
+A 6-7. ábra a VAD + ASR + LLM + TTS teljesen soros esetét mutatja; ennek a soros észlelésnek három gondja van:
 
-A VAD + ASR front-end három gondja a csend miatti **késleltetés**, a hezitálás, érzelem és környezeti hang elvesztése, valamint az e-mail-címek és tulajdonnevek **kontextustörése**. A valódi streaminghez kauzális vagy darabolt kódoló és inkrementális dekódolás kell; a Whisper teljes hangszegmenst vár. Az LLM-alapú hallási modell szöveget és szemantikai eseményeket adhat ki.
+1. **Halmozódó késleltetés**: csak egy szakasznyi csend után lehet megerősíteni, hogy a felhasználó befejezte a mondandóját.
+2. **Információvesztés**: a hangos/néma bináris jel nem tudja kifejezni a hezitálást, az érzelmet, a hümmögést és a környezeti hangot.
+3. **Kontextustörés**: az e-mail-címek, a személynevek és a tulajdonnevek darabokra szabdalva félreismerhetők.
+
+A moduláris munkamegosztás megtartása mellett erre a **streaming észlelés** kínál megoldást: minden szakasz a lehető legkorábban ad inkrementális eredményt.
+
+- **Az ASR hallgatás közben ír át**: amint a VAD érzékeli, hogy a felhasználó beszélni kezdett, a rendszer adott időközönként meghívja az ASR modellt, és folyamatosan ideiglenes átiratot állít elő; miután a VAD a beszéd végét jelzi, megerősíti a végleges szöveget.
+- **Az LLM spekulatív végrehajtása**: az ideiglenes átirat azonnal az LLM-hez kerül; ha a végleges szöveg megegyezik az ideiglenes átirattal, az LLM-et nem kell újra meghívni, ellenkező esetben a korábbi spekulatív gondolkodás megszakad, és az LLM újra lefut.
+- **Az LLM szakaszos kimenete**: az első felolvasható szövegrész azonnal a TTS-hez kerül, nem kell megvárni a teljes választ.
+- **A TTS inkrementális szintézise**: folyamatosan ad vissza hangblokkokat, így a további generálás, a szintézis és a lejátszás átfedheti egymást.
+
+A valódi streaming ASR-hez a modellnek is támogatnia kell ezt a működést. A Whisper dekódolása ugyan autoregresszív, de a kódolója teljes hangszegmenst vár, ezért nem tekinthető streaming modellnek. Az LLM-alapú streaming hallási modell folyamatos hangból ad ki szöveget és szemantikai eseményeket, vagyis a „felismerést” és a „megértés” egy részét ugyanabba a modellbe helyezi. Megőrzi a beszélgetés kezdetétől az aktuális pillanatig tartó kontextust, és világtudását felhasználva kezeli a márkaneveket, személyneveket és tulajdonneveket.
 
 A végpont eldöntése beépíthető a streaming felismerőbe, de a címkék csak a döntéskor látható információt használhatják. A speak_start/end, interrupt, emotion, laugh, sigh és noise jelölők megőrzik a nem szöveges jeleket.
 
@@ -358,17 +367,17 @@ A végpont eldöntése beépíthető a streaming felismerőbe, de a címkék csa
 
 ### Paradigma 2 · Végponttól végpontig tartó omnimodális modellek (Omni)
 
-A kaszkád szöveges határa elveszítheti az érzelmet, intonációt és környezeti hangot. Az Omni egy modellben hallgat, válaszol és beszél, de drágább tanítani, hibakeresni és cserélni. Előnye főként a késleltetés és a nem szöveges információ, nem szükségszerűen a pontosság. Az önkaszkád akkor javíthat felismerési hibát, ha a szöveg elég; beszédsebesség vagy érzelem esetén a szöveges szűk keresztmetszet bizonyítékot veszít.
+A kaszkád még streaming észleléssel is diszkrét interfészeken adja tovább a hallgatást, a gondolkodást és a beszédet; az érzelem, az intonáció és a környezeti hang elveszhet, amikor a hangból tiszta szöveg lesz. Az Omni megoldás ugyanazzal a modellel hallgatja a hangot, fogalmazza meg a választ és mondja ki, ezért megőrizheti ezeket a jeleket, cserébe viszont drágább a tanítása. Az első paradigma kaszkádjához képest az Omni előnye főként a késleltetésben, valamint a nem szöveges információ megértésében és generálásában mutatkozik meg.
+
+A megértés oldalán az Omni modell felfogja a hangban lévő szüneteket. A generálás oldalán gazdagabb paralingvisztikai információt tud átadni: például énekelhet, vagy különleges hanglejtéssel mondhat ki egy mondatot.
+
+Az Omni modell továbbra is a felváltva beszélést feltételezi, és a szólójogot rendszerint VAD osztja ki. Ezért ha a felhasználó számsort diktál, a közben tartott szünetet a rendszer még mindig a beszéd végének vélheti.
 
 ![6-9. ábra: End-to-end omnimodális hangmodellek](images/fig6-9.svg)
-
-A valós idejű hang API-k köztes megoldások: natívan kezelik a hangot, de VAD-ra, megszakításra és aszinkron eszközhívásra támaszkodnak. A feladatfüggő hibák fontosabbak, mint a ranglista.
 
 > **6-5. kísérlet ★★: MiniCPM-o 4.5 helyi futtatása — end-to-end és önkaszkád**
 >
 > Futtasd helyben a MiniCPM-o 4.5-öt kikapcsolt thinking mode-dal, és hasonlítsd össze a közvetlen hangalapú választ azzal az önkaszkáddal, amely ugyanazzal a modellel előbb átír, majd válaszol. Ez azt méri, megmarad-e a hanginformáció, **nem** a későbbi „beszéd közbeni gondolkodást”.
-
-Step-Audio 2 nyers hangból szöveget és hangot állít elő; a Step-Audio R1 a következtetést is a hangmodellbe építi.
 
 ### Paradigma 3 · Teljes duplex interaktív modellek
 
@@ -378,13 +387,7 @@ Az Omni a „felhasználó beszél” és a „modell beszél” időszakára os
 
 ### Kognitív időzítés: valós idejű interakció és mély gondolkodás
 
-Az előtérmodell addig válaszol, amíg a felhasználó jelen van; a háttérmodell tovább gondolkodhat. A három terv kompromisszum:
-
-| Terv | Előtér | Háttér | Kockázat |
-| --- | --- | --- | --- |
-| Gyors válasz, lassú javítás | Azonnali válasz | Újragondolás és kiegészítés | Ellentmondás |
-| Gyors interakció, lassú tanács | Beszélgetés és megfogalmazás | Tanács vagy eszközeredmény | Korlátozott interfész |
-| Egyesített gondolkodás és kifejezés | Gondolkodás közben beszél | Közös állapot | Magas újratanítási költség |
+Az interakció minősége és az intelligencia felső határa külön dimenzió. Az előtérmodell addig válaszol, amíg a felhasználó jelen van; a háttérmodell tovább gondolkodhat. A következő három terv kompromisszum, nem lineáris fejlődés. Az első kettő kaszkádra vagy Omni modellre is ráépíthető; a harmadik a mély gondolkodást és a valós idejű kifejezést ugyanazon modellen belül egyesíti.
 
 #### 1. terv: gyors gondolkodás a kitöltéshez, lassú gondolkodás a válaszhoz
 
@@ -398,16 +401,23 @@ A gyors gondolkodás néhány száz ezredmásodperc alatt képes kitöltő vála
 
 A második tervben a háttérmodell állapotsávon vagy dedikált interfészen keresztül ad javaslatokat az előtérmodellnek, az előtér pedig továbbra is tartja a szót, és eldönti, hogyan fogalmaz. Ez stabilabb az elsőnél, de a kommunikáció továbbra is közvetett: az előtér félreértheti a javaslatot, és nem látja a háttér köztes gondolkodását; amíg a háttér nem végez, a felhasználó rákérdezésére az előtér csak a saját képességeire támaszkodhat. Természetesen tud „eredményre várni", de valódi gondolkodás beszéd közben nem valósul meg.
 
-#### 3. terv: a gondolkodás és a kifejezés végponttól végpontig tartó egyesítése (a Step-Audio R1 példáján)
+#### 3. terv: a gondolkodás és a kifejezés végponttól végpontig tartó egyesítése
 
 A harmadik terv a gondolkodási képességet közvetlenül a végponttól végpontig tartó hangmodellbe építi be. A Step-Audio R1 két egymást kiegészítő mechanizmussal két problémát old meg: a **modalitáshoz horgonyzott gondolkodásdesztilláció (MGRD)** akusztikai jellemzők alapján gondolkodtatja a modellt, az **MPS kétagyú architektúra** pedig párhuzamosítja a fogalmazást és a kifejezést. Az előbbi a „helyes gondolkodást" biztosítja, az utóbbi az „időben történő megszólalást" oldja meg.
 
-Ideális esetben a modellnek a hangmagasságból, a ritmusból és a hanglejtésből kellene megítélnie az érzelmet, nem pusztán az átiratból. Az úgynevezett „szöveggel helyettesített gondolkodás" azt jelenti, hogy a modell a dallam és az akusztikai jellemzők elemzése helyett a dalszöveg negatív szavaira támaszkodik. Az MGRD kiszűri azokat a gondolatmeneteket, amelyek valóban akusztikai jellemzőkre hivatkoznak, ezekkel az adatokkal tanítja a modellt, és megerősítéses tanulással akadályozza meg, hogy a modell átugorja a gondolkodást és egyből tippeljen.
+Ideális esetben a modellnek a hangmagasságból, a ritmusból és a hanglejtésből kellene megítélnie az érzelmet, nem pusztán az átiratból. Az MGRD kiszűri azokat a gondolatmeneteket, amelyek valóban akusztikai jellemzőkre hivatkoznak, ezekkel az adatokkal tanítja a modellt, és megerősítéses tanulással akadályozza meg, hogy a modell átugorja a gondolkodást és egyből tippeljen. Az MPS-ben a fogalmazó agy folyamatosan gondolatfoszlányokat termel, a kifejező agy pedig, amint megkap egy foszlányt, a már elhangzott válasszal együtt azonnal beszédet generál. A kettő futószalagszerűen párhuzamosan működik, így nem kell megvárni a teljes gondolatmenet végét ahhoz, hogy a felhasználó meghallja az első mondatot.
 
-Az MPS-ben a fogalmazó agy folyamatosan gondolatfoszlányokat termel, a kifejező agy pedig, amint megkap egy foszlányt, a már elhangzott válasszal együtt azonnal beszédet generál. A kettő futószalagszerűen párhuzamosan működik, így nem kell megvárni a teljes gondolatmenet végét ahhoz, hogy a felhasználó meghallja az első mondatot.
+#### A gyors/lassú gondolkodás szétválasztása és a végponttól végpontig tartó gondolkodás közötti kompromisszum
 
+Az egyesített modell valósítja meg a legközvetlenebbül a „gondolkodás beszéd közben" elvét, ára viszont az, hogy a gondolkodást és a valós idejű kifejezést együtt kell újratanítani; a szétcsatolt megoldásban könnyebb kicserélni a háttéragyat. A kettő kompromisszum, nem egyszerű helyettesítője egymásnak.
 
-Az egyesített modell valósítja meg a legszorosabban a „gondolkodás beszéd közben" elvét, ára viszont az, hogy a gondolkodást és a valós idejű kifejezést együtt kell újratanítani; a szétcsatolt út esetén könnyebb kicserélni a háttéragyat, az egyesített út pedig inkább a végletekig természetes hatásra törekvő, célzott forgatókönyvekhez való. A kettő kompromisszum, nem pedig egyszerű helyettesítője egymásnak.
+A legfejlettebb következtető modellek gyors fejlődése közepette a gyors és lassú gondolkodás szétválasztása fontos mérnöki előnyt kínál: közvetlenül kihasználhatja a lassú modellek minden új generációjának javulását. A gyors előtérmodellnek csak alacsony késleltetéssel kell hallgatnia, válaszolnia és fenntartania a beszélgetést; a lassú háttérmodell végzi a következtetést, a tervezést és az eszközhívásokat. Amikor megjelenik egy erősebb következtető modell, elég a háttérmodellt cserélni, nem kell az egész valós idejű hangrendszert újratanítani. Az egyesített megoldás ugyanahhoz a tanítási ciklushoz köti a következtetést és az interakciót, ezért minden frissítésnél újra egyensúlyba kell hozni az intelligenciát, a válaszkésleltetést és a kifejezés természetességét. A gyors/lassú szétválasztás tehát nem pusztán a késleltetés miatti kompromisszum, hanem moduláris döntés, amelyben az interakciós képesség és az intelligencia felső határa külön fejlődhet.
+
+Ez a szétválasztás nem feltétlenül rontja a feladatteljesítményt sem. 2026 augusztusában a gyors/lassú architektúrát használó Pine AI hangügynöke az első helyen állt a τ³-Voice Leaderboardon, megelőzve többek között a Grok Voice és a GPT-Realtime-2 rendszereket. Ez az eredmény legalább azt mutatja, hogy a mély következtetést és a valós idejű beszélgetést egyszerre mérő feladatokban a szétcsatolt architektúra nem eleve gyengébb a végponttól végpontig tartó modelleknél.[^ch6-17]
+
+[^ch6-17]: Pine AI. “The Most Natural Human-Computer Interface Is Your Voice.” 2026-06-23 (frissítve: 2026-08-06). https://www.19pine.ai/blog/pine-ai-the-most-natural-human-computer-interface-is-your-voice
+
+Pontosítani kell, hogy a „végponttól végpontig tartó modell" kifejezést gyakran két értelemben használják. Az első az előző szakaszban tárgyalt **végponttól végpontig tartó hangút**: a modell közvetlenül hangot fogad és hangot állít elő, nem pedig diszkrét szövegen keresztül kapcsol össze több modellt. Az Omni és az Interaction Model ebben az értelemben egyaránt végponttól végpontig tartó, de az Omni rendszerint köralapú marad, míg az Interaction Model egyszerre tud hallgatni és beszélni; architektúrájuk jelentősen eltér. A második az ebben a szakaszban tárgyalt **végponttól végpontig tartó kognitív architektúra**: a valós idejű interakció és a mély gondolkodás egyetlen modellen belül közös állapotot használva együtt tanul-e, vagy egy gyors előtérmodell és egy lassú háttérmodell között oszlik meg. A két tengely független. Egy rendszer hangútja lehet végponttól végpontig tartó úgy, hogy kognitív architektúrája megtartja a gyors/lassú szétválasztást; ilyen kombináció, amikor a Thinking Machines Lab a bonyolult feladatokat háttérben futó következtető modellre bízza.
 
 ### Emberibb beszédszintézis
 
@@ -459,7 +469,7 @@ Az Anthropic referencia-megvalósítása három eszköztípusra bontja a teljes 
 
 ### Vizuális Helymeghatározás
 
-A ciklus minden iterációjában a modellnek pontosan meg kell találnia a cél elemet a képernyőképen — "Hol van a keresőmező?" "Mik a beküldő gomb koordinátái?" Ez a vizuális helymeghatározás problémája. Jelenleg "két fő megközelítés" létezik: az egyik a lokalizációt "többválasztásos problémává" alakítja — először számokkal annotáljuk a felületi elemeket, a modellnek csak ki kell választania egyet; a másik a "tiszta koordináta előrejelzés" — hagyjuk, hogy a modell "nézze" a képernyőképet, és közvetlenül adjon meg koordinátákat, akár egy ember. A többválasztásos megközelítésnek két implementációs módja van: "tiszta vizuális annotáció" (az eredeti Set-of-Mark, egy szegmentációs modell használatával a képen lévő jelölt régiók szegmentálására) és "strukturált elemindexálás" (DOM/Accessibility Tree, a felület eredeti struktúrájának közvetlen olvasása). A többválasztásos megközelítés közös előnye, hogy a "keresd meg a gombot a képernyőképen és jelezd előre a koordinátáit" nyílt végű problémát egy "válassz egyet a már annotált elemek közül" zárt végű problémává alakítja — ahogy a többválasztásos kérdésekre könnyebb helyesen válaszolni, mint a kitöltendő kérdésekre egy vizsgán, a modellnek csak annyit kell mondania, hogy "kattints [123]-ra" ahelyett, hogy "kattints a kék gombra, körülbelül 200 pixellel a képernyő bal felső sarkától jobbra".
+A ciklus minden iterációjában a modellnek pontosan meg kell találnia a cél elemet a képernyőképen — "Hol van a keresőmező?" "Mik a beküldő gomb koordinátái?" Ez a vizuális helymeghatározás problémája. Jelenleg "két fő megközelítés" létezik: az egyik a lokalizációt "többválasztásos problémává" alakítja — először számokkal annotáljuk a felületi elemeket, a modellnek csak ki kell választania egyet; a másik a "tiszta koordináta előrejelzés" — hagyjuk, hogy a modell "nézze" a képernyőképet, és közvetlenül adjon meg koordinátákat, akár egy ember. A többválasztásos megközelítésnek két implementációs módja van: "tiszta vizuális annotáció" (az eredeti Set-of-Mark, egy szegmentációs modell használatával a képen lévő jelölt régiók szegmentálására) és "strukturált elemindexálás" (DOM/Accessibility Tree, a felület eredeti struktúrájának közvetlen olvasása). A többválasztásos megközelítés közös előnye, hogy a "keresd meg a gombot a képernyőképen és jelezd előre a koordinátáit" nyílt végű problémát egy "válassz egyet a már annotált elemek közül" zárt végű problémává alakítja. Ahogy egy vizsgán a többválasztásos kérdésekre könnyebb helyesen válaszolni, mint a kitöltendőkre, a modellnek is elég annyit mondania, hogy "kattints [123]-ra" ahelyett, hogy "kattints a képernyő (350, 464) pontján lévő gombra". A koordináták kiadása különösen nagy kihívás a modell számára: sok tanítás kell ahhoz, hogy pontos legyen, ráadásul eltérő képernyőfelbontásokon könnyen hibázik.
 
 **Set-of-Mark: Vizuális Annotációs Módszer.**
 
@@ -467,7 +477,7 @@ Az eredeti Set-of-Mark (SoM) a Microsoft Research által 2023-ban javasolt, kezd
 
 **Strukturált Elemindexálás: Az SoM-ötlet strukturált implementációja a weben.**
 
-Amikor a felület maga biztosít strukturált információt, az annotáció pontosabb lehet. A modern weboldalak a renderelés előtt meghatároznak egy teljes elemstruktúrát (a DOM fát) és szemantikus szerepeket, amelyek azonosítják a gombokat, beviteli mezőket és más vezérlőket. Az akadálymentesítési fák hasonló információt nyújtanak sok asztali alkalmazáshoz. Ahelyett, hogy egy szegmentációs modellt kérnénk meg, hogy pixel alapján találja ki, melyik régió egy gomb, a rendszer közvetlenül lekérdezheti a felületről a kattintható elemeket. A webes ügynökrendszerek, mint a `browser-use`, pontosan ezt teszik: felsorolják és számozzák az interaktív elemeket a DOM-ból. Ez az SoM-ötlet strukturált implementációja a web számára (6-13. ábra). A folyamat négy lépésből áll:
+Amikor a felület maga biztosít strukturált információt, az annotáció pontosabb lehet. A modern weboldalak a renderelés előtt meghatároznak egy teljes elemstruktúrát (a DOM fát) és szemantikus szerepeket, amelyek azonosítják a gombokat, beviteli mezőket és más vezérlőket. Az akadálymentesítési fák hasonló információt nyújtanak sok asztali alkalmazáshoz. A webes ügynökrendszerek, mint a `browser-use`, pontosan ezt teszik: felsorolják és számozzák az interaktív elemeket a DOM-ból. Ez az SoM-ötlet strukturált implementációja a web számára (6-13. ábra). A folyamat négy lépésből áll:
 
 1. A strukturált reprezentáció (DOM fa) és akadálymentesítési információk lekérése a böngésző hibakereső felületén keresztül (CDP, Chrome DevTools Protocol)
 2. Automatikusan érzékelni, hogy mely elemek interaktívak (gombok, beviteli mezők, linkek stb.)
@@ -508,7 +518,7 @@ A három út közötti választás a következőképpen foglalható össze: **ha
 
 A Computer Use érzékelése eddig egy hallgatólagos feltételezésre épült: **a képernyő áll**—képernyőkép, egy lépés átgondolása, kattintás, majd újabb kép. A valós képernyők videót játszanak, felvillanó értesítéseket és értekezletek hangját közvetítik. Egy ügynök, amely csak 3–5 másodpercenként nyitja ki a szemét, és nincs füle, nem látja és nem hallja, mi történik két képkocka között.
 
-Nem a cselekvési, hanem a **megfigyelési interfészt** kell újratervezni[^ch6-9]. Az ügynök–számítógép megfigyelési interfész (AOI) a környezet folyamatos megfigyelését a modell számára kezelhető diszkrét eseményekké alakítja. Fő technikái: **képkockák közötti kulcskép-rögzítés**, amely átugorja a szinte változatlan képet, és kis modellel csak a jelentős változásokat tartja meg; **hangerővezérelt beszédátírás**, amely csak hang esetén fut; valamint **a képkockák szöveges leírása**, amely az eredeti kép kontextusból való törlése után is megmarad, tömörítve a multimodális előzményt.
+Nem a cselekvési, hanem a **megfigyelési interfészt** kell újratervezni[^ch6-9]. Az ügynök–számítógép megfigyelési interfész (AOI) a környezet folyamatos megfigyelését a modell számára kezelhető diszkrét eseményekké alakítja. Fő technikái: **a képernyő kulcskép-alapú rögzítése**, amelynél egy kis modell dönti el, hogy a képernyő jelentősen megváltozott-e, és csak jelentős változáskor készül képernyőkép — gyakori változás esetén már a másodpercenként egyszeri képernyőkép is jó eredményt ad; **hangerővezérelt beszédátírás**, amely hang esetén meghívja a beszédfelismerést, és a felismert szöveget a kontextusba helyezi, hogy az Agent hallhasson; valamint **a képernyő szöveges leírása**, amelynél a modell egyetlen mondatban írja le az elkapott képernyőképet, így az eredeti kép kontextusból való törlése után is a kontextusban marad ez a mondat, tömörítve a multimodális interakciós előzményt.
 
 [^ch6-9]: Lásd Li, Bojie and Noah Shi. *Agent-Computer Observation Interfaces Enable Dynamic Computer Use.* arXiv:2606.29472, 2026.
 

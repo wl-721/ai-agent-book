@@ -395,6 +395,23 @@ Workflow kalıbının iki temel avantajı vardır. Birincisi, **sıkı süreç k
 
 Bir workflow'un başlıca sınırlaması **esneklik eksikliğidir**. Akışın hiç öngörmediği bir şey olduğunda—kullanıcı ödeme sırasında rezervasyonu değiştirmeye karar verir, ya da bir uçuş aniden iptal edilir ve alternatif önerilmesi gerekir—sabit yol uyum sağlayamaz; yapabileceği tek şey önceden belirlenmiş bir istisna dalını izlemek ya da kontrolü bir insana geri vermektir.
 
+En basit workflow örneğini ele alalım: **metinden görüntüye üretim (text-to-image)**. Kullanıcının ihtiyacı genellikle günlük dilde tek bir cümledir, örneğin "AGI gerçekleştikten sonra programcıların çalışma sahnesini çiz"; oysa Stable Diffusion gibi metinden görüntüye modeller yalnızca belirli bir tarzdaki prompt'ları kabul eder—virgülle ayrılmış İngilizce etiketler, kalite sözcükleri, negatif prompt'lar. Bu yüzden workflow, kullanıcı ile görüntü üretim modeli arasına iki sabit düğüm yerleştirir:
+
+1. **Prompt yeniden yazımı**—kullanıcının doğal dil isteğini metinden görüntüye modelin alışık olduğu prompt formatına dönüştürmek için bir LLM kullanılır. Yukarıdaki örnekte "AGI gerçekleştikten sonra programcıların çalışma sahnesi" çok geniş bir istektir, bu yüzden LLM'in önce ciddi biçimde düşünmesi gerekir (örneğin, "AGI gerçekleştikten sonra programcıların kod yazmasına gerek kalmayacak, bu yüzden sahilde güneşlenen ve beyin-bilgisayar arayüzüyle AI çalışanları yöneten bir programcı çizilmeli"), ardından somut bir sahne tanımı verir.
+2. **Görüntü üretimi**—yeniden yazılan prompt ile metinden görüntüye model çağrılır ve görüntü elde edilir.
+
+Yürütme yolu kodla sabitlenmiştir. Bu workflow'daki LLM düğümünün yaptığı şey **çeviridir**—insan dilini aracın anlayabileceği girdi formatına dönüştürür; var olma nedeni, metinden görüntüye modelin "insan dilini anlamaması"dır. Bir aracın (veya modelin) yetenek açığını bu şekilde yamayan Harness koduna **uyarlama katmanı** (adaptation layer) demek yerinde olur.
+
+Ama görüntü üretim aracını **yerli görüntü üretimi** (native image generation) yeteneğine sahip çok modlu bir modelle değiştirirseniz—örneğin Nano Banana 2, GPT-Image 2—prompt yeniden yazımına artık gerek kalmaz. Kullanıcı nasıl ifade ederse etsin, model kendisi anlar ve doğrudan görüntü üretir.
+
+> **Deney 1-4 ★: Metinden Görüntüye Workflow ile Yerli Görüntü Üretiminin Karşılaştırılması**
+>
+> Aynı günlük dil isteğini iki rotadan geçirin. **Workflow rotası**: LLM önce isteği Stable Diffusion tarzı bir prompt'a yeniden yazar, ardından metinden görüntüye modeli çağırarak görüntü üretir; **yerli rota**: cümleyi olduğu gibi yerli görüntü üretimini destekleyen çok modlu bir modele (örn. GPT-Image 2) gönderin, tek çağrıyla doğrudan görüntü alın.
+>
+> Karşılaştırın: prompt yeniden yazım düğümü orijinal isteği nasıl bir şeye dönüştürdü ve iki rotanın ürettiği görüntülerden hangisi orijinal isteğe daha yakın. İki tür isteği karşılaştırmaya değer: biri somut betimlemeli (örneğin poster metni belirtilmiş); diğeri geniş kapsamlı (örneğin yukarıdaki AGI çalışma sahnesi)—bu tür isteklerde workflow rotasının hâlâ kendi avantajları olabilir.
+
+Bu deney şunu gösterir: **Harness'te modelin yetenek açıklarını yamayan parçalar, model güçlendikçe modelin kendisi tarafından içselleştirilir.** Yalnızca bu kitabın birinci bölümünde bile bu birkaç tur yaşandı: few-shot örnekleri ve "adım adım düşünelim" tarzı prompt teknikleri, instruction tuning ve reasoning modelleri tarafından içselleştirildi; çıktı formatı onarımı ve JSON ayrıştırma toleransı, structured output ve yerli tool calling tarafından içselleştirildi; metinden görüntüye prompt yeniden yazımı ise modelin yerli çok modlu anlama ve üretme yeteneği tarafından yutuldu. Her içselleştirme turunun yok ettiği şey, "çeviri" ve "iskele" (scaffolding) türü uyarlama katmanı kodudur.
+
 #### Autonomous Agent: Dinamik Otonom Karar Alma
 
 Bir workflow'un sabit yolu yetersiz kaldığında, bir **autonomous Agent'a** ihtiyaç duyarız. Autonomous Agent ile workflow arasındaki temel fark, yürütme yolunun önceden tanımlanmamış olması, bunun yerine **ortam geri bildirimine** dayanarak Agent tarafından gerçek zamanlı belirlenmesidir.
@@ -423,7 +440,7 @@ Aşağıdaki tablo, okuyucuların kendi senaryoları için doğru olanı hızla 
 
 | Çerçeve/Platform | Temel Konumlandırma | Orkestrasyon Kalıbı | Geliştirme Yaklaşımı | Uygulanabilir Senaryolar |
 |-------------------|--------------------|----------------|----------------|-------------------------|
-| **OpenAI Agents SDK** | Hafif Agent geliştirme kütüphanesi | Autonomous (araç döngüsü) | Kod öncelikli | Hızlı prototipleme, tek Agent'lı uygulamalar |
+| **Codex Harness** | Codex'i çalıştıran açık kaynaklı Agent çalışma zamanı | Autonomous | Kod öncelikli, kendi uygulamanıza gömülebilir | Coding Agent, Agent'ı kendi ürününüze gömme |
 | **Claude Agent SDK** | Üretim düzeyinde Agent geliştirme çerçevesi | Autonomous (araç döngüsü + alt Agent'lar) | Kod öncelikli | Karmaşık otonom görevler, Kodlama Agent'ı |
 | **LangChain / LangGraph** | Genel amaçlı LLM uygulama çerçevesi | Workflow + Autonomous | Kod öncelikli | Karmaşık düşünce zincirleri, çok adımlı workflow'lar |
 | **n8n** | Görsel workflow otomasyonu | Workflow + Autonomous | Düşük kod (görsel sürükle-bırak) | İş otomasyonu, teknik olmayan ekipler |
@@ -432,6 +449,10 @@ Aşağıdaki tablo, okuyucuların kendi senaryoları için doğru olanı hızla 
 | **OpenClaw** | Açık kaynak hepsi bir arada kişisel Agent | Autonomous + Olay güdümlü | Yapılandırma + Kod (self-hosted) | Kişisel asistan, Deep Research, Computer Use, çok platformlu mesaj entegrasyonu |
 | **DeepSeek Harness** | Agent öz-evrim çerçevesi | Her şey bir eklentidir | Kod öncelikli, kolay özelleştirme | Agent geliştiricileri, araştırmacılar |
 | **Pi** | Minimal Coding Agent çerçevesi | Otonom | Kod öncelikli, kolay özelleştirme | Agent geliştiricileri |
+
+Tablodaki ilk iki satır ayrıca açıklanmayı hak ediyor. Codex, OpenAI'nin Coding Agent ürünüdür (uygulama, CLI, IDE eklentisi); Codex Harness ise bu biçimlerin hepsini çalıştıran çalışma zamanı katmanıdır[^ch1-codex-harness]. Codex Harness üç entegrasyon yolu sunar: `codex exec` betiklerdeki ve CI'daki tek seferlik işler için uygundur; Codex SDK, görevleri başlatan, sürdüren ve akış hâlinde işleyen üçüncü taraf uygulama kodu için uygundur; app-server ise JSON-RPC protokolü üzerinden kalıcı oturumlar, olay akışları ve onay geri çağırmaları sağladığından Agent'ı doğrudan ürünün içine koymaya uygundur. Claude Agent SDK ile Claude Code arasında da benzer bir ilişki vardır; fark şu ki Claude tarafında dışarıya açılan SDK arayüzüdür, Harness'ın uygulamasının kendisi açık kaynak değildir.
+
+[^ch1-codex-harness]: OpenAI. "Codex as a platform: build on the open agent harness", Ağustos 2026.
 
 Agent çerçeveleri hızla gelişir. Siz bu kitabı okurken bunların bazıları eskimiş, yeni çerçeveler popülerleşmiş olabilir. Bu yüzden belirli bir çerçevenin API'sini öğrenmek önemli değildir. Seçimde asıl ölçüt çerçevenin karmaşıklığı değil, iş mantığına odaklanmanızı sağlayacak kadar ince bir soyutlama katmanı sunup sunmadığıdır.
 

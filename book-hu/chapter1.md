@@ -392,6 +392,23 @@ A munkafolyamat mintának két alapvető előnye van. Először is, "szigorú fo
 
 A munkafolyamat fő korlátja a "rugalmasság hiánya". Amikor egy nem várt esemény következik be – például a felhasználó megváltoztatja a foglalást a fizetés során, vagy egy járatot törölnek, és a rendszernek alternatívát kell ajánlania –, a rögzített útvonal nem tud önállóan alkalmazkodni; csak egy előre beállított kivételágat követhet, vagy átadhatja a vezérlést egy emberi kezelőnek.
 
+Vegyünk egy lehető legegyszerűbb munkafolyamat-példát: a **szövegből kép generálást** (text-to-image). A felhasználó igénye gyakran egyetlen hétköznapi mondat, például „rajzolj nekem egy jelenetet a programozók munkájáról az AGI megvalósulása után"; az olyan szöveg-kép modellek, mint a Stable Diffusion azonban csak meghatározott stílusú promptokat fogadnak el – vesszővel elválasztott angol címkéket, minőségi szavakat és negatív promptokat. Ezért a munkafolyamatnak két rögzített csomópontot kell elhelyeznie a felhasználó és a képgeneráló modell közé:
+
+1. **Prompt-átírás** – LLM-mel írjuk át a felhasználó természetes nyelvű igényét a szöveg-kép modell által megszokott promptformátumra. A fenti példában „a programozók munkája az AGI megvalósulása után" nagyon tág igény, ezért az LLM-nek alaposan végig kell gondolnia a feladatot (például: „az AGI megvalósulása után a programozóknak már nem kell kódot írniuk, ezért egy programozót kell megrajzolni, amint a tengerparton napozik, és agy-gép interfészen keresztül irányítja az AI-alkalmazottait"), majd konkrét jelenetleírást kell adnia.
+2. **Képgenerálás** – az átírt prompttal hívjuk meg a szöveg-kép modellt, és megkapjuk a képet.
+
+A végrehajtási útvonal kódban van rögzítve. Az ebben a munkafolyamatban szereplő LLM-csomópont **fordítást** végez: az emberi nyelvet az eszköz által érthető bemeneti formátumra alakítja, és azért létezik, mert a szöveg-kép modell „nem érti az emberi nyelvet". Az ilyen, kifejezetten egy eszköz (vagy modell) képességbeli hiányosságait foltozó Harness-kódot nevezhetjük **adapterrétegnek**.
+
+Ha azonban a képgeneráló eszközt egy **natív képgenerálási** képességgel rendelkező multimodális modellre cseréljük – például Nano Banana 2-re vagy GPT-Image 2-re –, már nincs szükség prompt-átírásra. Akárhogyan is fogalmaz a felhasználó, a modell maga is megérti a kérést, és közvetlenül legenerálja a képet.
+
+> **1-4. kísérlet ★: Szöveg-kép munkafolyamat és natív képgenerálás összevetése**
+>
+> Ugyanazt a hétköznapi nyelven megfogalmazott igényt futtassuk végig két útvonalon. **Munkafolyamat-útvonal**: az LLM először Stable Diffusion-stílusú prompttá írja át az igényt, majd meghívja a szöveg-kép modellt a kép elkészítéséhez; **natív útvonal**: a mondatot változatlan formában elküldjük egy natív képgenerálást támogató multimodális modellnek (például GPT-Image 2-nek), amely egyetlen hívással közvetlenül képet ad.
+>
+> Vessük össze: mit csinált a prompt-átíró csomópont az eredeti igénnyel, és melyik útvonal képe áll közelebb az eredeti igényhez. Érdemes két igénytípusra külön elvégezni az összevetést: az egyik a konkrétan leírt igény (például megadott plakátszöveg), a másik a tág igény (például a fenti AGI-s munkajelenet); ez utóbbi esetében a munkafolyamat-útvonalnak továbbra is lehetnek saját előnyei.
+
+Ez a kísérlet azt mutatja: **a Harness azon részeit, amelyek a modell képességbeli hiányosságait foltozzák, a modell erősödésével maga a modell interiorizálja**. Már a könyv első fejezetében is több ilyen kör lejátszódott: a few-shot példákat és a „gondolkodjunk lépésről lépésre"-féle prompttrükköket az instrukció-finomhangolás és az érvelő modellek interiorizálták; a kimeneti formátum javítását és a JSON-elemzés hibatűrését a strukturált kimenet és a natív eszközhívás interiorizálta; a szöveg-kép prompt-átírást pedig a modell natív multimodális megértési és generálási képessége nyelte el. Minden interiorizálási kör éppen a „fordítás" és az „állványzat" (scaffolding) jellegű adapterréteg-kódot szünteti meg.
+
 #### Autonóm ügynök: Futásidőbeli döntéshozatal
 
 Amikor a munkafolyamat rögzített útvonala nem elegendő, "autonóm ügynökre" (autonomous Agent) van szükségünk. Az autonóm ügynök és a munkafolyamat közötti alapvető különbség az, hogy a végrehajtási útvonal nem előre meghatározott, hanem futásidőben az ügynök határozza meg "környezeti visszajelzések" alapján.
@@ -420,7 +437,7 @@ Az alábbi táblázat összefoglalja a széles körben használt ügynökkeretre
 
 | Keretrendszer/platform | Alapvető rendeltetés | Összehangolási minta | Fejlesztési mód | Alkalmazási terület |
 |---|---|---|---|---|
-| **OpenAI Agents SDK** | Könnyű ügynökfejlesztési könyvtár | Autonóm | Kódközpontú | Gyors prototípusok, együgynökös alkalmazások |
+| **Codex Harness** | A Codexet hajtó nyílt forráskódú Agent-futtatókörnyezet | Autonóm | Kódközpontú, saját alkalmazásba ágyazható | Coding Agent, Agent beépítése saját termékbe |
 | **Claude Agent SDK** | Éles üzemi ügynökfejlesztési keretrendszer | Autonóm | Kódközpontú | Összetett autonóm feladatok, Coding Agentek |
 | **LangChain / LangGraph** | Általános LLM-alkalmazáskeret | Munkafolyamat + autonóm | Kódközpontú | Összetett gondolatmenetek, többlépéses munkafolyamatok |
 | **n8n** | Vizuális munkafolyamat-automatizálás | Munkafolyamat + autonóm | Low-code | Üzleti automatizálás, nem műszaki csapatok |
@@ -429,6 +446,10 @@ Az alábbi táblázat összefoglalja a széles körben használt ügynökkeretre
 | **OpenClaw** | Nyílt forrású, általános személyes ügynök | Autonóm + eseményvezérelt | Konfiguráció + kód | Személyi asszisztens, Deep Research, Computer Use, többplatformos üzenetkezelés |
 | **DeepSeek Harness** | Ügynök-önevolúciós keretrendszer | Minden bővítmény | Kódközpontú, könnyen testreszabható | Ügynökfejlesztők, kutatók |
 | **Pi** | Minimális Coding Agent keretrendszer | Autonóm | Kódközpontú, könnyen testreszabható | Ügynökfejlesztők |
+
+A táblázat első két sora külön magyarázatot érdemel. A Codex az OpenAI Coding Agent terméke (alkalmazás, CLI, IDE-bővítmény), a Codex Harness pedig az a futtatókörnyezeti réteg, amely mindezeket a formákat hajtja[^ch1-codex-harness]. A Codex Harness három integrációs utat kínál: a `codex exec` a szkriptekben és CI-ben futó egyszeri feladatokhoz való; a Codex SDK olyan harmadik féltől származó alkalmazáskódhoz, amely feladatokat indít, folytat és folyamatosan dolgoz fel; az app-server pedig JSON-RPC protokollon keresztül nyújt tartós munkameneteket, eseményfolyamokat és jóváhagyási visszahívásokat, ami akkor jó, ha az Agentet közvetlenül a termékbe építed. A Claude Agent SDK és a Claude Code is hasonló viszonyban áll egymással, azzal a különbséggel, hogy a Claude oldalán az SDK felülete nyílik meg kifelé, magának a Harnessnek az implementációja nem nyílt forráskódú.
+
+[^ch1-codex-harness]: OpenAI. "Codex as a platform: build on the open agent harness", 2026. augusztus.
 
 Az ügynök-keretrendszerek gyorsan változnak. Mire ezt a könyvet olvasod, némelyikük már elavult lehet, és új keretek válhatnak népszerűvé. Ezért egy adott keretrendszer API-jának megtanulása önmagában nem fontos. Választáskor nem a keret bonyolultsága a döntő, hanem az, hogy elég vékony absztrakcióval hagy-e az üzleti logikára összpontosítani.
 

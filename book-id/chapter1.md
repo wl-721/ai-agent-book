@@ -392,6 +392,23 @@ Pola workflow memiliki dua keunggulan inti. Pertama, **kontrol proses yang ketat
 
 Keterbatasan utama dari workflow adalah **kurangnya fleksibilitas (lack of flexibility)**. Ketika suatu peristiwa yang tak terduga terjadi—sebagai contoh, pengguna mengubah pemesanan di tengah-tengah pembayaran, atau penerbangan dibatalkan dan sistem perlu merekomendasikan alternatif lain—jalur tetap tersebut tidak dapat beradaptasi sendiri; ia hanya dapat mengikuti cabang pengecualian (preset exception branch) yang telah disetel sebelumnya atau mengembalikan kendali kepada manusia (hand control back to a human).
 
+Mari ambil contoh workflow yang paling sederhana: **text-to-image** (teks-ke-gambar). Kebutuhan pengguna sering kali hanyalah satu kalimat bahasa sehari-hari, misalnya "gambarkan suasana kerja programmer setelah AGI tercapai"; namun model text-to-image seperti Stable Diffusion hanya menerima prompt dengan gaya tertentu—tag berbahasa Inggris yang dipisahkan koma, kata kunci kualitas, dan prompt negatif. Jadi workflow harus menyisipkan dua node tetap di antara pengguna dan model pembuat gambar:
+
+1.  **Penulisan ulang prompt**—menggunakan LLM untuk menulis ulang kebutuhan bahasa alami pengguna ke dalam format prompt yang biasa dipahami model text-to-image. Untuk contoh di atas, "suasana kerja programmer setelah AGI tercapai" adalah kebutuhan yang sangat luas, sehingga LLM juga harus berpikir dengan saksama (misalnya, "setelah AGI tercapai, programmer tidak perlu lagi menulis kode, jadi gambarlah seorang programmer yang sedang berjemur di pantai sambil mengarahkan karyawan AI melalui antarmuka otak-komputer"), lalu memberikan deskripsi adegan yang konkret.
+2.  **Pembuatan gambar**—memanggil model text-to-image dengan prompt yang telah ditulis ulang untuk mendapatkan gambar.
+
+Jalur eksekusinya ditetapkan di dalam kode. Node LLM dalam workflow ini melakukan **penerjemahan**, yaitu mengubah bahasa manusia menjadi format input yang dapat dipahami tool; ia ada karena model text-to-image "tidak memahami bahasa manusia". Kode Harness yang secara khusus menambal kekurangan kapabilitas tool (atau model) semacam ini dapat disebut **lapisan adaptasi (adaptation layer)**.
+
+Namun jika tool pembuat gambar diganti dengan model multimodal yang memiliki kapabilitas **native image generation** (pembuatan gambar native), misalnya Nano Banana 2 atau GPT-Image 2, penulisan ulang prompt tidak lagi diperlukan. Bagaimana pun pengguna menyusun kalimatnya, model dapat memahaminya sendiri dan langsung menghasilkan gambar.
+
+> **Eksperimen 1-4 ★: Perbandingan Workflow Text-to-Image dengan Native Image Generation**
+>
+> Jalankan satu kalimat kebutuhan bahasa sehari-hari yang sama melalui dua rute. **Rute workflow**: LLM pertama-tama menulis ulang kebutuhan tersebut menjadi prompt bergaya Stable Diffusion, lalu memanggil model text-to-image untuk menghasilkan gambar; **rute native**: kirimkan kalimat itu apa adanya ke model multimodal yang mendukung native image generation (misalnya GPT-Image 2), dan hasilkan gambar langsung dalam satu panggilan.
+>
+> Bandingkan: seperti apa bentuk kebutuhan asli setelah diubah oleh node penulisan ulang prompt, dan gambar dari rute mana yang lebih dekat dengan kebutuhan asli. Ada baiknya membandingkan dua jenis kebutuhan: satu yang mendeskripsikan hal konkret (misalnya poster dengan copywriting yang telah ditentukan); dan satu lagi yang luas (misalnya suasana kerja AGI di atas)—untuk kebutuhan jenis ini, rute workflow mungkin masih memiliki keunggulannya sendiri.
+
+Eksperimen ini menunjukkan: **bagian-bagian Harness yang menambal kekurangan kapabilitas model akan diinternalisasi oleh model itu sendiri seiring model menjadi lebih kuat**. Hanya dalam Bab 1 buku ini saja, hal semacam itu sudah terjadi beberapa kali: in-context examples few-shot dan teknik prompt seperti "mari berpikir selangkah demi selangkah" diinternalisasi oleh instruction tuning dan reasoning model; perbaikan format output dan toleransi kesalahan parsing JSON diinternalisasi oleh structured output dan native tool calling; penulisan ulang prompt untuk text-to-image ditelan oleh kapabilitas pemahaman dan generasi multimodal native model. Setiap putaran internalisasi menyingkirkan kode lapisan adaptasi jenis "penerjemahan" dan "scaffolding".
+
 #### Agen Otonom (Autonomous Agent): Pengambilan Keputusan saat Runtime
 
 Ketika jalur tetap (fixed path) dari sebuah workflow tidak mencukupi, kita memerlukan **autonomous Agent (Agent otonom)**. Perbedaan inti antara autonomous Agent dan workflow adalah bahwa jalur eksekusinya tidak ditentukan sebelumnya (not predefined) melainkan ditentukan saat runtime (waktu berjalan) oleh Agent berdasarkan **environmental feedback (umpan balik lingkungan)**.
@@ -420,7 +437,7 @@ Tabel berikut ini merangkum kerangka kerja dan platform Agent yang banyak diguna
 
 | Framework/Platform | Posisi Inti | Pola Orkestrasi | Cara Pengembangan | Skenario yang Sesuai |
 |---|---|---|---|---|
-| **OpenAI Agents SDK** | Library pengembangan Agent ringan | Otonom | Code-first | Prototipe cepat, aplikasi satu Agent |
+| **Codex Harness** | Runtime Agent sumber terbuka yang menjalankan Codex | Otonom | Code-first, dapat ditanam di aplikasi sendiri | Coding Agent, menanam Agent ke produk sendiri |
 | **Claude Agent SDK** | Framework pengembangan Agent kelas produksi | Otonom | Code-first | Tugas otonom kompleks, Coding Agent |
 | **LangChain / LangGraph** | Framework aplikasi LLM umum | Workflow + otonom | Code-first | Rantai penalaran kompleks, workflow multi-langkah |
 | **n8n** | Otomasi workflow visual | Workflow + otonom | Low-code | Otomasi bisnis, tim nonteknis |
@@ -429,6 +446,10 @@ Tabel berikut ini merangkum kerangka kerja dan platform Agent yang banyak diguna
 | **OpenClaw** | Agent personal serbaguna open-source | Otonom + berbasis event | Konfigurasi + kode | Asisten personal, Deep Research, Computer Use, pesan multiplatform |
 | **DeepSeek Harness** | Framework evolusi mandiri Agent | Semuanya adalah plugin | Code-first, mudah dikustomisasi | Developer Agent, peneliti |
 | **Pi** | Framework Coding Agent minimal | Otonom | Code-first, mudah dikustomisasi | Developer Agent |
+
+Dua baris pertama pada tabel perlu diperjelas tersendiri. Codex adalah produk Coding Agent dari OpenAI (App, CLI, ekstensi IDE), dan Codex Harness adalah lapisan runtime yang menjalankan semua bentuk tersebut[^ch1-codex-harness]. Codex Harness menyediakan tiga jalur integrasi: `codex exec` cocok untuk tugas sekali jalan di skrip dan CI; Codex SDK cocok untuk kode aplikasi pihak ketiga yang memulai, melanjutkan, dan memproses tugas secara streaming; sedangkan app-server menyediakan sesi persisten, aliran peristiwa, dan callback persetujuan melalui protokol JSON-RPC, sehingga cocok untuk menanam Agent langsung ke dalam produk. Claude Agent SDK dan Claude Code memiliki hubungan serupa, bedanya yang dibuka ke publik di sisi Claude adalah antarmuka SDK, sedangkan implementasi Harness-nya sendiri tidak bersumber terbuka.
+
+[^ch1-codex-harness]: OpenAI. "Codex as a platform: build on the open agent harness", Agustus 2026.
 
 Framework Agent berkembang dengan cepat. Saat Anda membaca buku ini, sebagian mungkin sudah usang dan framework baru telah populer. Karena itu, mempelajari API satu framework tertentu bukanlah hal yang penting. Saat memilih, pertimbangan utamanya bukan kecanggihan framework, melainkan apakah lapisan abstraksinya cukup tipis sehingga Anda dapat berfokus pada logika bisnis.
 

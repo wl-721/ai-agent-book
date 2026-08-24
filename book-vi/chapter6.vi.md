@@ -74,7 +74,7 @@ Nếu bạn dựa vào việc bỏ phiếu theo lịch trình của Heartbeat—
 
 Giải pháp của PineClaw là giới thiệu **Cơ chế kênh** - thiết lập kênh sự kiện thời gian thực giữa OpenClaw's Gateway và Pine API. Khi các sự kiện chính như cuộc gọi được kết nối, yêu cầu đầu vào của người dùng và cuộc gọi kết thúc, tin nhắn sẽ ngay lập tức được đẩy tới OpenClaw Agent. Agent ngay lập tức xử lý và thông báo cho người dùng, đồng thời độ trễ phản hồi giảm từ vài phút xuống còn vài giây.
 
-Trường hợp này cho thấy giá trị cốt lõi của kiến trúc hướng sự kiện đối với khung Agent: **"Dịch vụ đang hoạt động" thực sự không chỉ yêu cầu Agent thường xuyên kiểm tra thế giới mà còn yêu cầu thế giới chủ động thông báo cho Agent**. Mô hình hóa thống nhất tất cả đầu vào - thông báo của người dùng, trả về công cụ, lệnh gọi lại bên ngoài, trình kích hoạt theo thời gian - dưới dạng luồng sự kiện và thúc đẩy suy nghĩ và hành động của Agent thông qua các vòng sự kiện, là nền tảng kiến trúc để đạt được mục tiêu này. Theo kiến trúc này, phần sau đây trước tiên sẽ giới thiệu hai loại công cụ liên quan trực tiếp đến các sự kiện, cũng như danh tính ảo và môi trường thực thi biệt lập hỗ trợ hành động độc lập của Agent, sau đó thảo luận về thiết kế cụ thể của cơ chế xử lý sự kiện.
+Trường hợp này cho thấy giá trị cốt lõi của kiến trúc hướng sự kiện đối với khung Agent: **"Dịch vụ đang hoạt động" thực sự không chỉ yêu cầu Agent thường xuyên kiểm tra sự kiện mà còn yêu cầu sự kiện chủ động thông báo cho Agent**. Mô hình hóa thống nhất tất cả đầu vào - thông báo của người dùng, trả về công cụ, lệnh gọi lại bên ngoài, trình kích hoạt theo thời gian - dưới dạng luồng sự kiện và thúc đẩy suy nghĩ và hành động của Agent thông qua các vòng sự kiện, là nền tảng kiến trúc để đạt được mục tiêu này. Theo kiến trúc này, phần sau đây trước tiên sẽ giới thiệu hai loại công cụ liên quan trực tiếp đến các sự kiện, cũng như danh tính ảo và môi trường thực thi biệt lập hỗ trợ hành động độc lập của Agent, sau đó thảo luận về thiết kế cụ thể của cơ chế xử lý sự kiện.
 
 ### Công cụ kích hoạt sự kiện
 
@@ -315,14 +315,12 @@ Bài giới thiệu GPT-Live của OpenAI nêu ba mô hình tương tác bằng 
 | Mô hình | Cấu trúc cốt lõi | Ưu điểm chính | Hạn chế chính |
 | --- | --- | --- | --- |
 | Cascade | VAD → ASR → LLM → TTS | Mô-đun rõ ràng, dễ thay thế và gỡ lỗi | Độ trễ cộng dồn, thông tin cận ngôn ngữ mất ở các giao diện |
-| Omni end-to-end | Một mô hình nghe, suy nghĩ và nói | Độ trễ thấp hơn, giữ tốt giọng điệu, cảm xúc và âm thanh môi trường | Vẫn theo lượt; huấn luyện và gỡ lỗi tốn kém hơn |
-| Full-duplex | Liên tục nghe, nói và quyết định | Nói chồng, ngắt lời tự nhiên và luồng liên tục | Huấn luyện, điều khiển và đánh giá phức tạp hơn |
+| Omni end-to-end | Đầu vào và đầu ra âm thanh native, tương tác theo lượt | Độ trễ thấp hơn, giữ tốt giọng điệu, cảm xúc và âm thanh môi trường | Vẫn theo lượt; huấn luyện và gỡ lỗi tốn kém hơn |
+| Full-duplex | Đầu vào và đầu ra âm thanh native; liên tục nghe, nói và quyết định | Nói chồng, ngắt lời tự nhiên và luồng liên tục | Huấn luyện, điều khiển và đánh giá phức tạp hơn |
 
 Điểm chung là thoát khỏi giả định mọi người phải nói lần lượt và khỏi phỏng đoán của VAD về người đang giữ lượt. Cascade và Omni vẫn chia tương tác thành các lượt; full-duplex biến quyền giữ lượt thành quyết định liên tục của mô hình.
 
 [^ch6-12]: OpenAI. *Introducing GPT-Live.* 2026-07-08. https://openai.com/index/introducing-gpt-live/ Phân loại cascade / turn-based / full-duplex xuất phát từ phần tóm tắt ba thế hệ ChatGPT Voice; thuật ngữ “end-to-end omnimodal (Omni)” tương ứng với nhóm “turn-based voice models”.
-
-Khi hệ thống cascade chuyển từ thực thi tuần tự sang streaming, điều quan trọng nhất không phải là biến mọi hàm thành `async`, mà là cho phép **kết quả gia tăng trở nên mất hiệu lực và bị hủy**.
 
 ### Mô hình 1 · Pipeline cascade
 
@@ -349,13 +347,24 @@ Với câu trả lời ngắn không reasoning, thời gian chờ của VAD, ASR
 
 #### Từ tuần tự đến nhận biết streaming
 
-Streaming ASR có thể tạo transcript tạm thời trong khi người dùng nói; LLM gửi câu đầu tiên có thể đọc được cho TTS; TTS trả về các đoạn âm thanh để chồng lấp sinh, tổng hợp và phát. Điều đó không làm ASR, LLM và TTS song song hoàn toàn: nếu transcript một phần thay đổi, phải hủy, khởi động lại hoặc sửa phần sinh; chỉ bật \`stream\` là chưa đủ.
+Hình 6-7 mô tả trường hợp hoàn toàn tuần tự: VAD, ASR, LLM và TTS chạy nối tiếp nhau. Cách nhận biết tuần tự này có ba vấn đề:
 
-Streaming thông thường cũng không bỏ được thời gian chờ im lặng của VAD. Front end VAD + ASR tích lũy độ trễ, làm mất do dự, cảm xúc, backchannel và âm thanh môi trường; tên riêng hay địa chỉ email có thể bị chia giữa các đoạn. Mô hình streaming thực sự cần encoder nhân quả hoặc theo khối cùng giải mã tăng dần. Encoder của Whisper chờ toàn bộ đoạn âm thanh nên không nên gọi là mô hình streaming nhân quả. Mô hình âm thanh dựa trên LLM có thể phát văn bản và sự kiện ngữ nghĩa từ âm thanh liên tục, nhưng mô phỏng bằng prefix không phải cam kết hiệu năng của mô hình nhân quả.
+1. **Độ trễ cộng dồn**: phải chờ qua một khoảng im lặng mới xác nhận được là đã nói xong.
+2. **Mất thông tin**: tín hiệu nhị phân có-tiếng/không-tiếng không thể diễn đạt do dự, cảm xúc, backchannel hay âm thanh môi trường.
+3. **Ngữ cảnh bị cắt**: địa chỉ email, tên riêng và danh từ riêng có thể bị chia nhỏ giữa các đoạn và nhận dạng sai.
+
+Để giải quyết vấn đề này mà vẫn giữ được sự phân chia mô-đun, một hướng tối ưu là **nhận biết streaming**, để mỗi giai đoạn sinh ra kết quả tăng dần càng sớm càng tốt:
+
+- **ASR vừa nghe vừa chuyển**: khi VAD phát hiện người dùng bắt đầu nói, hệ thống gọi mô hình ASR theo một khoảng thời gian cố định để sinh transcript tạm thời theo kiểu streaming; khi VAD phát hiện người dùng đã nói xong, hệ thống mới xác nhận văn bản cuối cùng.
+- **LLM thực thi suy đoán**: ngay khi có transcript tạm thời, hệ thống đã gửi nó cho LLM; nếu văn bản cuối cùng trùng với transcript tạm thời thì không cần gọi lại LLM, ngược lại phải hủy phần suy nghĩ suy đoán trước đó và gọi lại LLM.
+- **LLM sinh câu trả lời theo từng đoạn**: câu đầu tiên đủ để đọc được sẽ được chuyển ngay cho TTS, không chờ toàn bộ câu trả lời.
+- **TTS tổng hợp tăng dần**: liên tục trả về các đoạn âm thanh để việc sinh, tổng hợp và phát chồng lấp lên nhau.
+
+Một mô hình streaming thực sự cần được hỗ trợ ở cấp mô hình. Bộ giải mã của Whisper tuy tự hồi quy, nhưng bộ mã hóa của nó cần trọn vẹn một đoạn âm thanh nên không thể coi ngang hàng với mô hình streaming. Mô hình âm thanh dựa trên LLM có thể phát ra văn bản và sự kiện ngữ nghĩa từ âm thanh liên tục, gộp "nhận dạng" và một phần "hiểu" vào cùng một mô hình. Nó giữ được ngữ cảnh từ đầu cuộc hội thoại đến thời điểm hiện tại, và cũng có thể tận dụng tri thức thế giới để xử lý thương hiệu, tên riêng và danh từ riêng.
 
 Ngoài token văn bản, luồng có thể phát \`speak_start/end\`, \`interrupt\` (ranh giới lời nói và ý định ngắt), \`emotion\` (cảm xúc và do dự), \`laugh\`, \`sigh\`, \`noise\` (âm thanh cận ngôn ngữ và môi trường). Nhờ vậy Agent không phải nén mọi sự kiện âm thanh thành văn bản thường.
 
-Nếu mục tiêu chỉ là xác định người dùng đã nói xong hay chưa, quyết định kết thúc lượt có thể được tích hợp trực tiếp vào bộ nhận dạng streaming. Nhãn huấn luyện chỉ được dùng thông tin nhìn thấy tại thời điểm ra quyết định; nếu không, thông tin nhìn lại sẽ tạo ra phán đoán không thể tái hiện trực tuyến. Cách này nhẹ hơn một LLM âm thanh hoàn chỉnh.
+Nếu mục tiêu chỉ là xác định người dùng đã nói xong hay chưa, quyết định kết thúc lượt có thể được tích hợp trực tiếp vào bộ nhận dạng streaming. Nhãn huấn luyện chỉ được dùng thông tin nhìn thấy tại thời điểm ra quyết định; nếu không, thông tin nhìn lại sẽ tạo ra phán đoán không thể tái hiện trực tuyến.
 
 > **Thử nghiệm 6-4 ★: Mô phỏng nhận biết giọng nói streaming bằng Qwen2-Audio**
 >
@@ -363,19 +372,17 @@ Nếu mục tiêu chỉ là xác định người dùng đã nói xong hay chưa
 
 ### Mô hình 2 · Mô hình omnimodal end-to-end (Omni)
 
-Ngay cả khi có nhận biết streaming, cascade vẫn đưa nghe, suy nghĩ và nói qua các giao diện rời rạc; cảm xúc, ngữ điệu và âm thanh môi trường có thể mất khi âm thanh biến thành văn bản. Omni dùng một mô hình để nghe, sinh câu trả lời và nói, giữ được tín hiệu phi văn bản nhưng tốn hơn khi huấn luyện, gỡ lỗi và thay thành phần (Hình 6-9). Self-cascade có thể sửa lỗi nhận biết khi văn bản đủ cho nhiệm vụ; nếu câu trả lời phụ thuộc tốc độ nói, cảm xúc hoặc môi trường, nút thắt văn bản làm mất bằng chứng không thể đảo ngược.
+Ngay cả khi có nhận biết streaming, cascade vẫn đưa nghe, suy nghĩ và nói qua các giao diện rời rạc; cảm xúc, ngữ điệu và âm thanh môi trường có thể mất khi âm thanh biến thành văn bản. Phương án Omni dùng một mô hình để trực tiếp nghe, sinh câu trả lời và nói, nhờ đó có cơ hội giữ lại những tín hiệu này, dù chi phí huấn luyện cao hơn (Hình 6-9). So với pipeline cascade của mô hình 1, ưu thế của Omni chủ yếu thể hiện ở độ trễ và ở khả năng hiểu, sinh thông tin phi văn bản.
 
-Omni vẫn giả định chia lượt và thường dùng VAD hoặc endpointing ngữ nghĩa. Một khoảng dừng trong chuỗi số có thể bị coi là kết thúc; nhận biết streaming cải thiện phán đoán nhưng không xóa lượt.
+Về mặt hiểu, mô hình Omni có thể nhận ra khoảng dừng trong giọng nói. Về mặt sinh, mô hình Omni có thể truyền tải thông tin cận ngôn ngữ phong phú hơn — chẳng hạn hát, hay nói một câu bằng ngữ điệu đặc biệt.
+
+Mô hình Omni vẫn giả định chia lượt và thường dùng VAD để xác định quyền phát biểu. Vì vậy, một khoảng dừng giữa chừng khi người dùng đọc một dãy số vẫn có thể bị hiểu nhầm là đã nói xong.
 
 ![Hình 6-9: So sánh mô hình giọng nói omnimodal end-to-end](images/fig6-9.svg)
-
-Realtime speech API nằm giữa cascade và Omni: mô hình xử lý âm thanh native nhưng điều khiển tương tác vẫn dựa vào VAD, ngắt lời và gọi công cụ bất đồng bộ. So sánh có ích không phải bảng xếp hạng mà là cách hai đường end-to-end và self-cascade thất bại ở các nhiệm vụ khác nhau.
 
 > **Thử nghiệm 6-5 ★★: Chạy MiniCPM-o 4.5 cục bộ — end-to-end so với self-cascade**
 >
 > Chạy MiniCPM-o 4.5 cục bộ, tắt thinking mode, rồi so sánh trả lời trực tiếp từ âm thanh với self-cascade dùng cùng mô hình để phiên âm trước rồi mới trả lời. Thực nghiệm đo xem thông tin âm thanh có được giữ lại hay không, **không phải** “vừa nghĩ vừa nói” ở phần sau.
-
-Step-Audio 2 cho thấy đường end-to-end xử lý audio thô và phát văn bản lẫn giọng nói, chú ý đến cảm xúc, tốc độ, ngữ điệu và âm thanh môi trường. Step-Audio R1 đưa suy luận vào mô hình âm thanh và làm ví dụ cho “vừa suy nghĩ vừa nói”.
 
 ### Mô hình 3 · Mô hình tương tác full-duplex
 
@@ -385,13 +392,7 @@ Omni vẫn tách “người dùng nói” và “mô hình nói”, nhưng phi�
 
 ### Thời gian nhận thức: tương tác thời gian thực và suy nghĩ sâu
 
-Mô hình tiền cảnh phải trả lời khi người dùng còn chờ; mô hình nền có thể suy nghĩ lâu hơn. Đây là ba đánh đổi, không phải các bậc tiến hóa tuyến tính:
-
-| Thiết kế | Tiền cảnh | Nền | Rủi ro chính |
-| --- | --- | --- | --- |
-| Lấp chỗ nhanh, sửa chậm | Trả lời ngay | Nghĩ lại và bổ sung | Mâu thuẫn |
-| Tương tác nhanh, lời khuyên chậm | Giữ mạch hội thoại và chọn cách nói | Lời khuyên hoặc kết quả công cụ | Giao diện hạn chế |
-| Hợp nhất suy nghĩ và biểu đạt | Vừa suy nghĩ vừa nói | Chia sẻ trạng thái mô hình | Chi phí huấn luyện và thay thế cao |
+Chất lượng tương tác và trần trí tuệ là hai chiều khác nhau. Mô hình tiền cảnh phải trả lời khi người dùng còn chờ; mô hình nền có thể suy nghĩ lâu hơn. Ba thiết kế sau là những đánh đổi, không phải các bậc tiến hóa tuyến tính. Hai thiết kế đầu có thể áp dụng cho cascade hoặc Omni; thiết kế thứ ba hợp nhất suy luận sâu và biểu đạt thời gian thực trong cùng một mô hình.
 
 #### Giải pháp 1: nghĩ nhanh để lấp chỗ, nghĩ chậm để trả lời
 
@@ -405,16 +406,23 @@ Nghĩ nhanh có thể đưa ra một câu đáp lấp chỗ trong vài trăm mil
 
 Giải pháp hai để mô hình nền đưa gợi ý cho mô hình tiền cảnh qua thanh trạng thái hoặc một giao diện chuyên dụng, còn tiền cảnh tiếp tục giữ mạch hội thoại và quyết định cách diễn đạt. Nó ổn định hơn giải pháp một, nhưng giao tiếp vẫn gián tiếp: tiền cảnh có thể hiểu sai gợi ý và không thấy được suy luận trung gian của nền; trước khi nền hoàn tất, nếu người dùng hỏi thêm thì tiền cảnh chỉ có thể dựa vào năng lực của chính nó. Nó có thể "chờ kết quả" một cách tự nhiên, nhưng không thực sự vừa nghĩ vừa nói được.
 
-#### Giải pháp 3: hợp nhất suy nghĩ và biểu đạt end-to-end (lấy Step-Audio R1 làm ví dụ)
+#### Giải pháp 3: hợp nhất suy nghĩ và biểu đạt end-to-end
 
 Giải pháp ba đưa năng lực suy nghĩ vào thẳng bên trong mô hình âm thanh end-to-end. Step-Audio R1 dùng hai cơ chế bổ trợ để giải hai bài toán: **chưng cất suy nghĩ neo theo phương thức (MGRD)** khiến mô hình suy nghĩ dựa trên đặc trưng âm học, còn **kiến trúc song não MPS** cho phép hình thành ý và biểu đạt chạy song song. Cái trước bảo đảm "nghĩ đúng", cái sau giải quyết "nói kịp lúc".
 
-Lý tưởng nhất, mô hình nên đánh giá cảm xúc từ cao độ, nhịp điệu và ngữ điệu, chứ không chỉ nhìn văn bản đã chuyển tự. Cái gọi là "suy nghĩ thay thế bằng văn bản" là khi mô hình dùng những từ tiêu cực trong lời bài hát để thay cho việc phân tích giai điệu và đặc trưng âm học. MGRD lọc ra những chuỗi suy nghĩ thật sự viện dẫn đặc trưng âm học, rồi dùng dữ liệu đó huấn luyện mô hình, đồng thời dùng học tăng cường để ngăn mô hình bỏ qua suy nghĩ mà đoán thẳng đáp án.
+Lý tưởng nhất, mô hình nên đánh giá cảm xúc từ cao độ, nhịp điệu và ngữ điệu, chứ không chỉ nhìn văn bản đã chuyển tự. MGRD lọc ra những chuỗi suy nghĩ thật sự viện dẫn đặc trưng âm học, rồi dùng dữ liệu đó huấn luyện mô hình, đồng thời dùng học tăng cường để ngăn mô hình bỏ qua suy nghĩ mà đoán thẳng đáp án. MPS khiến não hình thành ý liên tục sinh ra các mảnh suy nghĩ; não biểu đạt nhận được mảnh nào thì kết hợp ngay với phần đã trả lời để sinh tiếng nói. Hai bên chạy song song theo kiểu đường ống, nên không cần chờ toàn bộ suy nghĩ kết thúc mới cho người dùng nghe câu đầu tiên.
 
-MPS khiến não hình thành ý liên tục sinh ra các mảnh suy nghĩ; não biểu đạt nhận được mảnh nào thì kết hợp ngay với phần đã trả lời để sinh tiếng nói. Hai bên chạy song song theo kiểu đường ống, nên không cần chờ toàn bộ suy nghĩ kết thúc mới cho người dùng nghe câu đầu tiên.
+#### Đánh đổi giữa tách rời suy nghĩ nhanh/chậm và suy luận end-to-end
 
+Mô hình hợp nhất hiện thực hóa "vừa nghĩ vừa nói" trực tiếp nhất, cái giá là suy nghĩ và biểu đạt thời gian thực phải được huấn luyện lại cùng nhau; hướng tách rời dễ thay não nền hơn. Hai bên là một đánh đổi, không đơn giản thay thế lẫn nhau.
 
-Mô hình hợp nhất hiện thực hoá "vừa nghĩ vừa nói" chặt chẽ nhất, cái giá là suy nghĩ và biểu đạt thời gian thực phải huấn luyện lại cùng nhau; hướng tách rời dễ thay não nền hơn, còn hướng hợp nhất phù hợp hơn với những kịch bản chuyên biệt theo đuổi độ tự nhiên tối đa. Hai bên là một đánh đổi, không đơn giản thay thế lẫn nhau.
+Trong bối cảnh các mô hình suy luận tiên tiến phát triển nhanh chóng, tách suy nghĩ nhanh khỏi suy nghĩ chậm đem lại một lợi thế kỹ thuật quan trọng: hệ thống có thể trực tiếp hưởng lợi từ mỗi thế hệ mô hình chậm mới. Mô hình nhanh ở tiền cảnh chỉ phụ trách lắng nghe, phản hồi và duy trì hội thoại với độ trễ thấp; mô hình chậm ở nền đảm nhiệm suy luận, lập kế hoạch và gọi công cụ. Khi có mô hình suy luận mạnh hơn, chỉ cần thay mô hình nền mà không phải huấn luyện lại toàn bộ hệ thống thoại thời gian thực. Hướng hợp nhất gắn suy luận và tương tác vào cùng một chu kỳ huấn luyện, vì vậy mỗi lần nâng cấp đều phải cân bằng lại trí tuệ, độ trễ phản hồi và tính tự nhiên của biểu đạt. Do đó, tách nhanh/chậm không chỉ là nhượng bộ về độ trễ, mà còn là lựa chọn mô-đun cho phép năng lực tương tác và trần trí tuệ tiến hóa độc lập.
+
+Sự tách rời này cũng không nhất thiết làm giảm hiệu quả nhiệm vụ. Tính đến tháng 8 năm 2026, Agent thoại Pine AI dùng kiến trúc suy nghĩ nhanh/chậm tách rời đứng đầu τ³-Voice Leaderboard, vượt các hệ thống thoại thời gian thực như Grok Voice và GPT-Realtime-2. Kết quả này ít nhất cho thấy kiến trúc tách rời không mặc nhiên kém hơn mô hình end-to-end trong những nhiệm vụ đồng thời đánh giá suy luận sâu và hội thoại thời gian thực.[^ch6-17]
+
+[^ch6-17]: Pine AI. “The Most Natural Human-Computer Interface Is Your Voice.” 2026-06-23 (cập nhật 2026-08-06). https://www.19pine.ai/blog/pine-ai-the-most-natural-human-computer-interface-is-your-voice
+
+Cần làm rõ rằng cụm từ "mô hình end-to-end" thường được dùng theo hai nghĩa. Nghĩa thứ nhất là **đường âm thanh end-to-end** đã nói ở phần trước: mô hình nhận âm thanh và trực tiếp tạo âm thanh, thay vì nối nhiều mô hình qua văn bản rời rạc. Omni và Interaction Model đều là end-to-end theo nghĩa này, nhưng Omni thường vẫn vận hành theo lượt, còn Interaction Model có thể vừa nghe vừa nói; kiến trúc của chúng rất khác nhau. Nghĩa thứ hai là **kiến trúc nhận thức end-to-end** được nói ở phần này: tương tác thời gian thực và suy luận sâu cùng chia sẻ trạng thái và được huấn luyện chung trong một mô hình, hoặc được tách giữa mô hình nhanh ở tiền cảnh và mô hình chậm ở nền. Hai trục này độc lập. Một hệ thống có thể có đường âm thanh end-to-end trong khi vẫn tách nhanh/chậm ở kiến trúc nhận thức; việc Thinking Machines Lab giao nhiệm vụ phức tạp cho mô hình suy luận nền là một ví dụ của tổ hợp này.
 
 ### Tổng hợp giọng nói giống con người hơn
 
@@ -469,7 +477,7 @@ Bản triển khai tham chiếu của Anthropic chia khả năng tương tác ho
 
 ### Định vị trực quan (Nối đất)
 
-Trong mỗi vòng lặp, mô hình cần xác định chính xác phần tử mục tiêu trong ảnh chụp màn hình - "Hộp tìm kiếm ở đâu?" "Tọa độ của nút gửi là gì?" Đây là vấn đề định vị trực quan (Nối đất). Hiện tại có hai ý tưởng chính: một là biến định vị thành câu hỏi trắc nghiệm - đầu tiên đánh dấu các thành phần giao diện bằng số và mô hình chỉ cần chọn một trong số đó; cái còn lại là **dự đoán tọa độ thuần túy** - để mô hình trực tiếp "nhìn" vào ảnh chụp màn hình và báo cáo tọa độ như con người. Có hai cách để triển khai ý tưởng câu hỏi trắc nghiệm: **Chú thích trực quan thuần tuý**(Set-of-Mark gốc, sử dụng mô hình phân đoạn để cắt bỏ các vùng ứng cử viên trên pixel) và **Chỉ mục thành phần cấu trúc**(Cây DOM/Accessibility, đọc trực tiếp cấu trúc đi kèm với giao diện). Ưu điểm chung của ý tưởng câu hỏi trắc nghiệm là chuyển đổi câu hỏi mở "tìm nút trong ảnh chụp màn hình và dự đoán tọa độ" thành câu hỏi đóng "chọn một trong các yếu tố được đánh dấu" - giống như các câu hỏi trắc nghiệm trong bài thi dễ trả lời chính xác hơn các câu hỏi điền vào chỗ trống. Mô hình chỉ cần nói "nhấp [123]" thay vì "nhấp vào nút màu xanh lam cách khoảng 200 pixel ở bên phải góc trên bên trái của màn hình."
+Trong mỗi vòng lặp, mô hình cần xác định chính xác phần tử mục tiêu trong ảnh chụp màn hình - "Hộp tìm kiếm ở đâu?" "Tọa độ của nút gửi là gì?" Đây là vấn đề định vị trực quan (Nối đất). Hiện tại có hai ý tưởng chính: một là biến định vị thành câu hỏi trắc nghiệm - đầu tiên đánh dấu các thành phần giao diện bằng số và mô hình chỉ cần chọn một trong số đó; cái còn lại là **dự đoán tọa độ thuần túy** - để mô hình trực tiếp "nhìn" vào ảnh chụp màn hình và báo cáo tọa độ như con người. Có hai cách để triển khai ý tưởng câu hỏi trắc nghiệm: **Chú thích trực quan thuần tuý**(Set-of-Mark gốc, sử dụng mô hình phân đoạn để cắt bỏ các vùng ứng cử viên trên pixel) và **Chỉ mục thành phần cấu trúc**(Cây DOM/Accessibility, đọc trực tiếp cấu trúc đi kèm với giao diện). Ưu điểm chung của ý tưởng câu hỏi trắc nghiệm là chuyển đổi câu hỏi mở "tìm nút trong ảnh chụp màn hình và dự đoán tọa độ" thành câu hỏi đóng "chọn một trong các yếu tố được đánh dấu". Giống như các câu hỏi trắc nghiệm trong bài thi dễ trả lời chính xác hơn các câu hỏi điền vào chỗ trống, mô hình chỉ cần nói "nhấp [123]" thay vì "nhấp vào nút tại tọa độ (350, 464) trên màn hình." Dự đoán tọa độ trực tiếp là một thách thức đặc biệt lớn đối với mô hình — cần khối lượng huấn luyện lớn mới làm chính xác được, và rất dễ sai khi độ phân giải màn hình thay đổi.
 
 **Set-of-Mark: Phương pháp chú thích trực quan.**
 
@@ -477,7 +485,7 @@ Set-of-Mark (SoM) ban đầu được Microsoft Research đề xuất vào năm 
 
 **Chỉ mục phần tử có cấu trúc: Triển khai có cấu trúc các ý tưởng SoM trên Web.**
 
-Chú thích có thể được thực hiện chính xác hơn khi chính giao diện cung cấp thông tin có cấu trúc. Các trang web hiện đại có cấu trúc thành phần hoàn chỉnh (cây DOM) và các vai trò ngữ nghĩa (là nút, là hộp nhập liệu) được xác định trước khi hiển thị. Cây trợ năng cung cấp thông tin tương tự cho nhiều ứng dụng trên máy tính để bàn. Thay vì yêu cầu mô hình phân đoạn đoán "nút là khu vực nào" trong pixel, tốt hơn là bạn nên hỏi trực tiếp chính giao diện "bạn có những yếu tố nào có thể nhấp vào được?". Giải pháp Web Agent do dự án browser-use đại diện thực hiện chính xác điều này: liệt kê và đánh số các phần tử tương tác từ DOM, có thể được coi là triển khai có cấu trúc các ý tưởng SoM trên Web (Hình 6-13). Quá trình này được chia thành bốn bước:
+Chú thích có thể được thực hiện chính xác hơn khi chính giao diện cung cấp thông tin có cấu trúc. Các trang web hiện đại có cấu trúc thành phần hoàn chỉnh (cây DOM) và các vai trò ngữ nghĩa (là nút, là hộp nhập liệu) được xác định trước khi hiển thị. Cây trợ năng cung cấp thông tin tương tự cho nhiều ứng dụng trên máy tính để bàn. Giải pháp Web Agent do dự án browser-use đại diện thực hiện chính xác điều này: liệt kê và đánh số các phần tử tương tác từ DOM, có thể được coi là triển khai có cấu trúc các ý tưởng SoM trên Web (Hình 6-13). Quá trình này được chia thành bốn bước:
 
 1. Lấy biểu diễn có cấu trúc (DOM tree) và thông tin truy cập của trang web thông qua giao diện gỡ lỗi trình duyệt (CDP, Chrome DevTools Protocol)
 2. Tự động phát hiện những thành phần nào có thể tương tác (nút, hộp nhập liệu, liên kết, v.v.)
@@ -521,7 +529,7 @@ Logic lựa chọn của ba tuyến đường có thể được tóm tắt như
 
 Cho đến đây, nhận thức của Computer Use dựa trên một giả định ngầm: **màn hình đứng yên**—chụp ảnh, nghĩ một bước, nhấp, rồi chụp ảnh tiếp theo. Màn hình thực tế phát video, hiện thông báo thoáng qua và phát tiếng nói trong cuộc họp. Agent chỉ mở mắt mỗi 3–5 giây một lần và hoàn toàn không có tai sẽ không thấy hoặc nghe được những gì xảy ra giữa hai khung hình.
 
-Thứ cần thiết kế lại không phải giao diện hành động mà là **giao diện quan sát**[^ch6-9]. Giao diện quan sát Agent–máy tính (AOI) chuyển quan sát môi trường liên tục thành các sự kiện rời rạc mà mô hình dễ xử lý. Các kỹ thuật chính gồm: **chụp khung hình chính giữa các frame**, bỏ qua màn hình gần như không đổi và dùng mô hình nhỏ chỉ giữ thay đổi có ý nghĩa; **phiên âm giọng nói theo ngưỡng âm lượng**, chỉ gọi nhận dạng khi có tiếng; và **mô tả frame thành văn bản**, để mô tả vẫn ở trong bộ nhớ sau khi ảnh gốc bị loại khỏi ngữ cảnh, qua đó nén lịch sử tương tác đa phương thức.
+Thứ cần thiết kế lại không phải giao diện hành động mà là **giao diện quan sát**[^ch6-9]. Giao diện quan sát Agent–máy tính (AOI) chuyển quan sát môi trường liên tục thành các sự kiện rời rạc mà mô hình dễ xử lý. Các kỹ thuật chính gồm: **chụp khung hình chính của màn hình**, dùng một mô hình nhỏ để phán đoán màn hình có thay đổi đáng kể hay không và chỉ chụp khi có thay đổi rõ rệt — khi thay đổi diễn ra thường xuyên, chụp một lần mỗi giây đã cho hiệu quả khá tốt; **phiên âm giọng nói theo ngưỡng âm lượng**, gọi nhận dạng khi có tiếng và đưa văn bản nhận dạng được vào ngữ cảnh để Agent có thể "nghe"; và **mô tả màn hình thành văn bản**, để mô hình biến mỗi ảnh chụp thu được thành một câu mô tả, câu này vẫn ở trong ngữ cảnh sau khi ảnh gốc đã rời khỏi đó, qua đó nén lịch sử tương tác đa phương thức.
 
 [^ch6-9]: Xem Li, Bojie and Noah Shi. *Agent-Computer Observation Interfaces Enable Dynamic Computer Use.* arXiv:2606.29472, 2026.
 

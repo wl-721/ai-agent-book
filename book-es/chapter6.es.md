@@ -74,7 +74,7 @@ Si se depende del sondeo periódico de Heartbeat (asumiendo un intervalo de lati
 
 La solución de PineClaw consiste en introducir el **mecanismo de Channel**: establecer un canal de eventos en tiempo real entre el Gateway de OpenClaw y la API de Pine. Cuando ocurren eventos clave como la llamada conectándose, la necesidad de entrada del usuario o la llamada finalizando, los mensajes se envían instantáneamente por push al Agente de OpenClaw, que procesa de inmediato y notifica al usuario, reduciendo la latencia de respuesta de minutos a segundos.
 
-Este caso revela el valor nuclear de la arquitectura orientada a eventos para los frameworks de Agentes: **un servicio verdaderamente "proactivo" no solo requiere que el Agente pueda examinar el mundo periódicamente, sino que requiere que el mundo pueda notificar activamente al Agente**. Modelar de forma unificada todas las entradas (mensajes de usuario, respuestas de herramientas, callbacks externos, disparos programados) como flujos de eventos y profundizar la reflexión y acción del Agente mediante un bucle de eventos constituye la base arquitectónica para lograr este objetivo. Bajo esta arquitectura, a continuación se presentan dos categorías de herramientas directamente relacionadas con los eventos, así como la identidad virtual y el entorno de ejecución aislado que respaldan la acción independiente del Agente, antes de discutir el diseño específico del mecanismo de procesamiento de eventos.
+Este caso revela el valor nuclear de la arquitectura orientada a eventos para los frameworks de Agentes: **un servicio verdaderamente "proactivo" no solo requiere que el Agente pueda examinar los eventos periódicamente, sino que requiere que los eventos puedan notificar activamente al Agente**. Modelar de forma unificada todas las entradas (mensajes de usuario, respuestas de herramientas, callbacks externos, disparos programados) como flujos de eventos y profundizar la reflexión y acción del Agente mediante un bucle de eventos constituye la base arquitectónica para lograr este objetivo. Bajo esta arquitectura, a continuación se presentan dos categorías de herramientas directamente relacionadas con los eventos, así como la identidad virtual y el entorno de ejecución aislado que respaldan la acción independiente del Agente, antes de discutir el diseño específico del mecanismo de procesamiento de eventos.
 
 ### Herramientas disparadas por eventos
 
@@ -314,14 +314,12 @@ La introducción de GPT-Live de OpenAI resume tres paradigmas: cascada, basado e
 | Paradigma | Estructura | Ventaja | Limitación |
 | --- | --- | --- | --- |
 | Cascada | VAD → ASR → LLM → TTS | Módulos claros, intercambiables y depurables | Se acumula la latencia y se pierde información paralingüística |
-| Omni de extremo a extremo | Un modelo escucha, piensa y habla | Menor latencia y preservación de tono, emoción y ambiente | Sigue dependiendo de turnos; entrenar y depurar cuesta más |
-| Dúplex completo | Escucha, habla y decide continuamente | Habla solapada, interrupción natural y flujo continuo | Entrenamiento, control y evaluación más complejos |
+| Omni de extremo a extremo | Entrada y salida de audio nativas, con interacción por turnos | Menor latencia y preservación de tono, emoción y ambiente | Sigue dependiendo de turnos; entrenar y depurar cuesta más |
+| Dúplex completo | Entrada y salida de audio nativas; escucha, habla y decide continuamente | Habla solapada, interrupción natural y flujo continuo | Entrenamiento, control y evaluación más complejos |
 
 El hilo común es escapar de la suposición de que hay que hablar por turnos y de la conjetura de VAD sobre quién tiene la palabra. Cascada y Omni aún dividen la interacción en turnos; el dúplex completo convierte esa decisión en una salida continua del modelo.
 
 [^ch6-12]: OpenAI. *Introducing GPT-Live.* 2026-07-08. https://openai.com/index/introducing-gpt-live/ . La clasificación procede del resumen de las tres generaciones de ChatGPT Voice; «end-to-end omnimodal (Omni)» corresponde a «turn-based voice models».
-
-Cuando un sistema en cascada pasa de la ejecución serial al streaming, lo más importante no es convertir cada función en `async`, sino permitir que **los resultados incrementales queden invalidados y se cancelen**.
 
 ### Paradigma 1 · Pipeline en cascada
 
@@ -348,11 +346,22 @@ En una respuesta breve, las esperas de VAD, ASR, LLM y TTS se acumulan en serie 
 
 #### De lo serial a la percepción en streaming
 
-ASR puede emitir una transcripción provisional mientras se habla, el LLM puede enviar la primera frase pronunciable a TTS y TTS puede devolver bloques de audio. Eso no hace que las tres etapas sean completamente paralelas: la generación anticipada exige cancelar, invalidar, reiniciar o revertir cuando cambia la transcripción.
+La Figura 6-7 describe el caso completamente serial de VAD+ASR+LLM+TTS. Ese esquema de percepción serial tiene tres problemas:
 
-El frente VAD + ASR acumula latencia por esperar silencio, pierde dudas, emoción, apoyos y ambiente, y rompe el contexto de nombres o correos. Un modelo realmente streaming necesita codificador causal o por bloques y decodificación incremental; Whisper no es causal porque su codificador espera el segmento completo. Un modelo auditivo basado en LLM puede emitir texto y eventos semánticos, pero simular prefijos no garantiza el rendimiento de un modelo causal. Los marcadores speak_start/end, interrupt, emotion, laugh, sigh y noise conservan señales que no caben en texto.
+1. **Acumulación de latencia**: hay que esperar un tramo de silencio para confirmar que el usuario ha terminado de hablar.
+2. **Pérdida de información**: una señal binaria de voz/silencio no puede expresar dudas, emoción, apoyos ni sonido ambiente.
+3. **Contexto cortado**: los correos, los nombres de persona y los nombres propios pueden fragmentarse y reconocerse mal.
 
-Si el único objetivo es decidir si el usuario ha terminado de hablar, el juicio de fin de turno puede integrarse directamente en el reconocedor streaming. Las etiquetas de entrenamiento solo deben usar información visible en el momento de la decisión; de lo contrario, la retrospectiva producirá un juicio imposible de reproducir en línea. Esta vía es más ligera que un LLM de audio completo.
+Para resolverlo, y sin renunciar al reparto modular, una vía de optimización es la **percepción en streaming**, que hace que cada etapa produzca resultados incrementales lo antes posible:
+
+- **ASR que transcribe mientras escucha**: cuando VAD detecta que el usuario empieza a hablar, se invoca el modelo ASR a intervalos regulares para generar en streaming una transcripción provisional; cuando VAD detecta que el usuario ha terminado, se confirma el texto definitivo.
+- **Ejecución especulativa del LLM**: la transcripción provisional se envía al LLM en cuanto se genera; si el texto definitivo coincide con ella, no hace falta volver a invocar al LLM; si no coincide, se cancela el pensamiento especulativo anterior y se invoca al LLM de nuevo.
+- **Salida por fragmentos del LLM**: el primer fragmento de texto apto para pronunciarse pasa de inmediato a TTS, sin esperar la respuesta completa.
+- **Síntesis incremental en TTS**: se devuelven bloques de audio de forma continua, de modo que la generación posterior, la síntesis y la reproducción se solapen.
+
+Un ASR realmente en streaming necesita soporte del propio modelo. Aunque la decodificación de Whisper es autorregresiva, su codificador necesita el segmento de audio completo, así que no equivale a un modelo en streaming. Un modelo auditivo en streaming basado en LLM puede emitir texto y eventos semánticos a partir de audio continuo, y así reúne el «reconocimiento» y parte de la «comprensión» dentro de un mismo modelo. Conserva el contexto desde el inicio de la conversación hasta el instante actual y puede aprovechar su conocimiento del mundo para tratar marcas, nombres de persona y nombres propios. Los marcadores speak_start/end, interrupt, emotion, laugh, sigh y noise conservan señales que no caben en texto.
+
+Si el único objetivo es decidir si el usuario ha terminado de hablar, el juicio de fin de turno puede integrarse directamente en el reconocedor streaming. Las etiquetas de entrenamiento solo deben usar información visible en el momento de la decisión; de lo contrario, la retrospectiva producirá un juicio imposible de reproducir en línea.
 
 > **Experimento 6-4 ★: Simular percepción de voz en streaming con Qwen2-Audio**
 >
@@ -360,17 +369,17 @@ Si el único objetivo es decidir si el usuario ha terminado de hablar, el juicio
 
 ### Paradigma 2 · Modelos omnimodales de extremo a extremo (Omni)
 
-La cascada pierde emoción, entonación y sonido ambiente en la interfaz textual. Omni escucha, genera y habla con un único modelo, pero cuesta más entrenarlo, depurarlo y sustituir componentes. Su ventaja principal es la latencia y la información no textual, no una precisión necesariamente mayor. La autocascada puede corregir un error de percepción cuando el texto basta; si la respuesta depende de velocidad, emoción o ambiente, el cuello de botella textual destruye la evidencia. Omni todavía supone turnos y puede confundir una pausa en una secuencia de números con el final.
+Aunque la cascada adopte percepción en streaming, escuchar, pensar y hablar siguen intercambiándose a través de interfaces discretas, y la emoción, la entonación y el sonido ambiente pueden perderse al convertirlo todo en texto plano. El esquema Omni escucha el audio, genera la respuesta y emite la voz con un único modelo, por lo que tiene la oportunidad de conservar esa información, aunque su entrenamiento cuesta más (Figura 6-9). Frente a la cascada del paradigma 1, la ventaja de Omni está sobre todo en la latencia y en la comprensión y la generación de información no textual.
+
+En la comprensión, un modelo Omni es capaz de interpretar las pausas de la voz. En la generación, puede transmitir información paralingüística más rica: cantar o pronunciar una frase con una entonación particular.
+
+Los modelos Omni siguen suponiendo que se habla por turnos y normalmente dependen de VAD para decidir quién tiene la palabra. Por eso, una pausa a mitad de camino mientras el usuario dicta una secuencia de números todavía puede confundirse con el final del turno.
 
 ![Figura 6-9: Comparación de modelos de voz omnimodales](images/fig6-9.svg)
-
-Las API de voz en tiempo real ocupan una posición intermedia: procesan audio de forma nativa, pero conservan VAD, interrupciones y llamadas asíncronas a herramientas. Lo importante es comparar los fallos por tarea, no una tabla de posiciones.
 
 > **Experimento 6-5 ★★: Ejecutar MiniCPM-o 4.5 localmente, extremo a extremo frente a autocascada**
 >
 > Ejecute MiniCPM-o 4.5 localmente con thinking mode desactivado y compare la respuesta directa desde el audio con una autocascada que primero transcribe y luego responde con el mismo modelo. Esto mide si se conserva la información sonora, **no** el «pensar mientras se habla» tratado más adelante.
-
-Step-Audio 2 procesa audio crudo y produce texto y voz; Step-Audio R1 incorpora el razonamiento en el modelo de audio.
 
 ### Paradigma 3 · Modelos interactivos de dúplex completo
 
@@ -380,13 +389,7 @@ Omni separa «habla el usuario» y «habla el modelo», pero la interpretación 
 
 ### Tiempo cognitivo: interacción en tiempo real y pensamiento profundo
 
-El modelo de primer plano responde mientras el usuario sigue conectado; el modelo de fondo puede pensar más tiempo. Son tres intercambios, no una progresión lineal:
-
-| Diseño | Primer plano | Fondo | Riesgo |
-| --- | --- | --- | --- |
-| Respuesta rápida, corrección lenta | Respuesta inmediata | Replantear y completar | Contradicción |
-| Interacción rápida, consejo lento | Mantener el hilo y elegir palabras | Consejo o resultados de herramientas | Interfaz limitada |
-| Pensamiento y expresión unidos | Pensar mientras habla | Compartir el estado | Alto coste de entrenamiento |
+La calidad de la interacción y el techo de inteligencia son dimensiones distintas. El modelo de primer plano responde mientras el usuario sigue conectado; el modelo de fondo puede pensar más tiempo. Los tres diseños siguientes son compromisos, no una progresión lineal: los dos primeros pueden aplicarse sobre una cascada o un modelo Omni; el tercero, en cambio, unifica el razonamiento profundo y la expresión en tiempo real dentro de un mismo modelo.
 
 #### Solución 1: pensamiento rápido para rellenar, pensamiento lento para responder
 
@@ -400,16 +403,23 @@ El pensamiento rápido puede emitir una respuesta de relleno en unos cientos de 
 
 En la segunda solución, el modelo de fondo ofrece sugerencias al de primer plano a través de una barra de estado o de una interfaz específica, mientras el primer plano mantiene el hilo y decide cómo expresarse. Es más estable que la primera, pero la comunicación sigue siendo indirecta: el primer plano puede malinterpretar la sugerencia y no ve el razonamiento intermedio del fondo; antes de que el fondo termine, si el usuario repregunta el primer plano solo puede responder con sus propias capacidades. Puede «esperar el resultado» con naturalidad, pero no llega realmente a pensar mientras habla.
 
-#### Solución 3: unificación de extremo a extremo del pensamiento y la expresión (el caso de Step-Audio R1)
+#### Solución 3: unificación de extremo a extremo del pensamiento y la expresión
 
 La tercera solución interioriza la capacidad de razonar dentro del propio modelo de audio de extremo a extremo. Step-Audio R1 resuelve dos problemas con dos mecanismos complementarios: la **destilación de pensamiento anclada en la modalidad (MGRD)** hace que el modelo razone a partir de rasgos acústicos, y la **arquitectura de doble cerebro MPS** permite que la concepción y la expresión avancen en paralelo. La primera garantiza «pensar bien»; la segunda resuelve «hablar a tiempo».
 
-Idealmente, el modelo debería inferir la emoción del tono, el ritmo y la entonación, y no solo del texto transcrito. El llamado «pensamiento por delegación al texto» consiste en que el modelo sustituye el análisis de la melodía y de los rasgos acústicos por las palabras negativas de la letra. MGRD filtra las cadenas de razonamiento que citan realmente rasgos acústicos, entrena el modelo con esos datos y, mediante aprendizaje por refuerzo, impide que el modelo se salte el razonamiento y adivine la respuesta.
+Idealmente, el modelo debería inferir la emoción del tono, el ritmo y la entonación, y no solo del texto transcrito. MGRD filtra las cadenas de razonamiento que citan realmente rasgos acústicos, entrena el modelo con esos datos y, mediante aprendizaje por refuerzo, impide que el modelo se salte el razonamiento y adivine la respuesta. MPS hace que el cerebro de concepción produzca fragmentos de pensamiento de forma continua, y el cerebro de expresión, al recibir cada fragmento, genera voz de inmediato combinándolo con lo ya respondido. Ambos funcionan en paralelo como una tubería, de modo que no hace falta esperar a que el razonamiento termine para que el usuario oiga la primera frase.
 
-MPS hace que el cerebro de concepción produzca fragmentos de pensamiento de forma continua, y el cerebro de expresión, al recibir cada fragmento, genera voz de inmediato combinándolo con lo ya respondido. Ambos funcionan en paralelo como una tubería, de modo que no hace falta esperar a que el razonamiento termine para que el usuario oiga la primera frase.
+#### La separación del pensamiento rápido y lento frente al razonamiento de extremo a extremo
 
+El modelo unificado es el que más directamente logra «pensar mientras habla», a costa de tener que reentrenar juntos el razonamiento y la expresión en tiempo real; la vía desacoplada facilita sustituir el cerebro de fondo. Son un compromiso, no un simple reemplazo mutuo.
 
-El modelo unificado es el que más estrechamente logra «pensar mientras habla», a costa de tener que reentrenar juntos el razonamiento y la expresión en tiempo real; la vía desacoplada facilita sustituir el cerebro de fondo, mientras que la vía unificada encaja mejor en escenarios especializados que buscan la máxima naturalidad. Son un compromiso, no un simple reemplazo mutuo.
+En un momento en que los modelos de razonamiento de frontera avanzan con rapidez, separar el pensamiento rápido del lento ofrece una importante ventaja de ingeniería: permite aprovechar directamente cada nueva generación del modelo lento. El modelo rápido de primer plano solo se ocupa de escuchar, responder y mantener la conversación con baja latencia; el modelo lento de fondo se encarga del razonamiento, la planificación y las llamadas a herramientas. Cuando aparece un modelo de razonamiento más potente, basta con sustituir el de fondo, sin volver a entrenar todo el sistema de voz en tiempo real. La vía unificada vincula razonamiento e interacción al mismo ciclo de entrenamiento, por lo que cada actualización debe volver a equilibrar inteligencia, latencia de respuesta y naturalidad expresiva. La separación rápido/lento no es, por tanto, una mera concesión a la latencia, sino una opción modular que permite que la capacidad de interacción y el techo de inteligencia evolucionen por separado.
+
+Esta separación tampoco implica necesariamente sacrificar el rendimiento. En agosto de 2026, el Agente de voz de Pine AI, basado en una arquitectura de pensamiento rápido/lento separada, ocupaba el primer puesto de la τ³-Voice Leaderboard, por delante de sistemas como Grok Voice y GPT-Realtime-2. Este resultado muestra, como mínimo, que una arquitectura desacoplada no es intrínsecamente inferior a los modelos de extremo a extremo en tareas que evalúan conjuntamente el razonamiento profundo y la conversación en tiempo real.[^ch6-17]
+
+[^ch6-17]: Pine AI. “The Most Natural Human-Computer Interface Is Your Voice.” 2026-06-23 (actualizado el 2026-08-06). https://www.19pine.ai/blog/pine-ai-the-most-natural-human-computer-interface-is-your-voice
+
+Conviene aclarar que «modelo de extremo a extremo» suele emplearse con dos significados. El primero es una **ruta de voz de extremo a extremo**, descrita en la sección anterior: el modelo recibe audio y genera audio directamente, sin enlazar varios modelos mediante texto discreto. Tanto Omni como los Interaction Models son de extremo a extremo en este sentido, pero Omni suele avanzar por turnos, mientras que un Interaction Model puede escuchar y hablar simultáneamente; sus arquitecturas son muy distintas. El segundo es una **arquitectura cognitiva de extremo a extremo**, el tema de esta sección: la interacción en tiempo real y el razonamiento profundo comparten estado y se entrenan juntos dentro de un solo modelo, o se reparten entre un modelo rápido de primer plano y otro lento de fondo. Ambos ejes son independientes. Un sistema puede tener una ruta de voz de extremo a extremo y, a la vez, mantener separadas las partes rápida y lenta de su arquitectura cognitiva; la delegación de tareas complejas a un razonador de fondo por parte de Thinking Machines Lab es un ejemplo de esta combinación.
 
 ### Síntesis de voz más humana
 
@@ -461,7 +471,7 @@ La implementación de referencia de Anthropic divide la capacidad de interacció
 
 ### Grounding visual (Visual Grounding)
 
-En cada ronda del bucle, el modelo necesita localizar con precisión el elemento objetivo en la captura de pantalla: "¿Dónde está la casilla de búsqueda?", "¿Cuáles son las coordenadas del botón de envío?". Este es el problema de grounding visual (Visual Grounding). Actualmente existen **dos enfoques principales**: el primero convierte la localización en una **pregunta de opción múltiple** (etiquetando previamente los elementos de la interfaz con números para que el modelo solo tenga que elegir uno); el segundo es la **predicción directa de coordenadas** (permitiendo que el modelo "mire" directamente la captura de pantalla e informe las coordenadas como haría un humano). El enfoque de opción múltiple tiene dos formas de implementación: **anotación puramente visual** (el Set-of-Mark original, utilizando modelos de segmentación para recortar regiones candidatas sobre los píxeles) e **indexación de elementos estructurados** (DOM/Accessibility Tree, leyendo directamente la estructura interna de la interfaz). La ventaja común del enfoque de opción múltiple es que transforma la tarea abierta de "encontrar el botón en la captura de pantalla y predecir las coordenadas" en una tarea cerrada de "elegir uno entre los elementos ya etiquetados" (al igual que en un examen las preguntas de opción múltiple son más fáciles de responder correctamente que las de rellenar espacios), donde el modelo solo necesita decir "hacer clic en [123]" en lugar de "hacer clic en el botón azul situado aproximadamente a 200 píxeles a la derecha de la esquina superior izquierda de la pantalla".
+En cada ronda del bucle, el modelo necesita localizar con precisión el elemento objetivo en la captura de pantalla: "¿Dónde está la casilla de búsqueda?", "¿Cuáles son las coordenadas del botón de envío?". Este es el problema de grounding visual (Visual Grounding). Actualmente existen **dos enfoques principales**: el primero convierte la localización en una **pregunta de opción múltiple** (etiquetando previamente los elementos de la interfaz con números para que el modelo solo tenga que elegir uno); el segundo es la **predicción directa de coordenadas** (permitiendo que el modelo "mire" directamente la captura de pantalla e informe las coordenadas como haría un humano). El enfoque de opción múltiple tiene dos formas de implementación: **anotación puramente visual** (el Set-of-Mark original, utilizando modelos de segmentación para recortar regiones candidatas sobre los píxeles) e **indexación de elementos estructurados** (DOM/Accessibility Tree, leyendo directamente la estructura interna de la interfaz). La ventaja común del enfoque de opción múltiple es que transforma la tarea abierta de "encontrar el botón en la captura de pantalla y predecir las coordenadas" en una tarea cerrada de "elegir uno entre los elementos ya etiquetados". Al igual que en un examen las preguntas de opción múltiple son más fáciles de responder correctamente que las de rellenar espacios, el modelo solo necesita decir "hacer clic en [123]" en lugar de "hacer clic en el botón situado en la posición (350, 464) de la pantalla". Emitir coordenadas resulta especialmente difícil para el modelo: requiere una gran cantidad de entrenamiento para lograr precisión, y es fácil equivocarse cuando cambia la resolución de la pantalla.
 
 **Set-of-Mark: Método de anotación visual.**
 
@@ -469,7 +479,7 @@ El Set-of-Mark (SoM) original fue propuesto por Microsoft Research en 2023, inic
 
 **Indexación de elementos estructurados: Implementación estructurada de la idea SoM en la Web.**
 
-Cuando la propia interfaz puede proporcionar información estructurada, las anotaciones se pueden realizar con mayor precisión. Las páginas web modernas ya definen la estructura completa de los elementos (árbol DOM) y los roles semánticos (cuál es un botón, cuál es una casilla de entrada) antes de renderizar, y las interfaces de accesibilidad (Accessibility Tree) proporcionan información similar para muchas aplicaciones de escritorio. En lugar de dejar que el modelo de segmentación adivine entre los píxeles "qué región es un botón", es mejor preguntar directamente a la propia interfaz "¿qué elementos interactivos tienes?". Las soluciones de Web Agent representadas por el proyecto `browser-use` funcionan precisamente de esta manera: enumeran y numeran los elementos interactivos desde el DOM, lo que puede considerarse una implementación estructurada de la idea SoM en la Web (Figura 6-13). El flujo consta de cuatro pasos:
+Cuando la propia interfaz puede proporcionar información estructurada, las anotaciones se pueden realizar con mayor precisión. Las páginas web modernas ya definen la estructura completa de los elementos (árbol DOM) y los roles semánticos (cuál es un botón, cuál es una casilla de entrada) antes de renderizar, y las interfaces de accesibilidad (Accessibility Tree) proporcionan información similar para muchas aplicaciones de escritorio. Las soluciones de Web Agent representadas por el proyecto `browser-use` funcionan precisamente de esta manera: enumeran y numeran los elementos interactivos desde el DOM, lo que puede considerarse una implementación estructurada de la idea SoM en la Web (Figura 6-13). El flujo consta de cuatro pasos:
 
 1. Obtener la representación estructurada de la página web (árbol DOM) y la información de accesibilidad a través de la interfaz de depuración del navegador (CDP, Chrome DevTools Protocol).
 2. Detectar automáticamente qué elementos son interactivos (botones, casillas de entrada, enlaces, etc.).
@@ -510,7 +520,7 @@ La lógica de elección entre las tres rutas se puede resumir de la siguiente ma
 
 Hasta ahora, la percepción de Computer Use se ha basado en una suposición implícita: **la pantalla es estática**—capturar, razonar un paso, hacer clic y volver a capturar. Las pantallas reales reproducen vídeo, muestran notificaciones fugaces y emiten voces de reuniones. Un Agente que abre los ojos cada 3–5 segundos y carece de oídos no puede ver ni oír lo que ocurre entre dos fotogramas.
 
-Lo que debe rediseñarse no es la interfaz de acción, sino la **interfaz de observación**[^ch6-9]. Una interfaz de observación Agente–ordenador (AOI) convierte la observación continua del entorno en eventos discretos que el modelo puede procesar. Sus técnicas clave son: **captura de fotogramas clave entre frames**, que omite pantallas casi idénticas y usa un modelo pequeño para conservar solo los cambios significativos; **transcripción de voz controlada por volumen**, que invoca el reconocimiento solo cuando hay sonido; y **descripción textual de los fotogramas**, para que persista en memoria cuando la imagen original salga del contexto y comprima el historial multimodal.
+Lo que debe rediseñarse no es la interfaz de acción, sino la **interfaz de observación**[^ch6-9]. Una interfaz de observación Agente–ordenador (AOI) convierte la observación continua del entorno en eventos discretos que el modelo puede procesar. Sus técnicas clave son: primero, la **captura de fotogramas clave de la pantalla**, en la que un modelo pequeño decide si la pantalla ha cambiado de forma significativa y solo se toma una captura cuando el cambio es relevante (si los cambios son frecuentes, basta con una captura por segundo para obtener buenos resultados); segundo, la **transcripción de voz controlada por volumen**, que invoca el reconocimiento cuando hay sonido e incorpora el texto reconocido al contexto, de modo que el Agente pueda oír; y tercero, la **descripción textual de la pantalla**, que hace que el modelo resuma en una frase cada captura obtenida, de manera que, aunque la imagen original se limpie después del contexto, esa frase permanezca en el contexto y comprima el historial de interacción multimodal.
 
 [^ch6-9]: Véase Li, Bojie and Noah Shi. *Agent-Computer Observation Interfaces Enable Dynamic Computer Use.* arXiv:2606.29472, 2026.
 
