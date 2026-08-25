@@ -521,7 +521,7 @@ Chat Template 是一塊**貫穿全書的地基**：它不只關係到 KV Cache�
 
 以 Qwen3 的 Chat Template 為例：模型在多輪工具呼叫中，會把之前的內部思考過程（`<think>` 標籤內的內容）保留下來，像草稿紙上的推導步驟，確保思路的連貫性。但當 Chat Template 偵測到新的使用者查詢時，會預設「使用者換了個話題」，於是清理之前的思考過程重新開始。問題在於，如果工具結果被錯誤地標記為使用者訊息，就會誤觸發這種清理——相當於模型正算到一半，草稿紙被人收走了，只能從頭再來，嚴重影響多步思考的連貫性。
 
-需要注意的是，不同模型家族對歷史思維鏈的處理策略差異很大，而且策略本身也在快速演變。DeepSeek R1 時代的官方做法是**剝離全部歷史思考**：多輪對話時只回傳 `content`，不回傳 `reasoning_content`——因為 R1 訓練時歷史 CoT 從不出現在輸入裡，塞回去屬於分佈外輸入，反而可能干擾輸出，同時也能省下可觀的 token。但這個策略對 Agent 場景是有缺陷的：中間思考承載著「為什麼呼叫這個工具、排除了哪些假設」等關鍵狀態，剝離後模型每輪從零推理，容易重複犯錯、丟失長程計畫。因此 DeepSeek 在 V4 上**徹底反轉**，強制要求把每輪 assistant 訊息（包括帶 `tool_calls` 的）的 `reasoning_content` 原樣回傳，否則直接報錯——Kimi K2、GLM-5 等也採用了同樣的協議。Claude 則要求用戶端在工具呼叫迴圈中把 thinking block（帶簽名校驗）原樣回傳給 API，而在新的使用者輸入之後，服務端會忽略最後一次使用者輸入之前的 thinking block。因此，使用前應查閱對應模型的最新文件。
+需要注意的是，不同模型家族對歷史思維鏈的處理策略差異很大，而且策略本身也在快速演變。DeepSeek R1 時代的官方做法是**剝離全部歷史思考**：多輪對話時只回傳 `content`，不回傳 `reasoning_content`——因為 R1 訓練時歷史 CoT 從不出現在輸入裡，塞回去屬於分佈外輸入，反而可能干擾輸出，同時也能省下可觀的 token。但這個策略對 Agent 場景是有缺陷的：中間思考承載著「為什麼呼叫這個工具、排除了哪些假設」等關鍵狀態，剝離後模型每輪從零推理，容易重複犯錯、丟失長程計畫。因此 DeepSeek 在 V4 上**徹底反轉**：只要請求攜帶 `tools` 參數，兩個 user 訊息之間的每條 assistant 訊息（哪怕這一輪並未真的呼叫工具）都必須原樣回傳 `reasoning_content`，否則 API 直接返回 400 錯誤；不帶 `tools` 的純聊天則仍然忽略歷史思考。Agent 天然攜帶 `tools`，因此這條強制規則躲不開——Kimi K2、GLM-5 等也採用了同樣的協議。Claude 則要求用戶端在工具呼叫迴圈中把 thinking block（帶簽名校驗）原樣回傳給 API，而在新的使用者輸入之後，服務端會忽略最後一次使用者輸入之前的 thinking block。因此，使用前應查閱對應模型的最新文件。這些差異在多輪對話裡只關係到省不省 token，一旦要把跑到一半的軌跡交給另一家模型接著跑，就會變成實打實的介面錯誤，詳見第五章的實驗 5-1。
 
 **第二，解釋了 KV Cache 為什麼對字首如此敏感**。Chat Template 將 system 訊息和工具定義轉換為固定的 token 序列放在最前面。這些 token 的鍵值對（Key-Value pairs）被快取後可以跨請求複用。但如果字首中某個 token 發生變化——哪怕只是系統提示詞裡多了一個空格——首個不同 token 及其後的快取就無法複用。
 
@@ -757,9 +757,10 @@ Agent Skills 的核心思想是將 Agent 的能力模組化為獨立的、可按
 
 後設資料中的 `description` 欄位是路由決策的關鍵——它應當足夠短（控制常駐的 token 量），但寫法要像路由條件而非功能介紹。可以明確寫出「何時使用」和「何時不使用」的邊界，並給出幾條典型**反例**，以減少寬泛匹配帶來的誤觸發；這是路由提示的寫作建議，不是額外的格式欄位。描述太寬泛（如 「help with backend」）等於任何後端相關的工作都能觸發，路由就會失準；真正有效的描述是路由條件——「何時該用我」比「我能做什麼」重要得多。
 
-**第二層（核心流程）**：當 Agent 判斷某個任務需要特定的 Skill 時，執行環境才載入完整的 `SKILL.md`。Claude Code 會在呼叫位置把 Skill 指令作為 user message 加入會話；採用檔案讀取或專用啟用工具的其他執行環境，也可以把內容作為 tool result 返回。以 PPTX Skill[^ch2-4] 為例，其中包含處理 PowerPoint 檔案的核心流程：如何透過 markitdown（Microsoft 開源的文件轉 Markdown 工具）提取文字，如何解壓 PPTX 檔案存取原始的 XML 結構，以及關鍵檔案的路徑約定。
+**第二層（核心流程）**：當 Agent 判斷某個任務需要特定的 Skill 時，執行環境才載入完整的 `SKILL.md`。觸發載入的方式有兩種：使用者顯式輸入斜線命令（如 `/pptx`）時，由客戶端在本地攔截並展開，模型不必先發起一次工具呼叫；模型讀過後設資料目錄後自己判斷需要某個 Skill 時，則呼叫專用的 Skill 工具，比前者多一次 ReAct 往返。兩條路徑的落點相同——Claude Code 都在呼叫位置把 Skill 正文作為 user message 加入會話，模型自主觸發時返回的那條 tool result 只是一句「正在啟動 Skill」的佔位符，並不承載正文[^ch2-cc-skill-inject]。沒有專用啟用工具的執行環境則用通用檔案讀取工具去讀 `SKILL.md`，正文以 tool result 的形式進入上下文。以 PPTX Skill[^ch2-4] 為例，其中包含處理 PowerPoint 檔案的核心流程：如何透過 markitdown（Microsoft 開源的文件轉 Markdown 工具）提取文字，如何解壓 PPTX 檔案存取原始的 XML 結構，以及關鍵檔案的路徑約定。
 
 [^ch2-4]: Anthropic, "PPTX Skill" , 2025. https://github.com/anthropics/skills/
+[^ch2-cc-skill-inject]: Claude Code Docs, [「How Claude Code uses prompt caching」](https://code.claude.com/docs/en/prompt-caching), 「Invoking skills and commands」：「Skills and commands inject their instructions as user messages at the point of invocation.」兩種觸發方式的分工見 Agent Skills, [「How to add skills support to your agent」](https://agentskills.io/client-implementation/adding-skills-support), 「User-explicit activation」：斜線命令由 Harness 攔截並注入，模型無需自己發起啟用動作。
 
 [^ch2-codex-skills]: OpenAI，《Build skills》，Codex 文件。 https://developers.openai.com/codex/skills/
 
@@ -791,7 +792,7 @@ Skills 的價值不僅在於優雅的上下文管理，更在於為領域知識�
 理解 Skills 的上下文成本時，必須把「後設資料目錄」和「完整 Skill 指令」分開：
 
 - **標準層**。規範規定的是載入時序，而不是訊息角色：目錄必須先於正文可發現，正文在 Skill 被選中後按需載入；具體訊息角色、包裝方式以及目錄是否在每輪重建，都由 Agent Harness 決定。
-- **Claude Code 的實作**。Claude Code 採用漸進式目錄與呼叫時追加正文的方式：目錄作為執行時上下文訊息提供，完整指令則在 Skill 被呼叫的位置作為 user message 注入。這裡的「system prompt」可以用來描述邏輯上的穩定指令層，但不應被理解為所有客戶端都使用 API 的 `role: "system"`。
+- **Claude Code 的實作**。Claude Code 採用漸進式目錄與呼叫時追加正文的方式：目錄作為執行時上下文訊息提供，完整指令則在 Skill 被呼叫的位置作為 user message 注入。這裡的「system prompt」可以用來描述邏輯上的穩定指令層，但不應被理解為所有客戶端都使用 API 的 `role: "system"`。圖2-12 畫的是模型自主觸發的情形，軌跡裡能看到完整的一次往返：`Skill(skill: "pptx")` 的 tool_use、一條佔位符 tool_result，正文隨後作為獨立的 user 訊息追加；如果使用者直接輸入 `/pptx`，客戶端在本地完成展開，軌跡裡就沒有這一對工具呼叫，只剩下最後那條 user 訊息。
 - **OpenAI Codex 的實作**。Codex 在每輪上下文建構階段重新渲染 Skills catalog，並將其作為 `developer` 上下文片段提供；明確選中的 Skill 正文則以帶 `<skill>` 標記的 `user` 片段注入。其他來源的 Skill 也可以透過專用工具按需讀取[^ch2-codex-skills]。
 
 目前 Agent Harness 演進非常快，讀者看到本書時它們的實作可能已經改變。儘管具體方式不同，但都遵循**「少量目錄常駐、完整正文按需載入」**的設計原則。這是 Skills 兼顧動態載入能力與上下文開銷的關鍵。下面兩張圖分別從兩個視角追蹤 Skills 在軌跡中的位置和 KV Cache 的演化。

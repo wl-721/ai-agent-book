@@ -177,6 +177,33 @@ def test_explicit_openai_provider_is_not_hijacked_for_gpt5(monkeypatch):
     assert backend.base_url == "https://api.openai.com/v1"
 
 
+def test_default_openai_provider_is_rerouted_for_gpt5(monkeypatch):
+    # An experiment that merely defaults to OpenAI is not the reader choosing
+    # it: gpt-5.x on the direct chat completions endpoint refuses function
+    # tools unless reasoning is off, so the reroute has to apply here.
+    monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key-3b")
+    backend = resolve_backend("openai", model="gpt-5.6-luna", chosen_by_reader=False)
+    assert backend.using_openrouter is True
+    assert backend.model == "openai/gpt-5.6-luna"
+
+
+def test_default_openai_provider_stays_direct_without_openrouter_key(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    backend = resolve_backend("openai", model="gpt-5.6-luna", chosen_by_reader=False)
+    assert backend.using_openrouter is False
+    assert backend.base_url == "https://api.openai.com/v1"
+
+
+def test_default_provider_flag_does_not_reroute_non_gpt5(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key-3c")
+    backend = resolve_backend("openai", model="gpt-4o", chosen_by_reader=False)
+    assert backend.using_openrouter is False
+    assert backend.model == "gpt-4o"
+
+
 def test_ollama_needs_no_key():
     backend = resolve_backend("ollama")
     assert backend.base_url == "http://localhost:11434/v1"
@@ -295,6 +322,13 @@ def test_fallback_key_is_not_reusable_as_a_provider_key(monkeypatch):
         ("gpt-4o", "openai/gpt-4o"),
         ("claude-sonnet-4", "anthropic/claude-sonnet-4.6"),
         ("deepseek-v4-flash", "deepseek/deepseek-v4-flash"),
+        # Vendors the chapter-local mappers knew and this one has to keep:
+        # a Gemini id sent unmapped is rejected by OpenRouter, and the o-series
+        # ships bare ids with no dash to anchor on.
+        ("gemini-3.5-flash", "google/gemini-3.5-flash"),
+        ("o3", "openai/o3"),
+        ("o4-mini", "openai/o4-mini"),
+        ("chatgpt-4o-latest", "openai/chatgpt-4o-latest"),
         # Already namespaced ids pass through untouched.
         ("google/gemma-4-26b-a4b-it:free", "google/gemma-4-26b-a4b-it:free"),
     ],
@@ -304,6 +338,17 @@ def test_direct_openrouter_maps_bare_model_ids(monkeypatch, override, expected):
     override is mapped the same way as on the fallback path."""
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-direct-key")
     assert resolve_backend("openrouter", model=override).model == expected
+
+
+def test_gemini_fallback_is_namespaced_for_openrouter(monkeypatch):
+    """The reroute path maps too: an unmapped ``gemini-*`` id reaches OpenRouter
+    under a name it does not host and is rejected."""
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-gemini-key")
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+    backend = resolve_backend("gemini", model="gemini-3.5-flash")
+    assert backend.using_openrouter is True
+    assert backend.model == "google/gemini-3.5-flash"
 
 
 def test_keyless_provider_resolves_without_any_key():
