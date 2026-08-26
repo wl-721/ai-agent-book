@@ -126,7 +126,6 @@ The first is **tool description poisoning**: the tool's description enters the m
 
 Mitigation strategies follow traditional software supply chain security principles: **review tool descriptions** before integration—treat descriptions as untrusted input, not harmless metadata; **lock server versions**, reject silent updates, and re-review when upgrading; configure **least-privilege credentials** for each server. At the runtime level, the Sidecar mechanism discussed later in this chapter provides a last line of defense: an independent security review model only sees structured tool call data and is less susceptible to manipulation by persuasive text hidden in tool descriptions. Chapter 5 will systematically introduce Simon Willison's **Lethal Triad** (access to private data, exposure to untrusted content, ability to communicate externally)—when all three are present, an attack loop closes. The triad gives a systematic frame for judging the overall risk of an MCP tool combination: the more servers you integrate, the likelier all three elements coexist; and on top of the triad, persistent memory lets an attack's impact outlive the session, amplifying the risk further.
 
-
 Skills are more flexible than MCP: they carry not only the tool description but also the code that implements the tool, and some of that code may run on the user's own machine. **Skills are therefore far more dangerous than MCP.** Beyond tool-description poisoning, malicious code can be planted directly in a Skill, or a supply-chain attack can pull down malicious code at runtime. This is why most Skill Hubs run security scans—but scanning is not a cure-all, and even a scanned Skill may still hide malicious content. When using untrusted third-party Skills, run them carefully in an isolated environment and avoid letting them touch sensitive information.
 
 ## What to Do When There Are Too Many Tools: Hierarchical Organization and Proactive Tool Discovery
@@ -159,8 +158,6 @@ Explicitly stating the classification structure in the system prompt can help th
 
 Retrieval-based pre-filtering eases the problem of having too many tools, but it carries an inherent limit—it matches **once**, against the user's initial query. A request as innocent-looking as “debug the file” may pull in a multi-step, cross-domain tool chain—file access, code analysis, command execution—that no one can foresee when the task begins.
 
-The traditional approach injects every tool's schema into the system prompt at once, and it breaks down fast once tools number in the thousands: the context clogs with tool manuals, and selection accuracy drops. Retrieval-based pre-filtering (discussed in the "Tool Ecosystem" section above), which screens candidates by semantic similarity first, eases the problem but carries an inherent limit—it matches **once**, against the user's initial query. A request as innocent-looking as "debug the file" may pull in a multi-step, cross-domain tool chain—file access, code analysis, command execution—that no one can foresee when the task begins.
-
 **From Passive Selection to Proactive Discovery.** The next step is to turn the Agent from passive recipient into active discoverer: when it hits a capability gap mid-execution, it declares in natural language what capability it needs, and the system matches and injects the tool on the fly. MCP-Zero[^mcp-zero-2025] is the representative work. No tool schema is pre-loaded in the system prompt; the Agent emits structured request blocks in its thinking (e.g., “GitHub server: search repositories and return metadata”), and the system routes through two levels of semantic matching (server-level → tool-level) across thousands of candidates before injecting. The paper reports a roughly 98% reduction in token use compared with full injection across about 2,800 tools.
 
 The more common engineering equivalent keeps only a few basic tools (web search, code interpreter) plus a “tool search tool” in the system prompt and lets the Agent describe its needs in natural language to retrieve and load the rest. Anthropic's Tool Search Tool in the Claude API is one example. Both approaches let the Agent declare a gap and have the system inject a capability on demand.
@@ -170,6 +167,8 @@ The more common engineering equivalent keeps only a few basic tools (web search,
 ![Figure 4-2: Hierarchical Tool Matching (Two-Level Semantic Search: Server-Level → Tool-Level)](images/fig4-2.svg)
 
 **Hierarchical Matching and Fallback.** Efficient matching exploits the hierarchy already present in how tools are organized. In protocols like MCP, tools are grouped by **server** (like apps on a phone, each bundling a set of related functions), so matching can run in two layers: locate the relevant servers by capability description, then match specific tools within them. That shrinks the search space from "thousands of tools" to "dozens of servers × dozens of tools each," saving compute and cutting cross-domain semantic confusion. In engineering terms this rests on an embedding index built offline and updated incrementally. And when both layers' candidates score below threshold, the system should return an explicit "not found," prompting the Agent to rephrase and retry, to improvise with basic tools, or to create a new tool outright (the subject of Chapter 9).
+
+After the first load, the schema stays pinned at its original position in the trajectory, so the static prefix remains reusable.
 
 ![Figure 4-3: KV Cache Optimization for Dynamic Tool Loading](images/fig4-3.svg)
 
@@ -252,7 +251,6 @@ Compared with native multimodal processing, tool-based analysis keeps only a sho
 
 > **Experiment 4-2 ★★: Perception Tool MCP Server**
 >
->
 > This experiment builds a set of perception tool MCP servers, covering the following five categories of perception scenarios:
 >
 > - **Search**: Web search, local knowledge base search, file download
@@ -311,6 +309,8 @@ A reader might object: we just said that review across a large capability gap is
 A security Sidecar also needs a **rejection circuit breaker**. If the classifier rejects several operations in a row, the system should not retry forever—wasting resources and potentially trapping the Agent in a loop—but should fall back to asking the user to decide manually. This is a typical instance of the Harness “correction” function from Chapter 1.
 
 Both the Sidecar and the Proposer-Reviewer mechanism introduce a second perspective, but their execution timing and review targets differ. Table 4-2 compares the key differences between these two mechanisms.
+
+**Make the security check invisible at the UX layer.** Security checks add latency. One way to improve the experience is to separate "display" from "admission" and run them in parallel: when the Agent is about to execute a tool call, the interface shows a progress hint ("Reading `src/main.py`...") while the security check runs in the background. This is Harness design at its best: safety not paid for with user experience.
 
 Table 4-2 Comparison of Proposer-Reviewer Mechanism and Sidecar Mechanism
 
@@ -428,8 +428,6 @@ Although AI Agents are becoming increasingly powerful, human intervention remain
 ## Chapter Summary
 
 The core conclusion of this chapter: the quality of tool design sets the ceiling on an Agent's capabilities. The first decision is what form a capability takes—lean toward the general end by default, and fall back to a dedicated tool only in the four cases of security and permissions, complex parameters, very high usage frequency, and platform differences; that decision is independent of “how many capabilities the model sees at once,” the former fixing the resident cost of each capability and the latter how many are exposed together.
-
-In tool design, the MCP protocol standardizes tool interoperability, while hierarchical organization, dynamic tool discovery, and Skills answer the challenge of tool overload. At the same time, every third-party MCP server introduces a new trust boundary—tool description poisoning, tool shadowing, and credential risks demand review before integration and defense at runtime. And one baseline runs through all tool design: fidelity of parameter passing—no systematic gap between the world the model perceives and the world the tool operates on.
 
 This chapter covered the three of the five tool categories that the Agent invokes on its own initiative:
 

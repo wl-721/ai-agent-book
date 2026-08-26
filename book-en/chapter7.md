@@ -72,41 +72,34 @@ Before building an environment or dataset, define what "success" means: is one w
 
 ### Technical Wonders: Capability Ceilings with Pass@k
 
-Many current models and Agents operate in a **technical-wonder** phase: after many attempts, a long time budget, and human selection, one breakthrough trajectory is enough to show that a task is possible in principle. That is the logic of **Pass@k**—run the same task $k$ times and count it as passed if at least one attempt passes; for continuous scores, keep the best attempt as **Best@k**.
+Many current models and Agents are still in what can be called the **technical wonder** phase. The wonder is a capability ceiling demonstrated under many attempts, a generous time budget, and human selection: one success is enough to prove that the thing is possible in principle. That is exactly the logic of **Pass@k** — run the same task $k$ times and count it as passed if at least one run passes; when the output is a continuous score, take the best run and call it **Best@k**.
 
-Anthropic's long-running-Agent examples—writing a C compiler over a week, searching for a counterexample to an important conjecture, or repeatedly auditing open-source software until a decades-old vulnerability is found—illustrate this capability ceiling. Research discovery, vulnerability hunting, and open-ended creation can all benefit from selecting the best of $k$ candidate trajectories.
+Anthropic's discussion of long-running Agents illustrates this kind of ceiling: letting an Agent work autonomously for a week and write a C compiler from scratch; having it explore until it finds a counterexample to an important mathematical conjecture; or having it review open-source software over and over until it surfaces a serious security hole that has been sitting there for decades.
 
-Manus made this ceiling visible by giving people a virtual computer on which an Agent could work for half an hour or an hour. OpenClaw made the experience feel more like a person who can be assigned work through messaging, access files and online services, report progress, ask for information, and wake itself to process mail. Early versions were expensive and unreliable on any single attempt, but their generality made high Pass@k possible—and the resulting technical wonders spread widely on social networks.
+For engineering and research exploration of this kind, what gets demonstrated is usually not "right every time" but a single breakthrough trajectory that finally appears once the exploration budget is stretched far enough. For scientific discovery, vulnerability hunting, and open-ended creative work, that ceiling is valuable in itself: a human can pick the best of $k$ candidate trajectories.
+
+Beyond the foundation-model labs, many application companies use the technical-wonder strategy too. Manus drew wide attention because it handed people a virtual computer, letting an audience with no intuition for Agents discover that AI can operate a computer the way a person does — working for half an hour or an hour and completing a complex task step by step.
+
+OpenClaw gave many people their first sense that an Agent could feel like a live colleague. Users assign it work through an instant-messaging app much as they would a real person; it can reach every file on the computer and every online service, it reports back or asks for more information when it reaches a certain point, and it can even wake itself up to check and handle email.
+
+Early Manus and OpenClaw did not have high success rates on complex tasks, and their token costs were steep. But because these Agent frameworks are general-purpose, complex tasks tend to have a high Pass@k when paired with the strongest models, which is a high technical ceiling. Those technical wonders were shared widely on social networks, and that was the key to these products' success.
 
 ### Business Reliability: Focus on Pass^k
 
-Business systems usually care about the opposite: no mistake across repeated attempts. We call this **Pass^k** (read "Pass consecutive k"): run a task consecutively $k$ times, require every run to pass, and veto any safety, compliance, or hallucination violation. It asks whether an Agent can deliver reliably, not whether it can occasionally create a miracle.
+Real businesses usually care about the opposite: not a single mistake across repeated attempts. We call this target **Pass^k** (read as **Pass consecutive k**): run the same task $k$ times in a row, require every run to pass, and allow no veto — no safety, compliance, or hallucination violation. It answers "can the Agent deliver reliably" rather than "can it occasionally work a miracle".
 
-If runs are independent and the single-run success rate is $p$,
+If the runs are independent and the single-run success rate is $p$, the relationship between the two metrics is straightforward:
 
 $$
 \mathrm{Pass@k}=1-(1-p)^k,\qquad
 \mathrm{Pass}^{k}=p^k.
 $$
 
-At $p=0.6$ and $k=5$, Pass@5 is about 99.0%, while Pass consecutive@5 is about 7.8%. The first is useful for capability exploration; the second is closer to the reliability required for payments, refunds, permission changes, and production deployment. Reports must state whether $k$ means independent samples of one task or consecutive production tasks. Side-effecting actions must be sampled in a sandbox or rollback-capable environment, with every failure counted.
+At $p=0.6$ and $k=5$, for instance, Pass@5 $=1-0.4^5\approx99.0\%$ — it looks as though at least one run almost always succeeds. But Pass consecutive@5 $=0.6^5\approx7.8\%$, which says that getting five in a row without a slip is still hard. The first number is the right way to measure a capability ceiling during exploration; only the second comes close to the reliability that payments, refunds, permission changes, and production deployments demand.
+
+An evaluation report must state exactly what the $k$ attempts are: $k$ independent samples of the same task, or $k$ consecutive tasks on a production pipeline. For operations with side effects you cannot simply "retry until it works"; sample in a sandbox or a rollback-capable environment instead, and record every failure in the reliability metric.
 
 ### Process Metrics: From Black Box to White Box
-
-Final outcomes alone are insufficient. **Action validity and authorization rate** measures the share of valid, authorized operations; **tool-call correctness** additionally asks whether arguments are semantically appropriate. **Path efficiency** covers steps, redundant actions, and backtracking against a human or heuristic baseline. **Retrieval coverage** asks whether the Agent explored enough of the information space; **cost and latency** track requests, input/output tokens, KV-cache reuse, tool time, and network delay.
-
-### Safety, Robustness, and Trajectory Coverage
-
-Safety and compliance follow a **zero-tolerance** rule for sensitive operations, data leakage, and prohibited content: one serious violation vetoes the evaluation. Robustness covers seed sensitivity, UI changes, API jitter, and stale-memory interference. Evaluation must cover both the execution **trajectory** (what the Agent said and did) and the final **outcome** (what the system became); a booking claim in the dialogue is not proof that a booking exists.
-
-### Human Spot Checks and Adversarial Review
-
-Regularly sample successes, failures, and borderline scores and audit the judge's rationale. Before deploying LLM judges at scale, calibrate against a human-labeled gold set of roughly 100–200 cases and require a preset agreement threshold such as Cohen's kappa above 0.7; recalibrate whenever the judge or Rubric changes. Red-team hidden errors, keyword stuffing, and judge-specific exploits, and use multiple independent judges with human review for serious disagreement.
-
-
-Having settled "what tasks to evaluate on," we still need to answer "which dimensions to measure." This section gathers the metrics commonly used in Agent evaluation into a reference "metric dictionary"—from process to outcome, from quality to safety—giving each a definition and its use cases. It also supplies the precise definitions of Pass@k, Pass^k, and the other metrics invoked earlier (e.g., in the τ-bench section).
-
-**Process Metrics: From Black Box to White Box.**
 
 Focusing solely on the final outcome is insufficient; the process by which the Agent achieves the outcome is equally important. **Action validity and authorization rate** measures the proportion of actions that are both valid and authorized—invalid operations include calling non-existent tools or passing incorrect parameter types; unauthorized operations refer to actions beyond the permitted scope. A high rate indicates the Agent has a clear understanding of the tool ecosystem. **Tool call correctness rate** further requires that parameters are semantically reasonable: the query terms for a search tool should accurately express the need, and the path for a file operation should point to the correct target.
 
@@ -114,15 +107,7 @@ Focusing solely on the final outcome is insufficient; the process by which the A
 
 **Retrieval coverage** targets information-gathering tasks: Did the Agent fully explore the information space? Did it jump to conclusions after only looking at the first page of search results? **Cost and latency** focus on request count, token expenditure (distinguishing input/output costs, considering KV Cache reuse), and wall-clock time (including model inference + tool execution + network latency). Time distribution needs to be tracked to identify bottlenecks.
 
-**Outcome and Quality Metrics.**
-
-**Task success rate** is the most direct hard metric, which can be designed with hierarchical standards (core goals must be achieved, secondary goals affect quality scores). In terms of statistical methods, two often-confused metrics need to be distinguished:
-
-- **Pass@k**: The probability that **at least one** of k attempts succeeds, answering "Can the Agent do it?"
-- **Pass^k**: The probability that **all** k attempts succeed, answering "Is the Agent stable and reliable?"
-- **Best@k**: The score of the **best** of k attempts (rather than whether it succeeded), measuring the "quality ceiling given enough opportunities," often used for open-ended tasks with continuous scoring.
-
-A concrete number makes the difference vivid. Suppose the Agent's single-attempt success rate is 60% (Pass@1 = 0.6). Over 5 attempts: Pass@5 = 1 - 0.4^5 ≈ 99% (almost certain to succeed at least once), while Pass^5 = 0.6^5 ≈ 7.8% (all five succeeding is unlikely). The former measures the capability ceiling, the latter stability; confuse them and you will misread your Agent.
+### Safety, Robustness, and Trajectory Coverage
 
 **Safety and Compliance Metrics** are crucial in production deployment: triggering sensitive operations (deleting data / modifying permissions / sending external communications), data leakage (printing passwords in logs / sending private documents to external APIs), and prohibited content should all be subject to a **zero-tolerance principle**—similar to the hallucination veto (see the "Four Rubric Principles" later). A single serious safety violation vetoes the overall evaluation, regardless of performance in other dimensions.
 
@@ -130,9 +115,13 @@ A concrete number makes the difference vivid. Suppose the Agent's single-attempt
 
 **Dual Coverage of Execution Trajectory and Final Outcome.** An easily overlooked distinction: "what the Agent said and did during execution" (the trajectory defined in Chapter 1) and "what the system ultimately became" (the final outcome) are two different things. The Agent saying "the booking is complete" is trajectory-level information; a record actually appearing in the database is outcome-level verification. Look only at the trajectory and you miss "said it but didn't do it"; look only at the outcome and you may miss intermediate steps that went astray. Anthropic once gave an example: a flight booking Agent discovered a loophole in the airline's policy during execution and found a cheaper option for the user—if scored only according to the preset execution path, this run would be judged a failure; but from the final outcome, the user got a better deal. Therefore, both types of evaluation should be covered to avoid systematic blind spots.
 
-**Human Spot Checks and Adversarial Review.**
+### Human Spot Checks and Adversarial Review
 
-Even when automated evaluation is reliable most of the time, regular human spot checks are still needed: cover different task types, successes and failures, and ambiguous cases near score boundaries — verifying not just the results but the soundness of the scoring rationale. Spot checks can be systematized into **judge calibration**. Before deploying LLM judges at scale, build a human-annotated gold standard set (say, 100-200 cases spanning task types and difficulties) and measure how well the judge model (an LLM acting as judge; the mechanism is detailed in the LLM-as-a-Judge section next) agrees with human annotations — simple agreement rate or Cohen's kappa, the latter discounting chance agreement. Only once agreement clears a preset threshold (e.g., kappa above 0.7) should the judge be used for large-scale evaluation; thereafter, recalibrate on the gold set whenever the judge model or Rubric changes. Without this step, an LLM judge's scores are just "another model's opinion," not a reliable proxy for human judgment. **Adversarial review** uses Red Teaming to actively construct challenging cases: seemingly perfect answers containing hidden errors, answers that get by through keyword stuffing, and answers that exploit known biases of the judge model to obtain undeservedly high scores. **Multi-judge mechanisms** use multiple independent judges to score separately, determining the final result through weighted averaging or consistency checks—when judges disagree significantly, the case is flagged for further human review.
+Even when automated evaluation is reliable most of the time, regular human spot checks are still needed: cover different task types, successes and failures, and ambiguous cases near score boundaries — verifying not just the results but the soundness of the scoring rationale.
+
+Spot checks can be systematized into **judge calibration**. Before deploying LLM judges at scale, build a human-annotated gold standard set (say, 100-200 cases spanning task types and difficulties) and measure how well the judge model (an LLM acting as judge; the mechanism is detailed in the LLM-as-a-Judge section next) agrees with human annotations — simple agreement rate or Cohen's kappa, the latter discounting chance agreement. Only once agreement clears a preset threshold (e.g., kappa above 0.7) should the judge be used for large-scale evaluation; thereafter, recalibrate on the gold set whenever the judge model or Rubric changes. Without this step, an LLM judge's scores are just "another model's opinion," not a reliable proxy for human judgment.
+
+**Adversarial review** uses Red Teaming to actively construct challenging cases: seemingly perfect answers containing hidden errors, answers that get by through keyword stuffing, and answers that exploit known biases of the judge model to obtain undeservedly high scores. **Multi-judge mechanisms** use multiple independent judges to score separately, determining the final result through weighted averaging or consistency checks—when judges disagree significantly, the case is flagged for further human review.
 
 ## Automated Evaluation Environment
 
@@ -303,8 +292,6 @@ SWE-Bench Verified is a model of quality control. OpenAI randomly selected 1,699
 
 OSWorld-Verified is a model of iterative improvement. After its release in April 2024, OSWorld quickly became an important benchmark for multimodal Agent evaluation, but over 15 months of widespread use, more than 300 issues were uncovered. These issues fall into four categories: environment issues (anti-scraping measures on websites, CAPTCHAs, and dynamic content changes), task description issues (ambiguous phrasing), verification logic issues (too strict or too lenient), and initial state issues (incomplete configuration). A team of about 10 people from the University of Hong Kong worked closely with MoonShot AI, OpenAI, ByteDance Seed TARS, Anthropic, Simular, and others for two months to systematically fix these issues. Repair strategies were formulated for each category: environment issues were resolved by locking versions and offline backups, task descriptions were clarified by rewriting ambiguous phrasing, verification logic was balanced by manually establishing correct baselines and adjusting conditions, and initial states were enhanced by adding completeness checks.
 
-The evaluation infrastructure was also migrated from local VMs to the AWS cloud platform, leveraging elastic scaling to achieve a 50-fold speedup through parallelization (from over 10 hours to a few minutes). The Google Drive task initialization success rate increased from 50% to over 95%. All official evaluation trajectory data is publicly available on Hugging Face, allowing the community to review every detail, reproduce results, and identify issues, forming a virtuous cycle of continuous improvement.
-
 Evaluation environments and post-training environments often share the same origin: a well-designed evaluation environment can be adapted into a training environment with little effort—SWE-Gym is a representative example of building training tasks based on SWE-bench, while the parameterized templates of τ²-bench and AndroidWorld can generate massive training instances in batches. But one red line must be drawn: what can be reused is the environment's **construction mechanism**; the evaluation set's specific tasks must stay strictly isolated from the training data—once an evaluation task enters the training set, it tests memory, not ability (see Chapter 8 for details).
 
 ## Automated Evaluation Methods
@@ -375,53 +362,6 @@ rubric:
 
 **Good Rubric vs. Bad Rubric**: Each scoring level above specifies verifiable, concrete behavior ("Correctly answers Dr. Chen") rather than descriptions that cannot be judged objectively, like "demonstrates a deep understanding of memory." The veto item sets the bottom line: even if every other dimension scores full marks, a single instance of hallucination results in an automatic zero.
 
-### Failure Attribution: Locate the First Error in a Trajectory
-
-End-to-end evaluation often says only "pass" or "fail". To make results drive fixes, perform **failure attribution** for every failed trajectory: record the main error class, the first step at which unacceptable behavior appeared, the relevant tool call or model output, and evidence that can be audited. Attribute the first error that sent the task off course; later errors are often just the chain reaction.
-
-Production bad cases usually come from three signals: an explicit user correction ("do not do that"), a downvote or other negative feedback, or a later state check, rule verifier, or LLM judge showing that the Agent did something it should not have done. LLMs can help with this work, but cannot replace careful human reading because failure attribution often reveals product problems, not only technical bugs.
-
-An initial Coding-Agent taxonomy can include missing process or repository rules, tool-call and format errors, abnormal model termination, and task-completion or logic failures. The first violating action—not the final error message—should be recorded. Store a structured JSON or YAML attribution with step number, tool name, observation evidence, root cause versus consequence, recoverability, and confidence, together with the task goal, environment state, version identities, and complete trajectory.
-
-#### Scope-Sensitive Document Formatting Errors
-
-When a user says "the quotes are wrong", that cannot be turned into a global character replacement. At minimum you must distinguish ASCII straight quotes (`"`, `'`), Chinese curly quotes (`“”`, `‘’`) and Markdown backticks (`` ` ``). The same character plays a different syntactic role in Chinese prose, quoted English source, inline code, code blocks, code comments, JSON and paths.
-
-Evaluation data should first parse the document into scoped spans—for example `ZH_PROSE`, `EN_PROSE`, `QUOTED_SOURCE`, `INLINE_CODE`, `CODE_BLOCK`, `CODE_COMMENT` and `JSON_OR_SCHEMA`. Each span records the set of permitted transformations, the characters that must be protected, and the validator result after editing. The three cases below cannot be handled by one replacement rule:
-
-```text
-Chinese prose: call the `reset()` method.
-Quoted English source: “Please restart the service.”
-# the code block below only illustrates a protected scope
-# Chinese comment: display "current status"
-name = "status"
-```
-
-Trajectory-prefix regression should require the model to make the minimal edit, and check at the same time Chinese document style, the preservation rate of quoted English source, code and JSON syntax, and the edit distance over non-target text. When the rules cannot determine the scope, keeping the original text and asking for clarification should count as a permitted action, not a guessed edit that happens to pass.
-
-#### Exact-Copy Errors: From `old_string` Mismatch to Layer-by-Layer Localization
-
-An `old_string` failure cannot be attributed simply to "the model copied it wrong" either. For the same string, store the raw byte hash, the Unicode code point sequence and the tokenizer token ID sequence, then look for the first divergence along this chain:
-
-```text
-original file bytes → tool return → Harness serialization → model context
-→ model token output → decoded string → JSON/tool-call parsing → tool matching
-```
-
-A minimal set of evaluation probes covers direct restatement, extraction from a long context, placement into tool arguments, selection among similar strings, and spaces, newlines, backslashes, Unicode combining characters and low-frequency tokens. The metrics are byte-exact match, code-point-exact match, token-exact match, the position of the first divergence, and the real tool success rate. If the model is correct on the direct probe but the tool call still fails, fix the tokenizer, the serialization, the Harness or the tool protocol; only when the first divergence appears in the model's own output should the case be turned into the copying training data of Chapter 8.
-
-### End-to-End and Trajectory-Prefix Regression Tasks
-
-Once the first error is known, turn the repair target into a repeatable **regression task**. End-to-end regression starts from the initial state and user request, runs the whole workflow, and checks final state, required output, and safety. A **trajectory-prefix regression task** freezes the context, conversation, tool returns, and environment state just before the first error, then tests only the next one or few observable actions. It is cheaper and isolates one decision boundary, so it is especially important for high-reliability production Agents.
-
-Prefix tasks should define an **acceptable action set**, not one canonical answer: reading repository rules, asking the user, or refusing a dangerous operation may all be valid, while prohibited actions are listed explicitly. Process omissions become end-to-end tasks with Plans, required documents, and acceptance tests; tool errors become prefix tasks that test formatting, escaping, or tool choice; abnormal execution becomes truncation, timeout, and tool-failure recovery; and completion or logic errors become multi-goal and "not yet proved impossible" cases. The first error is also a possible process-supervision signal for Chapter 8, but evaluation and training data must remain isolated.
-
-> **Experiment 7-5 ★★: Trajectory-Prefix Boundary Evaluation with Multiple Encodings**
->
-> This experiment supplies the Agent with known user memory, the current instruction, a trajectory prefix, tool returns, and environment state, then asks for only the next observable action. It covers production bad cases such as scope conflicts, stale preferences overriding current instructions, low-confidence inferences, confirmation before high-risk deletion, and preview before external publication. The same cases are encoded as JSON Cards, Markdown, and Python-like memory; deterministic checks score the allowed decision category, safety, required evidence, and forbidden actions.
->
-> With GPT-5.6-sol through OpenRouter, all 33 cells (11 cases × 3 encodings) completed without API errors. Each encoding passed 6/11 cases, but their failure locations differed, showing that changing the representation alone does not repair application policy.
-
 Give the judge both the Rubric and the Agent's response. It will score each dimension and explain why. Once results from dozens of cases are grouped by dimension and the low-scoring traces are replayed, a vague drop in success rate becomes a concrete diagnosis: retrieval missed a fact, the model linked the wrong people or events, or it added an unsupported claim. A useful Rubric tells the team not only how the system scored, but where to look next.
 
 > **Experiment 7-3 ★★: Building a Rubric-Based User Memory Evaluation System**
@@ -480,7 +420,7 @@ Multimodal judging extends LLM-as-a-Judge to the domains of speech, images, and 
 - **UI Evaluation**: Uses a **Proposer-Reviewer** mechanism to check for issues like text overflow, color contrast, and button placement. Here, the proposer-reviewer is used as an **evaluation method**, differing from its use as a **generation system component** in Chapter 5, but the core mechanism is the same—one model generates, another independently reviews.
 - **Video Editing Evaluation**: Verifies the correctness of clip start/end points and effect application through keyframes.
 
-> **Experiment 7-6 ★★: Building a Fully Automated TTS Quality Evaluation Pipeline**
+> **Experiment 7-5 ★★: Building a Fully Automated TTS Quality Evaluation Pipeline**
 >
 > This experiment requires designing and implementing a complete multimodal LLM-as-a-Judge TTS quality evaluation system from scratch.
 >
@@ -494,6 +434,104 @@ The companion repository preserves a small direct-listening run. OpenAI and Fish
 Those scores do not establish a provider winner. There were only four clips per provider, and the fixed reference clip came from Fish S1, which naturally favors Fish Audio on voice similarity. A general TTS comparison should remove that dimension or give every candidate an appropriate target speaker. A voice-cloning comparison should ask every system to imitate the same speaker and calibrate the model judge against blinded human listening. **Choosing the reference answer, image, or audio is part of evaluation design, not neutral setup work.**
 
 Handwritten Rubrics are a fast way to establish diagnostic dimensions like these. At larger scale, a specialized **generative reward model** can automate the judging; Chapter 8 covers how such reward models are trained.
+
+### Failure Attribution: Locate the First Error in a Trajectory
+
+End-to-end evaluation often says only "pass" or "fail". To make results drive fixes, perform **failure attribution** for every failed trajectory: record the main error class, the first step at which unacceptable behavior appeared, the relevant tool call or model output, and evidence that can be audited. Attribute the first error that sent the task off course; later errors are often just the chain reaction.
+
+Production bad cases usually come from three signals: an explicit user correction ("do not do that"), a downvote or other negative feedback, or a later state check, rule verifier, or LLM judge showing that the Agent did something it should not have done. LLMs can help with this work, but cannot replace careful human reading because failure attribution often reveals product problems, not only technical bugs.
+
+Building a failure-attribution system takes patient reading and analysis of production bad-case trajectories. An LLM can help with the work, but cannot replace the human, because **failure attribution often surfaces product problems**, not just technical ones.
+
+As the product matures, the taxonomy can grow into several top-level classes, each with sub-classes, until it holds hundreds of entries. Those classes and their attribution recipes then become the prompt or the Skill for an attribution-annotation Agent.
+
+For a Coding Agent, a workable initial taxonomy looks like this.
+
+| Error class | Typical symptom | How to locate the first error |
+| --- | --- | --- |
+| Requirement understanding and ambiguity | What got built is not what the user asked for: a condition in the requirement is dropped, or the scope is read too broadly or too narrowly; when the repository holds two config files with the same name, one is simply picked, with no note and no question | Use an LLM to compare the original requirement against what the Agent **actually did** (the action sequence), item by item; find the first divergence in the outcome, then trace back to the tool call or the reply that caused it |
+| Missing process or convention | Committing without running unit tests; editing code before writing a plan; pulling in an external dependency when the repository already has an internal equivalent; bypassing an established architectural convention | Find the first action that violates the development-process convention — the first `git commit`, the first file write — and check whether it had read the source of that convention beforehand |
+| Tool-call errors | Repeated failed edits to the same file; malformed JSON/schema or arguments; special characters breaking transcription, escaping, or writing | Record the first failed edit or tool call together with the original request and the error return; repeated failures are downstream symptoms |
+| Hacking the verification environment | Editing an assertion, adding a `skip`, mocking out the logic under test; claiming "the tests pass" without ever running them | Take the first message that modifies a test or the verification logic; then cross-check the completion claim against the commands actually executed in the trajectory to confirm whether it really ran |
+| Incomplete edit | The function signature changed and three call sites were updated, but a fourth — a dynamic call, a binding in another language, a schema — was missed | Take the set difference between the blast radius the Agent claimed and the real one, pick the first omission, and look back at the keywords it searched with |
+| Wrong information reported to the user | Tool calls and environment state are all correct, but what the user is told is not: a wrong amount, status, or time; partial completion described as full completion; a required disclosure omitted |Align every factual claim in the reply against the tool return values and take the first claim that cannot be traced or that contradicts a return |
+| Non-functional regression | A public API or schema changed with no database migration script; a validation deleted so that a check would pass | Take the first message that made the change and see whether it recognised that it was touching a public interface or a structure that needs migration |
+| Abnormal model termination | Output truncated mid-stream, stopping for no reason, timing out, or ending without the closing action | Locate the first abnormal termination and separate model stop, Harness timeout, and tool-service failure |
+| Stopping the task too early | Only part of a multi-goal task is done; declaring something impossible without exhausting the reasonable options | Locate the first decision that dropped a goal or abandoned exploration, and record it separately from the final verification failure |
+
+**An attribution-annotation Agent can use an LLM to run root-cause analysis over production trajectories at scale**, but it must not emit a single sentence of "reason for failure". **The attribution record has to be structured** — JSON or YAML, citing specific step numbers, tool names, and observed evidence; it must also separate root cause from consequence, judge recoverability, and give a confidence. For example, `edit_file` returns an `old_string` mismatch and the Agent then retries three times without writing the file: the primary cause is the file-edit and tool-call error, and the three retries are consequences, not three independent root causes. When several classes appear at once, pick the primary one by the rule "earliest, and explains the failures that follow", and keep the rest as secondary. At least three classes in the table above can be pre-filtered by rules before an LLM is asked to localize the first error: cross-checking the completion claim against the commands actually executed, whether the diff touches test assertions and `skip` markers, and whether the diff changes a public API or schema with no migration file. Rules first, LLM second, is both cheaper and more accurate than feeding every trajectory to an LLM.
+
+When storing an attribution record, keep more than the LLM's output: save the task goal, the environment state, the Agent version, the toolset version, and the complete Agent trajectory, so that the case can be turned into a regression test.
+
+The three classes below are worth a closer look.
+
+#### The "Right Actions, Wrong Report" Problem
+
+"Right actions, wrong report" is the category most often hidden by an overall pass rate, because most evaluations assert only on environment state. τ²-bench scores it separately: of the 704 published baseline runs whose task carries a communication requirement, 240 failed, 162 of those failed the communication check, and 80—a third of all failures—had correct environment state and a wrong report.
+
+The companion repository holds a matching case. Asked to enter the expenses from `expenses.jpg` into a bookkeeping app, the Agent spent 32 steps granting permissions, searching, opening the image, filling in each row and saving, **with no step returning an error**, then declared the task complete; the validator reported that the row it should have written—`Dress`, ¥436.35—was absent, bearing no relation to the four it entered. Step 8 of its own reasoning reads *"I cannot actually see the content/details of the expenses in the image"*: it already knew the data was missing, neither stopped nor reported it, and by step 11 four invented expenses had appeared in its notes, which every later input faithfully entered. The first error is step 8, and that step neither raised an error nor was a tool call. Its root cause is also easy to misfile: T3A is a text-only Agent whose observation space holds only the element tree and no image pixels, so the cause is not "the model cannot do OCR" but a missing observation channel plus the absence of a legal "information unavailable" exit. File it as a model-capability problem and the next move is to swap models or train OCR; the real fix is to add the channel and the exit.
+
+> **Experiment 7-6 ★★: Failure Attribution on AndroidWorld Traces**
+>
+> This experiment practices the attribution method of this section on real traces, with no emulator and no model API required. The material is the saved T3A run in `chapter7/android-world`: `t3a.md` holds the step-by-step `Action`/`Reason`/`Summary` for every task, and `t3a_failed.md` collects more than fifty failed traces, each ending with the validator's objective verdict.
+>
+> Step 1: Sampling. Draw at least ten silent failures from `t3a_failed.md` — traces with no tool error anywhere. No tool return may have failed; the Agent either declared completion or ran out of steps; and only the closing validator verdict marks the task failed.
+>
+> Step 2: Locate the first error. For each trace, record the step number of the first error and whether that step is a tool call or an assistant message. Silent failures need two techniques: fact-anchor comparison, which walks the Agent's statements against the tool return values and takes the first divergence; and trajectory-prefix bisection, which cuts the trajectory at step k and hands it over — if it is still recoverable, the error lies after k. Searching for error keywords is no substitute.
+>
+> Step 3: Write structured records. Emit one JSON or YAML record per trace with the task name, first-error step, error category, responsible party, supporting quotations, and a separation of primary cause from consequence.
+>
+> Step 4: Compare with the existing notes. Check your results against `t3a_failed_analysis.md` and record every disagreement. Pay particular attention to root-cause assignment: those notes originally recorded the image-transcription failure as "the vision model lacks OCR," yet T3A's observation space contains no image pixels at all, so the real root cause is a missing observation channel. An existing attribution note is not an answer key.
+>
+> Step 5: Convert to regression tasks. Take three traces whose first error is an assistant message, cut each trajectory prefix just before that error, and write the acceptable-action set and the forbidden actions to form trajectory-prefix regression tasks.
+>
+
+#### Scope-Sensitive Document Formatting Errors
+
+When a user says "the quotes are wrong", that cannot be turned into a global character replacement. At minimum you must distinguish ASCII straight quotes (`"`, `'`), Chinese curly quotes (`“”`, `‘’`) and Markdown backticks (`` ` ``). The same character plays a different syntactic role in Chinese prose, quoted English source, inline code, code blocks, code comments, JSON and paths.
+
+Evaluation data should first parse the document into scoped spans—for example `ZH_PROSE`, `EN_PROSE`, `QUOTED_SOURCE`, `INLINE_CODE`, `CODE_BLOCK`, `CODE_COMMENT` and `JSON_OR_SCHEMA`. Each span records the set of permitted transformations, the characters that must be protected, and the validator result after editing. The three cases below cannot be handled by one replacement rule:
+
+```text
+Chinese prose: call the `reset()` method.
+Quoted English source: “Please restart the service.”
+# the code block below only illustrates a protected scope
+# Chinese comment: display "current status"
+name = "status"
+```
+
+Trajectory-prefix regression should require the model to make the minimal edit, and check at the same time Chinese document style, the preservation rate of quoted English source, code and JSON syntax, and the edit distance over non-target text. When the rules cannot determine the scope, keeping the original text and asking for clarification should count as a permitted action, not a guessed edit that happens to pass.
+
+#### Exact-Copy Errors: From `old_string` Mismatch to Layer-by-Layer Localization
+
+An `old_string` failure cannot be attributed simply to "the model copied it wrong" either. For the same string, store the raw byte hash, the Unicode code point sequence and the tokenizer token ID sequence, then look for the first divergence along this chain:
+
+```text
+original file bytes → tool return → Harness serialization → model context
+→ model token output → decoded string → JSON/tool-call parsing → tool matching
+```
+
+A minimal set of evaluation probes covers direct restatement, extraction from a long context, placement into tool arguments, selection among similar strings, and spaces, newlines, backslashes, Unicode combining characters and low-frequency tokens. The metrics are byte-exact match, code-point-exact match, token-exact match, the position of the first divergence, and the real tool success rate. If the model is correct on the direct probe but the tool call still fails, fix the tokenizer, the serialization, the Harness or the tool protocol; only when the first divergence appears in the model's own output should the case be turned into the copying training data of Chapter 8.
+
+### End-to-End and Trajectory-Prefix Regression Tasks
+
+Once the first error is known, turn the repair target into a repeatable **regression task**. End-to-end regression starts from the initial state and user request, runs the whole workflow, and checks final state, required output, and safety. A **trajectory-prefix regression task** freezes the context, conversation, tool returns, and environment state just before the first error, then tests only the next one or few observable actions. It is cheaper and isolates one decision boundary, so it is especially important for high-reliability production Agents.
+
+**End-to-end regression tasks** start from the initial state and the user request, let the Agent complete the whole task, and check the final state, the required output, and the safety conditions. They come closest to the production result, but make it hard to tell at which step the failure occurred. As a rule, end-to-end regression tasks verify that the Agent's capability in each domain still meets expectations. The standard benchmarks described in this chapter — OSWorld, AndroidWorld, tau-bench — are all end-to-end regression tasks.
+
+**Trajectory-prefix regression tasks** freeze the existing context, dialogue, tool returns, and environment state, and ask the Agent only to think and take the next observable action or few actions. They cost less and isolate a single policy or tool problem. For a production Agent that needs high reliability, building the trajectory-prefix regression set often matters more than the end-to-end one — and it requires the developer to patiently build the failure taxonomy and attribution system described in the previous section.
+
+Prefix tasks should define an **acceptable action set**, not one canonical answer: reading repository rules, asking the user, or refusing a dangerous operation may all be valid, while prohibited actions are listed explicitly. Process omissions become end-to-end tasks with Plans, required documents, and acceptance tests; tool errors become prefix tasks that test formatting, escaping, or tool choice; abnormal execution becomes truncation, timeout, and tool-failure recovery; and completion or logic errors become multi-goal and "not yet proved impossible" cases. The first error is also a possible process-supervision signal for Chapter 8, but evaluation and training data must remain isolated.
+
+**Once failure attribution is done, an evaluation dataset of both end-to-end and trajectory-prefix regression tasks can be constructed.** For a Coding Agent: a missing process should yield an end-to-end regression task carrying a plan document and test acceptance conditions; a tool-call error should have its failing prefix truncated and edited into a boundary task that tests whether the model can fix the format, escape special characters, or switch to a suitable tool; abnormal termination should add recovery scenarios for truncation, timeout, and tool failure; completion and logic errors should add multi-goal checklists, reminders of remaining work, and the "not yet proven impossible" boundary; requirement-understanding and ambiguity cases should freeze tasks with several reasonable readings into prefixes and put "clarify first" in the acceptable-action set; symptom-fix and faked-verification cases should add two hard constraints to acceptance — "test assertions may not be modified" and "a completion claim must carry the output of a command that really ran"; and information-reporting cases should assert on the content of the reply itself, not only on the environment state.
+
+The evaluation dataset is the foundation for the post-training of Chapter 8 and the self-evolution of Chapter 9.
+
+> **Experiment 7-7 ★★: Trajectory-Prefix Boundary Evaluation with Multiple Encodings**
+>
+> This experiment supplies the Agent with known user memory, the current instruction, a trajectory prefix, tool returns, and environment state, then asks for only the next observable action. It covers production bad cases such as scope conflicts, stale preferences overriding current instructions, low-confidence inferences, confirmation before high-risk deletion, and preview before external publication. The same cases are encoded as JSON Cards, Markdown, and Python-like memory; deterministic checks score the allowed decision category, safety, required evidence, and forbidden actions.
+>
+> With GPT-5.6-sol through OpenRouter, all 33 cells (11 cases × 3 encodings) completed without API errors. Each encoding passed 6/11 cases, but their failure locations differed, showing that changing the representation alone does not repair application policy.
 
 In practical model selection, we often face the question: "Which is better, A or B?" Pairwise comparison provides an evaluation method that does not rely on absolute scores.
 
@@ -509,7 +547,7 @@ When pairwise judging is performed by an LLM rather than human voting, one must 
 
 **From Evaluation to Training: Transfer of Pairwise Comparison Signals.** Pairwise comparison is not only an evaluation tool but also an important source of signals for post-training. The **GRPO** (Group Relative Policy Optimization) algorithm, which will be introduced in Chapter 8, incorporates the "compare which is better" judging approach into model training—its core idea is to sample multiple candidate answers for the same question and estimate advantages from their relative merits (rather than absolute scores), thereby avoiding the need for the extra value network (critic, used to estimate baselines) that PPO must train. Note that GRPO drops the value network, not the reward signal: it still relies on a reward model or verifiable reward rules to judge each candidate. This is only a foreshadowing—the full derivation, the comparison with PPO/DPO, and the implementation details for Agent post-training all come in Chapter 8.
 
-> **Experiment 7-7 ★★: Building a Model Leaderboard from Pairwise Comparison Data**
+> **Experiment 7-8 ★★: Building a Model Leaderboard from Pairwise Comparison Data**
 >
 > This experiment aims to deeply understand how the Bradley-Terry model extracts relative ability scores from a large number of pairwise comparisons by implementing an Elo rating calculation system from scratch. Use the real open-source voting dataset from Chatbot Arena (containing millions of anonymous user blind votes).
 >
@@ -551,7 +589,7 @@ When a tendency continues to follow the model across harnesses, and changes when
 
 The accompanying experiment compares `openai/gpt-5.6-sol` and `anthropic/claude-sonnet-5` in one **neutral, fixed harness**. Both models use the same OpenRouter endpoint and receive the same system prompt, task, repository, tool names, JSON Schemas, and results. The harness requires neither exploration nor early editing. Three miniature repositories cover a localized bug, cross-module identity normalization, and a cache fix sensitive to a public contract. Each model runs each task independently three times, producing 18 trajectories. GPT-5.6-sol averaged 6.89 tool calls and 4.67 files read before its first edit; Claude Sonnet 5 averaged 4.56 calls and 3.56 files. The gap was largest on localized tasks and nearly vanished on the explicitly cross-cutting task (7.00 versus 6.67 files). Both models achieved 100% first-tested-patch and final-test success, so this small experiment supports “the action policy changes with the model,” not “reading more” or “editing earlier” as universally better. Time to first edit was also nearly identical (15.01 versus 14.48 seconds), a reminder to separate tool steps, parallel calls, and model latency.
 
-> **Experiment 7-8 ★★: Measuring Model Action Thresholds in a Fixed Coding Harness**
+> **Experiment 7-9 ★★: Measuring Model Action Thresholds in a Fixed Coding Harness**
 >
 > **Objective**: Isolate the model factor, quantify how Coding models trade off continued information gathering against starting to edit, and evaluate path efficiency together with outcome quality.
 >
@@ -602,7 +640,7 @@ The first input-side levers to test are **KV Cache Reuse** (keep the prefix stab
 
 In a production environment, a real-time cost monitoring system should be established: track token consumption and API costs by task type, model, user, etc. Also, set a cost cap for each task—automatically terminate the Agent when it falls into a loop or explores too deeply, preventing a single task from incurring abnormally high costs.
 
-> **Experiment 7-9 ★: End-to-End Cost Analysis of Agent Tasks**
+> **Experiment 7-10 ★: End-to-End Cost Analysis of Agent Tasks**
 >
 > **Experiment Goal**: Reproduce the eight-turn cost breakdown above, then test the same optimization levers on your own workload.
 >
@@ -620,7 +658,7 @@ Suppose your Agent system is currently built on Claude, excelling in tool callin
 
 A team with a solid evaluation system can answer this in hours: run the new model on its own evaluation dataset and compare task success rate, tool call accuracy, latency, and cost. You might find the new model really is better and cheaper on simple tasks—but in the core scenarios involving complex multi-round tool orchestration, its success rate drops by 5%. Once you confirm the difference exceeds the estimated sampling noise (see "Statistical Significance of Evaluation Results" below), your decision becomes a differentiated strategy—migrate simple tasks to the new model to cut costs, keep the original model on complex tasks to protect quality—rather than a blind wholesale switch. Decisions this granular and data-driven are only possible with an evaluation system built in advance.
 
-> **Experiment 7-10 ★★: Multi-Dimensional Model Performance Benchmarking**
+> **Experiment 7-11 ★★: Multi-Dimensional Model Performance Benchmarking**
 >
 > Conduct a comprehensive benchmark of mainstream LLMs and different API providers to build a multi-dimensional model selection decision database.
 >
@@ -630,7 +668,7 @@ A team with a solid evaluation system can answer this in hours: run the new mode
 >
 > Evaluate API availability and stability: Probe once per hour for a week, recording success rate, error types, and failure duration. Calculate failure rate, MTTR (Mean Time to Recovery), and longest continuous uptime. Test the actual thresholds of rate limits—gradually increase concurrency to find the throttling point, recording RPM/TPM limits. Calculate comprehensive cost: Collect pricing information (unit prices for input/output/cache tokens), consider the impact of KV Cache, and calculate the average cost for typical multi-round Agent tasks.
 >
-> **Experiment 7-11 ★★: End-to-End Selection Evaluation of User Memory Systems**
+> **Experiment 7-12 ★★: End-to-End Selection Evaluation of User Memory Systems**
 >
 > **Prerequisites**: Must complete the contextual retrieval or agentic RAG experiment from Chapter 3.
 >
@@ -683,15 +721,6 @@ The platform also supports A/B testing (routing a portion of user traffic to a n
 
 The most valuable use of observability data is to **turn it into evaluation assets**. A practical loop: extract failed and suspicious cases from production traces → anonymize them (strip sensitive fields such as user data and keys) → distill them into new test cases and regression tests for the evaluation set. The evaluation set then stops being a one-time, static collection and becomes a living asset that evolves with the product and continues to reflect the real user distribution—the failure patterns exposed in production today become the regression tests guarding the baseline tomorrow. This is precisely the interface between observability and the main theme of this chapter: observability is responsible for "seeing" what happens in the real world, and evaluation is responsible for solidifying those observations into repeatable standards.
 
-Observability faces several challenges:
-
-- **Trade-off between data volume and privacy**: High-traffic systems can generate terabytes of trace data daily, while also needing to comply with data protection regulations.
-- **Complexity of causal attribution**: Automatically identifying root causes from traces still requires more intelligent analysis algorithms; cutting-edge research is attempting causal inference and counterfactual analysis, but it is not yet mature.
-- **Tracing challenges in multi-Agent systems**: Tracing execution flows across multiple Agents is more complex and semantically richer than tracing API calls between microservices.
-- **Balance between real-time guardrails and post-hoc analysis**: High-risk scenarios require proactive guardrails, but these introduce additional latency and false positives.
-
-As ML technology becomes more deeply integrated into the toolchain, future observability platforms are expected to automatically identify anomalies and pinpoint root causes.
-
 With a comprehensive evaluation system and dataset in place, the key is to translate evaluation results into tangible system improvements.
 
 ## From Benchmark Reports to System Improvements
@@ -738,7 +767,7 @@ Passing H5C on four tasks only earns it a larger test; it does not authorize dep
 
 That is what continuous iteration means in practice: evidence from one round should authorize only the next action that its scope can support. H1 stopped further prompt piling; H5 found the right mechanism and revealed a cost problem; H5C fixed that problem and qualified for broader testing. A good benchmark report contains more than a score. It states where the conclusion applies, which guardrails failed, and what must be tested next.
 
-> **Experiment 7-12 ★★★: Evaluation and Improvement on AndroidWorld**
+> **Experiment 7-13 ★★★: Evaluation and Improvement on AndroidWorld**
 >
 > This experiment practices the full path from evaluation report to system improvement. Start with the historical report and three saved paired runs in `chapter6/android-world`.
 >
@@ -813,7 +842,7 @@ On the **digital environment** side, the AWorld framework builds a controllable 
 
 On the **embodied environment** side, RoboTwin2 builds dual-arm manipulation tasks based on a physics engine, randomizing object positions, orientations, and appearances to improve generalization. The observation space includes multi-camera visuals and joint states, achieving real-time control through **Action Chunking**—where the model plans multiple consecutive actions at once (detailed in Chapter 6). OSWorld provides reset capability through virtual machine snapshots, and AndroidWorld focuses on mobile application automation. Whether digital or embodied, simulation environments also require the isolated execution environments and virtual identity mechanisms discussed in Chapter 4 (VM/container isolation, residential proxies, Human-in-the-Loop authentication, shared file systems), which will not be repeated here.
 
-> **Experiment 7-13 ★★: Configure the Embodied Intelligence Environment for OpenVLA and RoboTwin2**
+> **Experiment 7-14 ★★: Configure the Embodied Intelligence Environment for OpenVLA and RoboTwin2**
 >
 > Set up a simulation environment for robot manipulation. Read `ch7/SimpleVLA-RL` and the OpenVLA documentation to understand the architecture of the Vision-Language-Action model (end-to-end integration of a vision encoder, language model, and action decoder, projecting images and text into a shared semantic space). Configure the RoboTwin2 environment, understanding the observation space (three-view RGB + 14-dimensional joint state) and action space (14-dimensional control vector). Study the environment randomization mechanism and spatial constraint logic in `move_can_pot`. Evaluate the pretrained model, recording its success rate, completion time, and failure modes, with a focus on the impact of the action chunking mechanism.
 >

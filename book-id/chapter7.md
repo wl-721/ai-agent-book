@@ -72,35 +72,34 @@ Sebelum membangun lingkungan atau dataset, tentukan arti “berhasil”: apakah 
 
 ### Keajaiban teknis: batas kemampuan dengan Pass@k
 
-Banyak model dan Agent masih berada pada fase **keajaiban teknis**: setelah banyak percobaan, waktu yang panjang, dan seleksi manusia, satu trajectory terobosan cukup membuktikan bahwa tugas dapat dilakukan. Itulah logika **Pass@k**—jalankan tugas $k$ kali dan lulus jika setidaknya satu berhasil; untuk skor kontinu, ambil yang terbaik sebagai **Best@k**. Contoh Agent jangka panjang Anthropic, Manus, dan OpenClaw menunjukkan batas kemampuan ini, yang berguna untuk penemuan ilmiah, pencarian kerentanan, dan kreasi terbuka.
+Banyak model dan Agent saat ini masih berada pada tahap yang bisa disebut **"keajaiban teknis"**. Keajaiban di sini berarti batas atas kemampuan yang diperlihatkan setelah banyak percobaan, anggaran waktu yang longgar, dan penyaringan oleh manusia: cukup satu kali berhasil untuk membuktikan bahwa hal itu pada prinsipnya bisa dilakukan. Itulah persis logika **Pass@k** — tugas yang sama dijalankan $k$ kali, dan dianggap lulus asalkan setidaknya satu kali lolos; bila keluarannya berupa skor kontinu, diambil yang terbaik dan disebut **Best@k**.
+
+Pembahasan Anthropic tentang Agent yang berjalan lama menggambarkan batas atas semacam ini: membiarkan Agent bekerja mandiri selama seminggu untuk menulis kompiler C dari nol; menyuruhnya terus menjelajah sampai menemukan contoh tandingan bagi sebuah konjektur matematis penting; atau memeriksa perangkat lunak sumber terbuka berulang-ulang sampai tersingkap celah keamanan serius yang sudah bertahun-tahun ada di sana.
+
+Dalam penjelajahan teknis dan ilmiah semacam ini, yang dipertontonkan biasanya bukan "selalu benar setiap kali", melainkan satu lintasan terobosan yang akhirnya muncul setelah anggaran penjelajahan direntangkan cukup jauh. Untuk penemuan ilmiah, perburuan celah, dan penciptaan terbuka, batas atas itu sendiri sudah berharga: manusia dapat memilih satu lintasan terbaik dari $k$ kandidat.
+
+Selain lab model dasar, banyak perusahaan aplikasi juga memakai strategi "keajaiban teknis". Manus menarik perhatian luas karena menyodorkan sebuah komputer virtual: orang-orang yang sebelumnya tak punya gambaran konkret tentang Agent menyaksikan bahwa AI bisa mengoperasikan komputer layaknya manusia, bekerja setengah jam bahkan sejam penuh, dan menuntaskan tugas rumit selangkah demi selangkah.
+
+OpenClaw membuat banyak orang untuk pertama kalinya merasakan "kesan hidup" dari sebuah Agent. Pengguna menugaskan pekerjaan lewat aplikasi pesan instan persis seperti kepada orang sungguhan; ia dapat mengakses seluruh berkas di komputer serta layanan daring, pada tahap tertentu berinisiatif melapor atau meminta informasi tambahan, bahkan bisa membangunkan dirinya sendiri untuk memeriksa dan menangani surel.
+
+Manus dan OpenClaw awal tidak punya tingkat keberhasilan tinggi pada tugas rumit, dan biaya token-nya pun sangat besar. Namun karena kerangka Agent ini bersifat serbaguna, ketika dipasangkan dengan model terkuat, tugas rumit kerap memperoleh Pass@k yang tinggi sehingga memperlihatkan batas atas teknis yang tinggi. Tersebarnya "keajaiban teknis" itu secara masif di media sosial menjadi kunci keberhasilan produk-produk ini.
 
 ### Keandalan bisnis: Pass^k
 
-Sistem bisnis biasanya menuntut kebalikannya: tidak ada kesalahan dalam percobaan berulang. **Pass^k** (“Pass consecutive k”) mengharuskan seluruh $k$ eksekusi berturut-turut lulus tanpa veto keamanan, kepatuhan, atau halusinasi. Jika keberhasilan satu eksekusi adalah $p$,
+Bisnis nyata biasanya lebih peduli pada hal sebaliknya: tidak boleh salah satu kali pun dalam sekian percobaan. Sasaran ini kami sebut **Pass^k** (dibaca **Pass consecutive k**): tugas yang sama dijalankan $k$ kali berturut-turut, setiap kali harus lolos, dan tidak boleh memicu butir veto apa pun soal keamanan, kepatuhan, atau halusinasi. Ia menjawab "apakah Agent sanggup mengantar hasil secara stabil dan andal", bukan "apakah ia sesekali bisa membuat keajaiban".
+
+Bila tiap kali jalan saling bebas dan tingkat keberhasilan sekali jalan adalah $p$, hubungan kedua metrik itu gamblang:
 
 $$
 \mathrm{Pass@k}=1-(1-p)^k,\qquad
 \mathrm{Pass}^{k}=p^k.
 $$
 
-Untuk $p=0.6$ dan $k=5$, Pass@5 sekitar 99,0%, sedangkan Pass consecutive@5 hanya 7,8%. Yang pertama mengukur batas eksplorasi; yang kedua mendekati keandalan pembayaran, refund, perubahan izin, dan deployment produksi. Laporan harus menjelaskan arti $k$; tindakan yang memiliki efek samping diuji di sandbox atau lingkungan yang dapat di-rollback, dan setiap kegagalan dihitung.
+Misalnya pada $p=0.6$ dan $k=5$: Pass@5 $=1-0.4^5\approx99.0\%$, seolah-olah "berhasil setidaknya sekali" hampir selalu tercapai; tetapi Pass consecutive@5 $=0.6^5\approx7.8\%$, yang menunjukkan lima kali beruntun tanpa cela masih sulit. Angka pertama cocok untuk mengukur langit-langit kemampuan saat penjelajahan; hanya angka kedua yang mendekati tuntutan keandalan pada pembayaran, pengembalian dana, perubahan hak akses, dan penggelaran produksi.
+
+Laporan evaluasi wajib menuliskan dengan jelas apa arti $k$ percobaan itu: $k$ pengambilan sampel independen atas tugas yang sama, atau $k$ tugas berurutan pada jalur produksi. Untuk operasi yang menimbulkan efek samping, tidak boleh sekadar "ulangi sampai berhasil"; ambil sampel di sandbox atau lingkungan yang bisa di-rollback, dan catat setiap kegagalan ke dalam metrik keandalan.
 
 ### Metrik proses: Dari kotak hitam ke kotak putih
-
-Hasil akhir saja tidak cukup. Rasio tindakan valid dan berizin, ketepatan semantik tool call, efisiensi jalur (langkah, redundansi, dan backtracking), cakupan retrieval, serta biaya/latensi menunjukkan lokasi kegagalan Agent.
-
-### Keamanan, robustness, dan cakupan trajectory
-
-Operasi sensitif, kebocoran data, dan konten terlarang menerapkan **toleransi nol**. Robustness mencakup sensitivitas seed, perubahan UI, gangguan API, dan interferensi memori usang; evaluasi harus memeriksa **trajectory** dan **outcome** sistem yang sebenarnya.
-
-### Pemeriksaan manusia dan tinjauan adversarial
-
-Auditlah keberhasilan, kegagalan, dan skor batas secara berkala. Sebelum memakai LLM judge dalam skala besar, kalibrasikan pada gold set berlabel manusia berisi 100–200 kasus (misalnya Cohen's kappa > 0,7) dan ulangi saat judge atau Rubrik berubah. Red teaming mencari kesalahan tersembunyi, keyword stuffing, dan eksploitasi bias judge; perbedaan serius antarjudge diteruskan kepada reviewer manusia.
-
-
-Setelah menetapkan "tugas apa yang akan dievaluasi," kita masih perlu menjawab "dimensi mana yang akan diukur." Bagian ini mengumpulkan metrik-metrik yang umum digunakan dalam evaluasi Agent ke dalam "kamus metrik" referensi—dari proses ke hasil, dari kualitas ke keselamatan (safety)—memberikan masing-masing definisi dan kasus penggunaannya. Ini juga menyediakan definisi yang tepat dari Pass@k, Pass^k, dan metrik lain yang dipanggil sebelumnya (misalnya, di bagian τ-bench).
-
-**Metrik Proses: Dari Kotak Hitam (Black Box) ke Kotak Putih (White Box).**
 
 Berfokus semata-mata pada hasil akhir tidaklah cukup; proses di mana Agent mencapai hasil tersebut sama pentingnya. **Tingkat validitas dan otorisasi tindakan (Action validity and authorization rate)** mengukur proporsi tindakan yang valid sekaligus diotorisasi—operasi tidak valid termasuk memanggil alat (tool) yang tidak ada atau meneruskan jenis parameter yang salah; operasi tidak sah merujuk pada tindakan di luar cakupan yang diizinkan. Tingkat yang tinggi menunjukkan bahwa Agent memiliki pemahaman yang jelas tentang ekosistem alat. **Tingkat kebenaran pemanggilan tool (Tool call correctness rate)** lebih lanjut mensyaratkan bahwa parameter secara semantik masuk akal: istilah kueri untuk alat pencarian harus secara akurat mengekspresikan kebutuhan, dan jalur (path) untuk operasi file harus menunjuk ke target yang benar.
 
@@ -108,15 +107,7 @@ Berfokus semata-mata pada hasil akhir tidaklah cukup; proses di mana Agent menca
 
 **Cakupan pencarian (Retrieval coverage)** menargetkan tugas-tugas pengumpulan informasi: Apakah Agent sepenuhnya mengeksplorasi ruang informasi? Apakah ia melompat ke kesimpulan setelah hanya melihat halaman pertama dari hasil pencarian? **Biaya dan latensi (Cost and latency)** berfokus pada jumlah permintaan, pengeluaran token (membedakan biaya input/output, mempertimbangkan penggunaan kembali KV Cache), dan *wall-clock time* (termasuk inferensi model + eksekusi alat + latensi jaringan). Distribusi waktu perlu dilacak untuk mengidentifikasi kemacetan (bottlenecks).
 
-**Metrik Hasil dan Kualitas.**
-
-**Tingkat kesuksesan tugas (Task success rate)** adalah metrik keras (hard metric) yang paling langsung, yang dapat dirancang dengan standar hierarkis (tujuan inti harus dicapai, tujuan sekunder memengaruhi skor kualitas). Dalam hal metode statistik, dua metrik yang sering tertukar perlu dibedakan:
-
-- **Pass@k**: Probabilitas bahwa **setidaknya satu** dari k percobaan berhasil, menjawab "Bisakah Agent melakukannya?"
-- **Pass^k**: Probabilitas bahwa **semua** k percobaan berhasil, menjawab "Apakah Agent stabil dan dapat diandalkan?"
-- **Best@k**: Skor **terbaik** dari k percobaan (daripada apakah itu berhasil), mengukur "plafon kualitas jika diberikan kesempatan yang cukup," sering digunakan untuk tugas terbuka (open-ended) dengan penilaian berkelanjutan.
-
-Sebuah angka konkret membuat perbedaannya menjadi jelas. Misalkan tingkat keberhasilan upaya tunggal Agent adalah 60% (Pass@1 = 0.6). Lebih dari 5 upaya: Pass@5 = 1 - 0.4^5 ≈ 99% (hampir dipastikan berhasil setidaknya satu kali), sementara Pass^5 = 0.6^5 ≈ 7.8% (kemungkinan kelimanya berhasil sangatlah kecil). Yang pertama mengukur plafon kemampuan, yang kedua stabilitas; bingung membedakan keduanya dan Anda akan salah membaca Agent Anda.
+### Keamanan, robustness, dan cakupan trajectory
 
 
 **Metrik Keselamatan dan Kepatuhan (Safety and Compliance Metrics)** sangat penting dalam penyebaran (deployment) produksi: memicu operasi sensitif (menghapus data / memodifikasi izin / mengirim komunikasi eksternal), kebocoran data (mencetak kata sandi dalam log / mengirim dokumen pribadi ke API eksternal), dan konten yang dilarang semuanya harus tunduk pada **prinsip tanpa toleransi (zero-tolerance principle)**—mirip dengan veto halusinasi (lihat "Empat Prinsip Rubric" nanti). Pelanggaran keselamatan yang serius meskipun hanya satu kali akan memveto keseluruhan evaluasi, terlepas dari performanya di dimensi lain.
@@ -125,9 +116,13 @@ Sebuah angka konkret membuat perbedaannya menjadi jelas. Misalkan tingkat keberh
 
 **Cakupan Ganda dari Lintasan Eksekusi (Execution Trajectory) dan Hasil Akhir (Final Outcome).** Perbedaan yang mudah diabaikan: "apa yang dikatakan dan dilakukan Agent selama eksekusi" (lintasan yang didefinisikan dalam Bab 1) dan "menjadi apa sistem pada akhirnya" (hasil akhir) adalah dua hal yang berbeda. Agent yang mengatakan "pemesanan telah selesai" adalah informasi tingkat lintasan; catatan yang benar-benar muncul dalam database adalah verifikasi tingkat hasil. Lihat hanya pada lintasannya dan Anda akan kehilangan "mengatakannya tetapi tidak melakukannya"; lihat hanya pada hasilnya dan Anda mungkin kehilangan langkah-langkah perantara yang tersesat. Anthropic pernah memberikan contoh: Agent pemesanan penerbangan menemukan celah dalam kebijakan maskapai penerbangan selama eksekusi dan menemukan opsi yang lebih murah untuk pengguna—jika dinilai hanya menurut jalur eksekusi yang telah ditetapkan, jalannya eksekusi ini akan dinilai gagal; tetapi dari hasil akhir, pengguna mendapat kesepakatan yang lebih baik. Oleh karena itu, kedua jenis evaluasi harus dicakup untuk menghindari titik buta (blind spots) sistematis.
 
-**Pemeriksaan Acak Manusia (Human Spot Checks) dan Tinjauan Adversarial (Adversarial Review).**
+### Pemeriksaan manusia dan tinjauan adversarial
 
-Bahkan ketika evaluasi otomatis dapat diandalkan sebagian besar waktu, pemeriksaan acak manusia secara teratur tetap diperlukan: mencakup jenis tugas yang berbeda, keberhasilan dan kegagalan, dan kasus-kasus ambigu di dekat batas skor — memverifikasi bukan hanya hasilnya tetapi juga keabsahan rasional dari penilaian tersebut. Pemeriksaan acak dapat disistematisasi menjadi **kalibrasi juri (judge calibration)**. Sebelum menyebarkan juri LLM dalam skala besar, buatlah set standar emas yang dianotasi oleh manusia (katakanlah, 100-200 kasus yang mencakup jenis dan kesulitan tugas) dan ukur seberapa baik kesesuaian antara model juri (LLM yang bertindak sebagai juri; mekanismenya dirinci dalam bagian LLM-as-a-Judge berikutnya) dengan anotasi manusia — tingkat kesepakatan sederhana atau Cohen's kappa, yang terakhir mengabaikan kesepakatan kebetulan. Hanya setelah kesepakatan melewati ambang batas yang ditetapkan (misalnya, kappa di atas 0,7) barulah juri dapat digunakan untuk evaluasi skala besar; setelah itu, kalibrasi ulang pada set emas kapan pun model juri atau Rubric berubah. Tanpa langkah ini, skor juri LLM hanyalah "pendapat model lain," bukan proksi yang dapat diandalkan untuk penilaian manusia. **Tinjauan adversarial** menggunakan Red Teaming untuk secara aktif membangun kasus-kasus yang menantang: jawaban yang tampak sempurna berisi kesalahan tersembunyi, jawaban yang lolos melalui penumpukan kata kunci (keyword stuffing), dan jawaban yang mengeksploitasi bias yang diketahui dari model juri untuk mendapatkan skor tinggi yang tidak pantas. **Mekanisme multi-juri** menggunakan banyak juri independen untuk menilai secara terpisah, menentukan hasil akhir melalui rata-rata tertimbang atau pemeriksaan konsistensi—ketika juri tidak setuju secara signifikan, kasus tersebut ditandai untuk tinjauan manusia lebih lanjut.
+Bahkan ketika evaluasi otomatis dapat diandalkan sebagian besar waktu, pemeriksaan acak manusia secara teratur tetap diperlukan: mencakup jenis tugas yang berbeda, keberhasilan dan kegagalan, dan kasus-kasus ambigu di dekat batas skor — memverifikasi bukan hanya hasilnya tetapi juga keabsahan rasional dari penilaian tersebut.
+
+Pemeriksaan acak dapat disistematisasi menjadi **kalibrasi juri (judge calibration)**. Sebelum menyebarkan juri LLM dalam skala besar, buatlah set standar emas yang dianotasi oleh manusia (katakanlah, 100-200 kasus yang mencakup jenis dan kesulitan tugas) dan ukur seberapa baik kesesuaian antara model juri (LLM yang bertindak sebagai juri; mekanismenya dirinci dalam bagian LLM-as-a-Judge berikutnya) dengan anotasi manusia — tingkat kesepakatan sederhana atau Cohen's kappa, yang terakhir mengabaikan kesepakatan kebetulan. Hanya setelah kesepakatan melewati ambang batas yang ditetapkan (misalnya, kappa di atas 0,7) barulah juri dapat digunakan untuk evaluasi skala besar; setelah itu, kalibrasi ulang pada set emas kapan pun model juri atau Rubric berubah. Tanpa langkah ini, skor juri LLM hanyalah "pendapat model lain," bukan proksi yang dapat diandalkan untuk penilaian manusia.
+
+**Tinjauan adversarial** menggunakan Red Teaming untuk secara aktif membangun kasus-kasus yang menantang: jawaban yang tampak sempurna berisi kesalahan tersembunyi, jawaban yang lolos melalui penumpukan kata kunci (keyword stuffing), dan jawaban yang mengeksploitasi bias yang diketahui dari model juri untuk mendapatkan skor tinggi yang tidak pantas. **Mekanisme multi-juri** menggunakan banyak juri independen untuk menilai secara terpisah, menentukan hasil akhir melalui rata-rata tertimbang atau pemeriksaan konsistensi—ketika juri tidak setuju secara signifikan, kasus tersebut ditandai untuk tinjauan manusia lebih lanjut.
 
 ## Lingkungan Evaluasi Otomatis
 
@@ -296,8 +291,6 @@ SWE-Bench Verified adalah model kontrol kualitas. OpenAI secara acak memilih 1.6
 
 OSWorld-Verified adalah model peningkatan iteratif. Setelah dirilis pada bulan April 2024, OSWorld dengan cepat menjadi benchmark penting untuk evaluasi Agent multimodal, tetapi selama lebih dari 15 bulan penggunaan luas, lebih dari 300 masalah terungkap. Masalah-masalah ini terbagi dalam empat kategori: masalah lingkungan (tindakan anti-scraping di situs web, CAPTCHA, dan perubahan konten dinamis), masalah deskripsi tugas (kalimat yang ambigu), masalah logika verifikasi (terlalu ketat atau terlalu longgar), dan masalah keadaan awal (konfigurasi yang tidak lengkap). Sebuah tim yang terdiri dari sekitar 10 orang dari University of Hong Kong bekerja sama dengan MoonShot AI, OpenAI, ByteDance Seed TARS, Anthropic, Simular, dan lainnya selama dua bulan untuk secara sistematis memperbaiki masalah-masalah ini. Strategi perbaikan dirumuskan untuk setiap kategori: masalah lingkungan diselesaikan dengan mengunci versi dan cadangan offline, deskripsi tugas diperjelas dengan menulis ulang kalimat yang ambigu, logika verifikasi diseimbangkan dengan menetapkan *baseline* yang benar secara manual dan menyesuaikan kondisi, dan keadaan awal ditingkatkan dengan menambahkan pemeriksaan kelengkapan.
 
-Infrastruktur evaluasi juga dimigrasikan dari VM lokal ke platform cloud AWS, memanfaatkan penskalaan elastis untuk mencapai percepatan 50 kali lipat melalui paralelisasi (dari lebih dari 10 jam menjadi beberapa menit). Tingkat keberhasilan inisialisasi tugas Google Drive meningkat dari 50% menjadi lebih dari 95%. Semua data lintasan (trajectory) evaluasi resmi tersedia untuk umum di Hugging Face, memungkinkan komunitas untuk meninjau setiap detail, memproduksi ulang hasil, dan mengidentifikasi masalah, membentuk siklus luhur dari peningkatan berkelanjutan.
-
 Lingkungan evaluasi dan lingkungan pasca-pelatihan (post-training) seringkali memiliki asal yang sama: lingkungan evaluasi yang dirancang dengan baik dapat diadaptasi menjadi lingkungan pelatihan dengan sedikit usaha—SWE-Gym adalah contoh representatif dari membangun tugas pelatihan berdasarkan SWE-bench, sementara templat berparameter dari τ²-bench dan AndroidWorld dapat menghasilkan instans pelatihan masif secara berkelompok (batch). Tetapi satu garis merah harus ditarik: apa yang dapat digunakan kembali adalah **mekanisme konstruksi** lingkungan; tugas-tugas spesifik dari set evaluasi harus tetap terisolasi secara ketat dari data pelatihan—setelah tugas evaluasi masuk ke dalam set pelatihan, itu menguji memori, bukan kemampuan (lihat Bab 8 untuk detailnya).
 
 ## Metode Evaluasi Otomatis
@@ -425,11 +418,70 @@ Penilaian multimodal memperluas LLM-as-a-Judge ke ranah suara, gambar, dan video
 - **Evaluasi UI**: Menggunakan mekanisme **Proposer-Reviewer** untuk memeriksa masalah seperti teks meluber (text overflow), kontras warna, dan penempatan tombol. Di sini, proposer-reviewer digunakan sebagai **metode evaluasi**, berbeda dari penggunaannya sebagai **komponen sistem generasi** pada Bab 5, tetapi mekanisme intinya sama—satu model menghasilkan, model yang lain meninjau secara independen.
 - **Evaluasi Pengeditan Video**: Memverifikasi ketepatan titik awal/akhir klip dan penerapan efek melalui keyframe.
 
+> **Eksperimen 7-5 ★★: Membangun Pipeline Evaluasi Kualitas TTS yang Sepenuhnya Otomatis**
+>
+> Eksperimen ini mengharuskan perancangan dan implementasi sistem evaluasi kualitas TTS LLM-as-a-Judge multimodal yang lengkap dari awal.
+>
+> Rancang Rubric TTS multi-dimensi: Dimensi Accuracy memverifikasi apakah semua teks dibaca dengan benar (tanpa penghilangan/salah baca/penambahan); dimensi Naturalness menilai apakah suara terdengar alami dan bukan seperti robot, tidak ada jeda yang tidak wajar, dan menggunakan prosodi alami; dimensi Emotional Expression memeriksa apakah nada cocok dengan nada emosional teks (intonasi naik untuk pertanyaan, penekanan untuk seruan, langkah lebih lambat dan nada lebih rendah untuk konten sedih); dimensi Voice Consistency mengevaluasi kemiripan pembicara ketika suara referensi tersedia (model multimodal secara bersamaan menerima suara referensi dan suara yang disintesis untuk perbandingan).
+>
+> Bangun korpus yang bervariasi dalam panjang, genre, emosi, angka, nama diri, kata berpelafalan ambigu, dan dialek. Modul TTS dapat terhubung ke OpenAI, ElevenLabs, Fish Audio, Minimax, atau Doubao. Model penilai multimodal yang menerima audio menilai suara sintetis, teks asli, suara referensi, dan Rubric secara bersamaan. Selain menganalisis distribusi per dimensi, simpan nama model penilai serta hash audio referensi dan setiap kandidat agar hasil dapat diaudit.
+
+Repositori menyimpan pilot kecil dengan penilaian audio langsung. OpenAI dan Fish Audio masing-masing menghasilkan empat sampel—angka, pelafalan ambigu, kalimat panjang, dan nada bersemangat—lalu Voxtral menilai kedelapan audio pada empat dimensi di atas. Keduanya memperoleh 5.00 untuk akurasi dan 4.00 untuk kealamian. Untuk ekspresi emosi dan konsistensi suara, Fish Audio mendapat 4.00 dan 3.00, sedangkan OpenAI 3.75 dan 2.75. Memisahkan dimensi memperlihatkan perbedaan nada dan suara meskipun keduanya sama-sama membaca teks dengan benar.
+
+Delapan sampel belum cukup untuk menentukan layanan yang lebih baik. Selain hanya empat sampel per layanan, audio referensi tetap dibuat dengan Fish S1 sehingga perbandingan kemiripan suara sejak awal menguntungkan Fish Audio. Untuk membandingkan TTS umum, kemiripan dengan suara Fish tidak boleh masuk skor total. Untuk membandingkan kloning suara, semua sistem harus meniru pembicara target yang sama dan skor model perlu dikalibrasi dengan uji dengar manusia secara buta. **Pemilihan jawaban, gambar, atau audio referensi adalah bagian dari desain evaluasi, bukan persiapan netral sebelum evaluasi.**
+
+Rubric buatan manusia cocok untuk membangun dimensi diagnostik ini dengan cepat. Pada skala lebih besar, **model hadiah generatif** dapat dilatih untuk mengotomatisasi penilaian; Bab 8 membahas metode pelatihannya.
+
 ### Atribusi kegagalan: Melacak kesalahan pertama dalam trajectory
 
 Evaluasi end-to-end sering hanya memberi “lulus” atau “gagal”. Agar hasilnya memandu perbaikan, catat kategori, langkah pertama yang tidak dapat diterima, tool call atau output model terkait, dan bukti yang dapat diaudit untuk setiap trajectory gagal. Bad case biasanya datang dari koreksi eksplisit pengguna, feedback negatif, atau pemeriksaan status/aturan setelah kejadian. LLM dapat membantu, tetapi pembacaan manusia tetap penting karena akar masalah sering berada pada produk, bukan sekadar bug teknis.
 
 Untuk Coding Agent, taksonomi awal mencakup proses atau aturan yang terlewat, kesalahan tool/format, terminasi model yang abnormal, serta masalah logika atau kelengkapan. Simpan catatan JSON/YAML terstruktur berisi nomor langkah, tool, observasi, akar penyebab versus konsekuensi, kemampuan pemulihan, dan confidence bersama state, versi, dan trajectory lengkap.
+
+Membangun sistem atribusi kegagalan menuntut pengembang membaca dan menganalisis trace bermasalah dari produksi dengan sabar. LLM bisa membantu, tetapi tak bisa menggantikan manusia, sebab **atribusi kegagalan kerap menyingkap masalah produk**, bukan sekadar masalah teknis.
+
+Seiring produk makin matang, taksonomi galat bisa memuat beberapa kelas besar, masing-masing dengan subkelas, hingga akhirnya mencapai ratusan jenis. Kelas-kelas itu berikut cara atribusinya kemudian menjadi prompt atau Skill bagi Agent penganotasi atribusi.
+
+Dengan Coding Agent sebagai contoh, taksonomi awal yang layak pakai tampak seperti ini.
+
+| Kelas galat | Gejala khas | Cara menemukan galat pertama |
+| --- | --- | --- |
+| Pemahaman kebutuhan dan ambiguitas | Yang dibuat bukan yang diminta pengguna: satu syarat dalam kebutuhan terlewat, atau cakupan dibaca terlalu luas/terlalu sempit; ketika repositori punya dua berkas konfigurasi bernama sama, salah satu dipilih begitu saja tanpa penjelasan maupun pertanyaan | Pakai LLM untuk menyandingkan kebutuhan asli dengan **apa yang benar-benar dikerjakan Agent** (urutan aksi), butir demi butir; temukan simpangan pertama di tataran hasil, lalu telusuri balik ke pemanggilan tool atau kalimat jawaban yang menyebabkannya |
+| Proses atau konvensi terlewat | Commit tanpa menjalankan unit test; menyunting kode sebelum menulis Plan; menarik dependensi luar padahal repositori sudah punya padanan internal; menerobos konvensi arsitektur yang sudah ditetapkan | Cari aksi pertama yang melanggar konvensi proses pengembangan — `git commit` pertama, penulisan berkas pertama — lalu periksa apakah sebelumnya ia sempat membaca sumber konvensi itu |
+| Galat pemanggilan tool | Penyuntingan berkas yang sama gagal berulang kali; format JSON/schema atau argumen keliru; karakter khusus merusak penyalinan, escaping, atau penulisan | Catat penyuntingan/tool pertama yang gagal beserta permintaan asli dan galat yang dikembalikan; kegagalan berulang adalah gejala lanjutan |
+| Meretas lingkungan verifikasi | Menyunting assertion, menambah `skip`, menge-mock logika yang sedang diuji; menyatakan "tes lulus" padahal tak pernah dijalankan | Ambil message pertama yang mengubah tes atau logika verifikasi; lalu sandingkan pernyataan selesai dengan perintah yang benar-benar dijalankan di trace untuk memastikan ia sungguh menjalankannya |
+| Perubahan tidak tuntas | Tanda tangan fungsi diubah dan tiga titik pemanggilan diperbarui, tetapi yang keempat — panggilan dinamis, binding di bahasa lain, atau schema — terlewat | Hitung selisih himpunan antara cakupan dampak yang diklaim Agent dan yang sebenarnya, ambil kelalaian pertama, lalu tengok kata kunci apa yang ia pakai saat mencari |
+| Informasi salah dilaporkan ke pengguna | Pemanggilan tool dan keadaan akhir semuanya benar, tetapi yang disampaikan ke pengguna tidak: nominal, status, atau waktu keliru; yang baru sebagian dikatakan tuntas; hal yang wajib diberitahukan terlewat | Sandingkan setiap klaim faktual dalam jawaban dengan nilai balik tool, lalu ambil klaim pertama yang tak bisa ditelusuri atau yang bertentangan dengan nilai balik |
+| Regresi non-fungsional | API publik atau schema berubah tanpa skrip migrasi; validasi dihapus supaya pemeriksaan lolos | Ambil message pertama yang melakukan perubahan itu, lalu lihat apakah ia sadar sedang menyentuh antarmuka publik atau struktur yang butuh migrasi |
+| Terminasi model tak normal | Keluaran terpotong di tengah, berhenti tanpa sebab, kehabisan waktu, atau berakhir tanpa aksi penutup | Temukan terminasi tak normal yang pertama, lalu pisahkan antara model berhenti, Harness timeout, dan gangguan layanan tool |
+| Menghentikan tugas terlalu dini | Tugas bertujuan jamak baru selesai sebagian; menyatakan sesuatu mustahil tanpa menghabiskan opsi yang masuk akal | Temukan keputusan pertama yang melepas sebuah tujuan atau menyerah menjelajah, dan catat terpisah dari kegagalan verifikasi akhir |
+
+**Agent penganotasi atribusi dapat memakai LLM untuk menjalankan analisis akar masalah secara besar-besaran atas banyak trace produksi**, tetapi tidak boleh hanya mengeluarkan satu kalimat "penyebab kegagalan". **Catatan atribusi harus terstruktur**: dalam JSON atau YAML, mengutip nomor langkah spesifik, nama tool, dan bukti yang teramati; ia juga harus memisahkan akar masalah dari akibat, menilai apakah masih bisa dipulihkan, dan memberi tingkat keyakinan. Misalnya `edit_file` mengembalikan ketidakcocokan `old_string` lalu Agent mencoba ulang tiga kali dan tetap gagal menulis berkas: penyebab utamanya adalah galat penyuntingan berkas dan pemanggilan tool, sedangkan tiga percobaan ulang itu akibat, bukan tiga akar masalah yang berdiri sendiri. Bila beberapa kelas muncul bersamaan, pilih penyebab utama dengan kaidah "paling awal dan mampu menjelaskan kegagalan sesudahnya", sisanya disimpan sebagai penyebab sekunder. Sedikitnya tiga kelas pada tabel di atas bisa disaring lebih dulu dengan aturan sebelum LLM diminta menemukan galat pertama: menyandingkan pernyataan selesai dengan perintah yang benar-benar dijalankan; apakah diff menyentuh assertion tes dan penanda `skip`; apakah diff mengubah API publik atau schema tanpa berkas migrasi. Menyaring dengan aturan dulu, baru melokalisasi dengan LLM, lebih murah sekaligus lebih akurat daripada menjejalkan seluruh trace ke LLM.
+
+Saat menyimpan catatan atribusi, jangan hanya keluaran LLM: simpan pula tujuan tugas, keadaan lingkungan, versi Agent, versi kumpulan tool, dan trace Agent yang utuh, agar kasusnya dapat diubah menjadi uji regresi.
+
+Berikut diuraikan tiga kelas galat yang khas.
+
+#### Masalah "tindakannya benar, laporannya salah"
+
+"Tindakannya benar, laporannya salah" adalah kategori yang paling mudah tertutup oleh tingkat keberhasilan agregat, karena kebanyakan evaluasi hanya memeriksa keadaan lingkungan. τ²-bench menilainya terpisah: dari 704 run baseline terpublikasi yang tugasnya memuat syarat penyampaian informasi, 240 gagal, 162 di antaranya jatuh pada pemeriksaan penyampaian, dan 80 — sepertiga dari seluruh kegagalan — memiliki keadaan lingkungan yang benar tetapi laporan yang salah.
+
+Repositori pendamping menyimpan kasus yang sepadan. Ditugasi memasukkan pengeluaran dari `expenses.jpg` ke aplikasi pembukuan, Agent menghabiskan 32 langkah untuk memberi izin, mencari, membuka gambar, mengisi tiap baris, dan menyimpan, **tanpa satu langkah pun mengembalikan galat**, lalu menyatakan tugas selesai; validator melaporkan bahwa baris yang seharusnya ditulis — `Dress`, ¥436,35 — tidak ada, dan tak berkaitan dengan empat baris yang ia masukkan. Pada langkah 8 penalarannya sendiri berbunyi *"I cannot actually see the content/details of the expenses in the image"*: ia sudah tahu datanya tidak diperoleh, tidak berhenti dan tidak melapor, dan pada langkah 11 empat pengeluaran rekaan muncul dalam catatannya, yang kemudian dieksekusi dengan setia oleh setiap masukan berikutnya. Kesalahan pertama ada di langkah 8, dan langkah itu tidak memunculkan galat maupun berupa pemanggilan tool. Akar masalahnya juga mudah salah arsip: T3A adalah Agent teks-saja yang ruang observasinya hanya berisi pohon elemen dan tanpa piksel gambar, sehingga penyebabnya bukan "model tidak bisa OCR" melainkan kanal observasi yang hilang ditambah tiadanya aksi keluar yang sah berupa "informasi tidak tersedia". Mengarsipkannya sebagai masalah kapabilitas model membawa langkah berikutnya ke penggantian model atau pelatihan OCR; perbaikan sebenarnya adalah menambah kanal dan aksi keluar itu.
+
+> **Eksperimen 7-6 ★★: Atribusi kegagalan pada trace AndroidWorld**
+>
+> Eksperimen ini melatih metode atribusi pada bagian ini dengan trace nyata, tanpa emulator dan tanpa API model. Materinya adalah rekaman jalannya T3A yang tersimpan di `chapter7/android-world`: `t3a.md` memuat `Action`/`Reason`/`Summary` langkah demi langkah untuk semua tugas, sedangkan `t3a_failed.md` mengumpulkan lebih dari lima puluh trace gagal yang masing-masing diakhiri putusan objektif dari validator.
+>
+> Langkah 1: Pengambilan sampel. Ambil sedikitnya sepuluh kegagalan senyap dari `t3a_failed.md`, yaitu trace tanpa satu pun galat tool. Tidak boleh ada pemanggilan tool yang gagal, Agent menyatakan selesai sendiri atau kehabisan langkah, dan hanya putusan validator di akhir yang menandai kegagalan.
+>
+> Langkah 2: Temukan kesalahan pertama. Untuk tiap trace, catat nomor langkah kesalahan pertama dan tegaskan apakah langkah itu berupa pemanggilan tool atau sebuah assistant message. Kegagalan senyap butuh dua teknik: pembandingan jangkar fakta, yang menyandingkan pernyataan Agent dengan nilai balik tool lalu mengambil titik simpang pertama; dan biseksi trajectory prefix, yang memotong trajectory di langkah k lalu menyerahkannya — bila masih tertolong, galat ada setelah k. Mencari kata kunci galat tidak menggantikan keduanya.
+>
+> Langkah 3: Tulis catatan terstruktur. Hasilkan satu catatan JSON atau YAML per trace berisi nama tugas, langkah kesalahan pertama, kategori kesalahan, pihak penanggung jawab akar masalah, kutipan bukti, serta pemisahan sebab utama dari akibat.
+>
+> Langkah 4: Bandingkan dengan catatan yang ada. Bandingkan hasil Anda dengan `t3a_failed_analysis.md` butir demi butir dan catat setiap perbedaan. Perhatikan khusus atribusi akar masalah: catatan itu semula menulis kegagalan transkripsi gambar sebagai "model visi tidak punya OCR", padahal ruang observasi T3A sama sekali tidak memuat piksel gambar, sehingga akar masalah sebenarnya adalah kanal observasi yang hilang. Catatan atribusi yang sudah ada bukan kunci jawaban.
+>
+> Langkah 5: Ubah menjadi tugas regresi. Pilih tiga trace yang kesalahan pertamanya berupa assistant message, potong prefix tepat sebelum kesalahan itu, lalu tulis himpunan aksi yang dapat diterima dan aksi terlarang untuk membentuk tugas regresi trajectory prefix.
+>
 
 #### Kesalahan format dokumen yang peka terhadap cakupan
 
@@ -460,25 +512,21 @@ Serangkaian probe evaluasi minimal mencakup pengulangan langsung, ekstraksi dari
 
 ### Tugas regresi end-to-end dan regresi trajectory prefix
 
-**Regresi end-to-end** menjalankan seluruh workflow; **regresi trajectory prefix** membekukan konteks, percakapan, hasil tool, dan state tepat sebelum kesalahan pertama lalu hanya menguji tindakan berikutnya. Definisikan himpunan tindakan yang dapat diterima—membaca aturan, bertanya kepada pengguna, atau menolak operasi berbahaya—bukan satu jawaban kanonis. Data evaluasi harus tetap terpisah dari data pelatihan.
+Atribusi kegagalan sudah memastikan galat pertama beserta kelasnya; langkah berikutnya adalah menuliskan sasaran perbaikan sebagai kasus uji yang bisa dijalankan berulang, yaitu **tugas regresi** (regression task). Di sini diperlukan dua lapis yang saling melengkapi: **tugas regresi end-to-end** memastikan perubahan tidak merusak alur kerja utuh; **tugas regresi trajectory prefix** memotong keadaan tepat sebelum galat pertama dan hanya memeriksa apakah batas keputusan itu sudah diperbaiki.
 
-> **Eksperimen 7-5 ★★: Evaluasi batas trajectory prefix dengan beberapa encoding**
+**Tugas regresi end-to-end** berangkat dari keadaan awal dan permintaan pengguna, membiarkan Agent menuntaskan seluruh tugas, lalu memeriksa keadaan akhir, keluaran yang diwajibkan, dan syarat keamanan. Ia paling mendekati hasil produksi, tetapi sulit dipakai menentukan di langkah mana kegagalan terjadi. Umumnya tugas regresi end-to-end dipakai untuk memastikan kemampuan Agent di tiap ranah masih sesuai harapan. Kumpulan evaluasi standar yang dibahas di bab ini — OSWorld, AndroidWorld, tau-bench — semuanya tugas regresi end-to-end.
+
+**Tugas regresi trajectory prefix** membekukan konteks, dialog, nilai balik tool, dan keadaan lingkungan yang sudah ada, lalu hanya meminta Agent memikirkan dan menjalankan satu atau beberapa aksi teramati berikutnya. Biayanya lebih rendah dan ia mampu mengisolasi persoalan satu kebijakan atau satu tool. Untuk Agent tingkat produksi yang menuntut keandalan tinggi, menyusun himpunan tugas prefix sering lebih penting ketimbang yang end-to-end, dan itu menuntut pengembang membangun dengan sabar taksonomi kegagalan serta sistem atribusi yang dibahas pada bagian sebelumnya.
+
+Jawaban tugas prefix sebaiknya didefinisikan sebagai **himpunan aksi yang dapat diterima**, bukan satu aksi atau satu jawaban tunggal: boleh menuntut "baca dulu aturan repositori", "tanya dulu ke pengguna", atau "tolak operasi berbahaya", sekaligus mendaftar aksi yang dilarang.
+
+**Setelah atribusi kegagalan rampung, kumpulan data evaluasi yang mencakup tugas regresi end-to-end maupun trajectory prefix dapat disusun.** Dengan Coding Agent sebagai contoh: proses yang terlewat mesti menghasilkan tugas regresi end-to-end berikut dokumen rencana dan syarat penerimaan uji; galat pemanggilan tool mesti dipotong pada prefix yang gagal lalu disunting menjadi tugas batas, menguji apakah model sanggup membetulkan format, meng-escape karakter khusus, atau beralih ke tool yang tepat; terminasi tak normal mesti menambah skenario pemulihan dari pemotongan, timeout, dan gangguan tool; galat ketuntasan dan logika mesti menambah daftar tujuan jamak, pengingat pekerjaan tersisa, serta batas "belum terbukti mustahil"; kelas pemahaman kebutuhan dan ambiguitas mesti membekukan tugas bertafsir ganda menjadi prefix dan memasukkan "klarifikasi dulu" ke himpunan aksi yang diterima; kelas tambal gejala dan pemalsuan verifikasi mesti menambah dua kendala keras pada penerimaan — "assertion tes tidak boleh diubah" dan "pernyataan selesai wajib disertai keluaran perintah yang benar-benar dijalankan"; kelas pelaporan informasi mesti memasang assertion pada isi jawaban itu sendiri, bukan hanya memeriksa keadaan lingkungan.
+
+Kumpulan data evaluasi adalah fondasi bagi pasca-pelatihan di Bab 8 dan evolusi mandiri Agent di Bab 9.
+
+> **Eksperimen 7-7 ★★: Evaluasi batas trajectory prefix dengan beberapa encoding**
 >
 > Model menerima memori yang sudah diketahui, instruksi saat ini, trajectory prefix, hasil tool, dan state lingkungan, lalu hanya menghasilkan tindakan berikutnya yang dapat diamati. Sebelas kasus dikodekan sebagai JSON Cards, Markdown, dan Python-like serta dinilai dengan aturan deterministik. Seluruh 33 sel selesai tanpa error API dan setiap encoding lulus 6/11; mengubah representasi saja tidak memperbaiki kebijakan penggunaan konteks.
-
-> **Eksperimen 7-6 ★★: Membangun Pipeline Evaluasi Kualitas TTS yang Sepenuhnya Otomatis**
->
-> Eksperimen ini mengharuskan perancangan dan implementasi sistem evaluasi kualitas TTS LLM-as-a-Judge multimodal yang lengkap dari awal.
->
-> Rancang Rubric TTS multi-dimensi: Dimensi Accuracy memverifikasi apakah semua teks dibaca dengan benar (tanpa penghilangan/salah baca/penambahan); dimensi Naturalness menilai apakah suara terdengar alami dan bukan seperti robot, tidak ada jeda yang tidak wajar, dan menggunakan prosodi alami; dimensi Emotional Expression memeriksa apakah nada cocok dengan nada emosional teks (intonasi naik untuk pertanyaan, penekanan untuk seruan, langkah lebih lambat dan nada lebih rendah untuk konten sedih); dimensi Voice Consistency mengevaluasi kemiripan pembicara ketika suara referensi tersedia (model multimodal secara bersamaan menerima suara referensi dan suara yang disintesis untuk perbandingan).
->
-> Bangun korpus yang bervariasi dalam panjang, genre, emosi, angka, nama diri, kata berpelafalan ambigu, dan dialek. Modul TTS dapat terhubung ke OpenAI, ElevenLabs, Fish Audio, Minimax, atau Doubao. Model penilai multimodal yang menerima audio menilai suara sintetis, teks asli, suara referensi, dan Rubric secara bersamaan. Selain menganalisis distribusi per dimensi, simpan nama model penilai serta hash audio referensi dan setiap kandidat agar hasil dapat diaudit.
-
-Repositori menyimpan pilot kecil dengan penilaian audio langsung. OpenAI dan Fish Audio masing-masing menghasilkan empat sampel—angka, pelafalan ambigu, kalimat panjang, dan nada bersemangat—lalu Voxtral menilai kedelapan audio pada empat dimensi di atas. Keduanya memperoleh 5.00 untuk akurasi dan 4.00 untuk kealamian. Untuk ekspresi emosi dan konsistensi suara, Fish Audio mendapat 4.00 dan 3.00, sedangkan OpenAI 3.75 dan 2.75. Memisahkan dimensi memperlihatkan perbedaan nada dan suara meskipun keduanya sama-sama membaca teks dengan benar.
-
-Delapan sampel belum cukup untuk menentukan layanan yang lebih baik. Selain hanya empat sampel per layanan, audio referensi tetap dibuat dengan Fish S1 sehingga perbandingan kemiripan suara sejak awal menguntungkan Fish Audio. Untuk membandingkan TTS umum, kemiripan dengan suara Fish tidak boleh masuk skor total. Untuk membandingkan kloning suara, semua sistem harus meniru pembicara target yang sama dan skor model perlu dikalibrasi dengan uji dengar manusia secara buta. **Pemilihan jawaban, gambar, atau audio referensi adalah bagian dari desain evaluasi, bukan persiapan netral sebelum evaluasi.**
-
-Rubric buatan manusia cocok untuk membangun dimensi diagnostik ini dengan cepat. Pada skala lebih besar, **model hadiah generatif** dapat dilatih untuk mengotomatisasi penilaian; Bab 8 membahas metode pelatihannya.
 
 Dalam pemilihan model secara praktis, kita sering menghadapi pertanyaan: "Mana yang lebih baik, A atau B?" Perbandingan berpasangan (pairwise comparison) memberikan metode evaluasi yang tidak bergantung pada skor absolut.
 
@@ -494,7 +542,7 @@ Ketika penilaian berpasangan (pairwise judging) dilakukan oleh LLM daripada pemu
 
 **Dari Evaluasi ke Pelatihan: Transfer Sinyal Perbandingan Berpasangan.** Perbandingan berpasangan bukan hanya alat evaluasi tetapi juga sumber sinyal yang penting untuk pasca-pelatihan (post-training). Algoritma **GRPO** (Group Relative Policy Optimization), yang akan diperkenalkan pada Bab 8, menggabungkan pendekatan penilaian "bandingkan mana yang lebih baik" ke dalam pelatihan model—ide intinya adalah untuk mengambil sampel beberapa kandidat jawaban untuk pertanyaan yang sama dan memperkirakan keuntungan dari keunggulan relatif mereka (daripada skor absolut), sehingga menghindari kebutuhan akan jaringan nilai tambahan (critic, digunakan untuk memperkirakan baseline) yang harus dilatih oleh PPO. Perhatikan bahwa GRPO membuang jaringan nilai, bukan sinyal hadiah (reward signal): ia masih bergantung pada model hadiah (reward model) atau aturan hadiah yang dapat diverifikasi untuk menilai setiap kandidat. Ini hanyalah sebuah gambaran awal—penurunan lengkap, perbandingan dengan PPO/DPO, dan detail implementasi untuk pasca-pelatihan Agent semuanya ada di Bab 8.
 
-> **Eksperimen 7-7 ★★: Membangun Papan Peringkat Model dari Data Perbandingan Berpasangan**
+> **Eksperimen 7-8 ★★: Membangun Papan Peringkat Model dari Data Perbandingan Berpasangan**
 >
 > Eksperimen ini bertujuan untuk memahami secara mendalam bagaimana Bradley-Terry model mengekstrak skor kemampuan relatif dari sejumlah besar perbandingan berpasangan dengan mengimplementasikan sistem perhitungan Elo Rating dari awal. Gunakan kumpulan data pemungutan suara sumber terbuka (open-source) nyata dari Chatbot Arena (berisi jutaan suara buta pengguna anonim).
 >
@@ -535,7 +583,7 @@ Ketika kecenderungan tetap mengikuti model saat Harness diganti, dan berubah ket
 
 Eksperimen pendamping membandingkan `openai/gpt-5.6-sol` dan `anthropic/claude-sonnet-5` di dalam satu **Harness netral dan tetap**. Kedua model memakai endpoint OpenRouter yang sama dan menerima system prompt, tugas, repositori, nama alat, JSON Schema, serta hasil yang sama. Harness tidak mewajibkan eksplorasi maupun penyuntingan dini. Tiga repositori mini mencakup bug lokal, normalisasi identitas lintas modul, dan perbaikan cache yang sensitif terhadap kontrak publik. Setiap model menjalankan setiap tugas secara independen tiga kali, menghasilkan 18 lintasan. Sebelum penyuntingan pertama, GPT-5.6-sol rata-rata melakukan 6,89 panggilan alat dan membaca 4,67 berkas; Claude Sonnet 5 rata-rata 4,56 panggilan dan 3,56 berkas. Selisih terbesar muncul pada tugas lokal dan hampir hilang pada tugas yang secara eksplisit lintas modul (7,00 berbanding 6,67 berkas). Kedua model mencapai kelulusan 100% pada patch pertama yang diuji dan pada pengujian akhir. Jadi, eksperimen kecil ini mendukung kesimpulan bahwa “kebijakan tindakan berubah bersama model”, bukan bahwa “membaca lebih banyak” atau “menyunting lebih awal” selalu lebih baik. Waktu menuju penyuntingan pertama juga hampir sama (15,01 berbanding 14,48 detik), sehingga langkah alat, panggilan paralel, dan latensi model harus dibedakan.
 
-> **Eksperimen 7-8 ★★: Mengukur Ambang Tindakan Model dalam Coding Harness Tetap**
+> **Eksperimen 7-9 ★★: Mengukur Ambang Tindakan Model dalam Coding Harness Tetap**
 >
 > **Tujuan**: mengisolasi faktor model, mengukur bagaimana model Coding menyeimbangkan pengumpulan informasi lanjutan dengan mulai menyunting, serta menilai efisiensi lintasan bersama kualitas hasil.
 >
@@ -586,7 +634,7 @@ Di sisi input, tiga hal patut diuji lebih dahulu: mempertahankan awalan agar **K
 
 Dalam lingkungan produksi, sistem pemantauan biaya waktu nyata (real-time cost monitoring) harus dibangun: melacak konsumsi token dan biaya API berdasarkan jenis tugas, model, pengguna, dll. Selain itu, tetapkan batas biaya (cost cap) untuk setiap tugas—secara otomatis menghentikan Agent ketika jatuh ke dalam loop atau mengeksplorasi terlalu dalam, mencegah tugas tunggal menimbulkan biaya tinggi yang tidak normal.
 
-> **Eksperimen 7-9 ★: Analisis Biaya End-to-End Tugas Agent**
+> **Eksperimen 7-10 ★: Analisis Biaya End-to-End Tugas Agent**
 >
 > **Tujuan Eksperimen**: Mereproduksi rincian biaya tugas delapan putaran di atas dan memvalidasi optimasi pada beban kerja nyata milik Anda.
 >
@@ -604,7 +652,7 @@ Misalkan sistem Agent Anda saat ini dibangun di atas Claude, unggul dalam pemang
 
 Tim dengan sistem evaluasi yang solid dapat menjawab ini dalam hitungan jam: jalankan model baru pada dataset evaluasinya sendiri dan bandingkan tingkat keberhasilan tugas, akurasi pemanggilan alat (tool call), latensi, dan biaya. Anda mungkin menemukan bahwa model baru benar-benar lebih baik dan lebih murah untuk tugas-tugas sederhana—tetapi dalam skenario inti yang melibatkan orkestrasi tool multi-ronde yang kompleks, tingkat keberhasilannya turun 5%. Setelah Anda mengonfirmasi bahwa perbedaannya melampaui estimasi noise sampel (lihat "Signifikansi Statistik dari Hasil Evaluasi" di bawah), keputusan Anda menjadi strategi yang dibedakan—migrasikan tugas-tugas sederhana ke model baru untuk memangkas biaya, pertahankan model asli pada tugas-tugas kompleks untuk melindungi kualitas—daripada penggantian total secara membabi buta. Keputusan yang sangat terperinci dan didorong oleh data (data-driven) seperti ini hanya dimungkinkan dengan sistem evaluasi yang dibangun sebelumnya.
 
-> **Eksperimen 7-10 ★★: Benchmarking Kinerja Model Multi-Dimensi**
+> **Eksperimen 7-11 ★★: Benchmarking Kinerja Model Multi-Dimensi**
 >
 > Lakukan benchmark komprehensif terhadap LLM arus utama dan berbagai penyedia API untuk membangun basis data keputusan pemilihan model multi-dimensi.
 >
@@ -614,7 +662,7 @@ Tim dengan sistem evaluasi yang solid dapat menjawab ini dalam hitungan jam: jal
 >
 > Evaluasi ketersediaan dan stabilitas API: Lakukan pemeriksaan (probe) sekali per jam selama seminggu, catat tingkat keberhasilan, jenis kesalahan, dan durasi kegagalan. Hitung tingkat kegagalan (failure rate), MTTR (Mean Time to Recovery), dan waktu aktif berkelanjutan (continuous uptime) terlama. Uji ambang batas aktual dari rate limits—tingkatkan konkurensi secara bertahap untuk menemukan titik throttling, catat batasan RPM/TPM. Hitung biaya komprehensif: Kumpulkan informasi harga (harga satuan untuk token input/output/cache), pertimbangkan dampak KV Cache, dan hitung biaya rata-rata untuk tugas Agent multi-ronde yang khas.
 >
-> **Eksperimen 7-11 ★★: Evaluasi Pemilihan Ujung-ke-Ujung (End-to-End) untuk Sistem User Memory**
+> **Eksperimen 7-12 ★★: Evaluasi Pemilihan Ujung-ke-Ujung (End-to-End) untuk Sistem User Memory**
 >
 > **Prasyarat**: Harus menyelesaikan eksperimen contextual retrieval atau agentic RAG dari Bab 3.
 >
@@ -666,15 +714,6 @@ Platform ini juga mendukung pengujian A/B (mengalihkan sebagian lalu lintas peng
 
 Penggunaan data observabilitas yang paling berharga adalah **mengubahnya menjadi aset evaluasi**. Loop praktis: ekstrak kasus yang gagal dan mencurigakan dari jejak (traces) produksi → anonimkan (hapus bidang sensitif seperti data pengguna dan keys) → saring (distill) menjadi kasus uji baru dan uji regresi (regression tests) untuk set evaluasi. Set evaluasi kemudian berhenti menjadi koleksi statis sekali pakai dan menjadi aset hidup yang berevolusi dengan produk dan terus mencerminkan distribusi pengguna nyata—pola kegagalan yang terekspos di produksi hari ini menjadi uji regresi (regression tests) yang menjaga garis dasar (baseline) besok. Inilah tepatnya antarmuka antara observabilitas dan tema utama bab ini: observabilitas bertanggung jawab untuk "melihat" apa yang terjadi di dunia nyata, dan evaluasi bertanggung jawab untuk memadatkan pengamatan tersebut menjadi standar yang dapat diulang.
 
-Observabilitas menghadapi beberapa tantangan:
-
-- **Trade-off antara volume data dan privasi**: Sistem dengan lalu lintas tinggi (high-traffic) dapat menghasilkan terabita data jejak (trace data) setiap hari, sementara juga perlu mematuhi peraturan perlindungan data.
-- **Kompleksitas atribusi kausal**: Mengidentifikasi akar penyebab (root causes) secara otomatis dari jejak (traces) masih membutuhkan algoritma analisis yang lebih cerdas; penelitian mutakhir sedang mencoba inferensi kausal (causal inference) dan analisis kontrafaktual (counterfactual analysis), tetapi ini belum matang.
-- **Tantangan pelacakan (tracing) dalam sistem Multi-Agent**: Melacak alur eksekusi di berbagai Agent lebih kompleks dan secara semantik lebih kaya daripada melacak pemanggilan API di antara microservices.
-- **Keseimbangan antara pembatas waktu nyata (real-time guardrails) dan analisis pascafakta (post-hoc analysis)**: Skenario berisiko tinggi memerlukan pembatas (guardrails) proaktif, tetapi ini memunculkan latensi tambahan dan positif palsu.
-
-Seiring dengan semakin terintegrasinya teknologi ML ke dalam rangkaian alat (toolchain), platform observabilitas masa depan diharapkan dapat secara otomatis mengidentifikasi anomali dan menunjukkan akar masalah (root causes).
-
 Dengan sistem evaluasi dan dataset yang komprehensif, kuncinya adalah menerjemahkan hasil evaluasi menjadi perbaikan sistem yang nyata.
 
 ## Dari Laporan Benchmark ke Perbaikan Sistem
@@ -721,7 +760,7 @@ H5C yang lolos pada empat tugas hanya berarti layak memasuki uji berikutnya, buk
 
 Inilah disiplin iterasi: bukti hanya membenarkan langkah berikut yang sepadan dengan skalanya. Kegagalan H1 menghentikan penumpukan Prompt; H5 menemukan arah yang benar sekaligus masalah biaya; H5C mengatasi biaya dan baru kemudian layak diuji lebih luas. Laporan Benchmark yang baik menyatakan skor, batas berlaku kesimpulan, guardrail yang belum lolos, dan hal yang akan diuji berikutnya.
 
-> **Eksperimen 7-12 ★★★: Evaluasi dan Perbaikan di AndroidWorld**
+> **Eksperimen 7-13 ★★★: Evaluasi dan Perbaikan di AndroidWorld**
 >
 > Eksperimen ini melatih alur dari laporan evaluasi menuju perbaikan sistem. Mulailah dari laporan historis dan tiga hasil berpasangan yang tersimpan di `chapter6/android-world`.
 >
@@ -796,7 +835,7 @@ Di sisi **lingkungan digital**, *framework* AWorld membangun *sandbox* MCP serve
 
 Di sisi **lingkungan berwujud fisik (*embodied environment*)**, RoboTwin2 membangun tugas-tugas manipulasi lengan ganda berdasarkan pada mesin fisika (*physics engine*), mengacak posisi objek, orientasi, dan tampilan untuk meningkatkan generalisasi. Ruang observasinya (*observation space*) mencakup visual multi-kamera dan *joint states*, mencapai kontrol *real-time* melalui **Action Chunking**—di mana model merencanakan beberapa tindakan berurutan sekaligus (dirinci pada Bab 6). OSWorld menyediakan kemampuan *reset* melalui *virtual machine snapshots*, dan AndroidWorld berfokus pada otomatisasi aplikasi seluler. Baik digital maupun berwujud fisik, lingkungan simulasi juga memerlukan lingkungan eksekusi terisolasi dan mekanisme identitas virtual yang dibahas di Bab 4 (isolasi VM/container, proksi residensial, autentikasi *Human-in-the-Loop*, *shared file systems*), yang tidak akan diulangi di sini.
 
-> **Eksperimen 7-13 ★★: Mengonfigurasi Lingkungan Kecerdasan Terwujud (*Embodied Intelligence Environment*) untuk OpenVLA dan RoboTwin2**
+> **Eksperimen 7-14 ★★: Mengonfigurasi Lingkungan Kecerdasan Terwujud (*Embodied Intelligence Environment*) untuk OpenVLA dan RoboTwin2**
 >
 > Siapkan lingkungan simulasi untuk manipulasi robot. Baca `ch7/SimpleVLA-RL` dan dokumentasi OpenVLA untuk memahami arsitektur dari model Vision-Language-Action (integrasi *end-to-end* dari *vision encoder*, *language model*, dan *action decoder*, yang memproyeksikan gambar dan teks ke dalam ruang semantik bersama). Konfigurasikan lingkungan RoboTwin2, pahami *observation space* (tiga pandangan RGB + 14-dimensi *joint state*) dan *action space* (14-dimensi vektor kontrol). Pelajari mekanisme pengacakan lingkungan dan logika batasan spasial dalam `move_can_pot`. Evaluasi model prapelatihan (*pretrained model*), catat tingkat keberhasilannya, waktu penyelesaian, dan mode kegagalan, dengan fokus pada dampak dari mekanisme *action chunking*.
 >

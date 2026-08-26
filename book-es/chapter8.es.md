@@ -67,17 +67,21 @@ En resumen, la esencia del SFT es: **utilizar una eficiencia de muestra extremad
 
 ### Cuándo reparar la base antes de aplicar SFT o RL
 
-RL evalúa con una recompensa respuestas que el modelo **genera por sí mismo**. Para aprender, la salida debe poder verificarse y la política actual debe explorar ocasionalmente una conducta valiosa.
+La política de RL no imita directamente los tokens de una respuesta de referencia, sino que usa la recompensa para evaluar las respuestas que el modelo **genera por sí mismo**; el cálculo de la recompensa todavía puede apoyarse en respuestas de referencia o en datos de preferencia. Para aprender de esa señal hacen falta al menos dos premisas: que la salida se pueda verificar y que la política actual explore de vez en cuando algún comportamiento valioso.
 
-La primera condición es el **soporte de formato**: si un JSON o una llamada a herramienta no puede analizarse, la recompensa tampoco puede calcularse. SFT estabiliza formato y procedimiento con pocas demostraciones antes de que RL optimice la política.
+La primera premisa es el **soporte de formato**. Si la tarea exige un JSON o una llamada a herramienta y el modelo escupe texto imposible de analizar, la función de recompensa no puede ni siquiera distinguir el éxito del fracaso. Aquí el SFT puede desempeñar primero el papel de «hacer que el modelo se exprese con soltura»: unas pocas demostraciones estabilizan el formato y el procedimiento básico, la recompensa pasa a ser calculable y solo entonces RL optimiza la política. Este es el conocido patrón «primero SFT, después RL».
 
-La segunda es el **soporte de capacidad**. En tareas reservadas, mide `pass@1` y `pass@k`. Si la probabilidad de éxito por muestra es $p$, la probabilidad de al menos un éxito en $k$ muestras aproximadamente independientes es
+La segunda premisa es más fundamental: el **soporte de capacidad**. Muestrea las tareas reservadas a una temperatura próxima a la del entrenamiento y mide `pass@1` y `pass@k`. Si la probabilidad de éxito en un intento es $p$, con un muestreo aproximadamente independiente la probabilidad de acertar al menos una vez en $k$ intentos es
 
 $$
 \operatorname{pass@}k = 1-(1-p)^k.
 $$
 
-Si `pass@1` es bajo pero `pass@k` crece con $k$, la estrategia correcta ya está en la distribución y RL, muestreo por rechazo o destilación pueden amplificarla. Si `pass@k` sigue cerca de cero, los grupos GRPO serán todo ceros y PPO tampoco verá una dirección positiva; esperar un acierto fortuito cuesta aproximadamente $1/p$ muestras. Si faltan idioma, hechos, patrones de código o capacidad de contexto largo, usa Mid-training; si la capacidad existe pero no se expresa según la interfaz, usa SFT; si hay progreso parcial, diseña recompensas parciales verificables o un currículo. RL eleva conductas exitosas **existentes pero improbables**; no crea conocimiento nuevo a partir de recompensas siempre nulas. Un modelo fuerte con éxito no nulo puede omitir SFT; el SFT de arranque en frío de DeepSeek-R1 mejoró sobre todo legibilidad y coherencia lingüística.
+Si `pass@1` es bajo pero `pass@k` crece claramente con $k$, la estrategia correcta ya está en la distribución del modelo y solo le falta masa de probabilidad; RL, el muestreo por rechazo o la destilación tienen algo que amplificar. Por el contrario, si con un $k$ razonable, una temperatura de muestreo adecuada y suficiente cobertura de tareas el `pass@k` medido sigue cerca de cero, el modelo base apenas es capaz de generar una trayectoria exitosa. Cuando solo hay recompensa terminal 0/1, es muy probable que todo un grupo de rollouts de GRPO valga cero y la ventaja intragrupo desaparezca sin más; PPO tampoco ve ningún ejemplo positivo que le indique «hacia dónde moverse». Seguir aumentando el número de muestras equivale a esperar un éxito fortuito a un ritmo de aproximadamente $1/p$, y la eficiencia deja de tener sentido práctico enseguida.
+
+En ese punto conviene preguntarse qué es lo que falta. Si falta lenguaje del dominio, hechos, patrones de código o capacidad básica de contexto largo, refuerza primero los cimientos con Mid-training. Si la capacidad existe pero el modelo no sabe expresarla según la interfaz, empieza por SFT. Si avanza parcialmente pero no llega al final, añade recompensas parciales verificables o aprendizaje curricular. RL es bueno elevando comportamientos de éxito **que ya existen pero son poco probables**, y malo creando de la nada, a partir de una recompensa siempre nula, conocimientos y capacidades que el modelo nunca aprendió.
+
+Un límite importante: «hay que hacer SFT primero» solo se sostiene mientras el formato de salida o el comportamiento básico aún no estén establecidos. En el experimento 8-11 se verá que Llama-3.2-Vision-11B fracasa si se pasa directamente a RL bajo requisitos estrictos de salida estructurada; en cambio, un modelo base suficientemente potente y con una tasa de éxito no nula puede saltarse el SFT, como ocurrió con DeepSeek-R1-Zero. El SFT de arranque en frío que se le añadió después mejoró sobre todo la legibilidad y la consistencia lingüística, no inyectó conocimiento de la tarea para RL. El flujo completo de elección entre Mid-training, SFT y RL se detalla más adelante, en la sección de decisión independiente.
 
 ### Diferencia esencial entre SFT y RL (la tabla más importante del capítulo)
 
@@ -103,7 +107,7 @@ Desde el punto de vista de la distribución de probabilidad, SFT y RL presentan 
 
 Esta distinción explica los rasgos característicos de cada uno: el SFT es bueno cubriendo varias formulaciones ya conocidas, y el RL es bueno buscando entre las conductas candidatas una estrategia de alta recompensa. Que el resultado final conserve diversidad o se contraiga a unos pocos modos depende de la distribución de las demostraciones, de la función de recompensa, de la dirección y el coeficiente de la KL, de la regularización de entropía y de la temperatura de muestreo.
 
-**El post-entrenamiento también determina cuándo actúa un modelo.** Los modelos de programación ofrecen un ejemplo concreto: las familias GPT y Claude suelen mostrar umbrales de acción por defecto distintos. La primera puede leer más información del repositorio antes de modificar; la segunda puede localizar el problema con menos archivos, implementar primero y corregir después con la ayuda de las pruebas. No se trata de antropomorfizar a un modelo como "prudente" y a otro como "intuitivo": es una política inscrita en los parámetros que estima si el valor esperado de leer un archivo más sigue siendo mayor que el de enviar el parche actual y verificarlo. Si las demostraciones de SFT contienen repetidamente trayectorias que investigan ampliamente antes de editar, el modelo imita un umbral de acción más alto; si la recompensa de proceso o de resultado del RL premia de forma sostenida la localización rápida y la entrada temprana en un ciclo verificable, la masa de probabilidad se desplaza hacia las trayectorias que actúan antes. El Experimento 7-8 del capítulo 7 cambia de modelo dentro de un Harness de programación neutro e idéntico y mide efectivamente esta diferencia según el modelo, lo que muestra que el Harness no necesita imponer un flujo para que el modelo lleve consigo una política estable de uso de herramientas. El Harness puede modularla, pero el origen principal de la conducta puede residir en los parámetros posteriores al entrenamiento. Como los proveedores no publican sus datos ni sus recetas de recompensa completas, lo que el experimento establece es una diferencia de conducta del lado del modelo, no que un algoritmo propietario concreto la haya causado.
+**El post-entrenamiento también determina cuándo actúa un modelo.** Los modelos de programación ofrecen un ejemplo concreto: las familias GPT y Claude suelen mostrar umbrales de acción por defecto distintos. La primera puede leer más información del repositorio antes de modificar; la segunda puede localizar el problema con menos archivos, implementar primero y corregir después con la ayuda de las pruebas. No se trata de antropomorfizar a un modelo como "prudente" y a otro como "intuitivo": es una política inscrita en los parámetros que estima si el valor esperado de leer un archivo más sigue siendo mayor que el de enviar el parche actual y verificarlo. Si las demostraciones de SFT contienen repetidamente trayectorias que investigan ampliamente antes de editar, el modelo imita un umbral de acción más alto; si la recompensa de proceso o de resultado del RL premia de forma sostenida la localización rápida y la entrada temprana en un ciclo verificable, la masa de probabilidad se desplaza hacia las trayectorias que actúan antes. El Experimento 7-9 del capítulo 7 cambia de modelo dentro de un Harness de programación neutro e idéntico y mide efectivamente esta diferencia según el modelo, lo que muestra que el Harness no necesita imponer un flujo para que el modelo lleve consigo una política estable de uso de herramientas. El Harness puede modularla, pero el origen principal de la conducta puede residir en los parámetros posteriores al entrenamiento. Como los proveedores no publican sus datos ni sus recetas de recompensa completas, lo que el experimento establece es una diferencia de conducta del lado del modelo, no que un algoritmo propietario concreto la haya causado.
 
 **La retroalimentación en línea da al modelo la oportunidad de explorar estrategias más allá de las demostraciones.** El SFT sobre un conjunto de datos fijo usa la señal de entrenamiento directa que aportan las demostraciones, pero aun así puede combinar el conocimiento del pre-entrenamiento y generalizar a entradas que no aparecían en ellas. El RL en línea hace que el modelo genere respuestas con su política actual y reciba retroalimentación del entorno, con lo que puede evaluar directamente conductas candidatas ausentes de las demostraciones. Esto no garantiza automáticamente un techo más alto: el resultado depende del modelo base, de la cobertura de las demostraciones, de la fidelidad de la recompensa, de la exploración y de la estabilidad de la optimización. Los términos en línea/fuera de línea y los más estrictos on-policy/off-policy se usarán en las secciones de recompensa y de destilación. Por ahora, veamos las tres oportunidades que abre la retroalimentación en línea:
 
@@ -276,55 +280,24 @@ SFT puede memorizar algunos hechos y enseñar a formular respuestas de dominio, 
 
 ### Cómo construir los datos de Mid-training
 
-La **distribución objetivo, la distribución de retención y la evaluación** deben cerrar el ciclo:
-
 1. **Derivar los datos de la distribución de fallos.** Segmenta por tema, idioma, tipo de documento, patrón de código y longitud; distingue una carencia de base de un simple error de formato.
+
 2. **Crear corpus objetivo densos.** Documentos para términos y hechos, repositorios para estructura y dependencias, y derivaciones, explicaciones sintéticas y relaciones entre documentos para hacer explícitas las conexiones. Deduplica, filtra calidad y evita contaminación del conjunto de evaluación.
-3. **Mezclar por capacidad.** En la etapa $i$:
 
-   $$
-   \mathcal{D}_i=\alpha_i\mathcal{D}_{\text{long}}+\beta_i\mathcal{D}_{\text{atomic}}+\gamma_i\mathcal{D}_{\text{agent}}+\delta_i\mathcal{D}_{\text{replay}},\qquad
-   \alpha_i+\beta_i+\gamma_i+\delta_i=1
-   $$
+3. **Repartir los datos por capacidad.** La mezcla necesita texto largo natural —libros, documentos extensos, repositorios de código—; datos de cadena de pensamiento que encarnen las capacidades atómicas sobre texto largo (búsqueda en texto largo, razonamiento multi-salto, seguimiento de instrucciones, agregación de información y estadística); y trayectorias de ejecución de Agente que encarnen las capacidades imprescindibles de un Agente (planificación, selección e invocación de herramientas, seguimiento de estado a largo alcance y recuperación tras un error). Los datos de cadena de pensamiento y de trayectorias pueden destilarse de un modelo abierto más potente o tomarse de conjuntos ya existentes.
 
-   $\mathcal{D}_{\text{long}}$ contiene libros, documentos largos y repositorios cercanos a la longitud actual; $\mathcal{D}_{\text{atomic}}$, recuperación, razonamiento multi-salto, agregación y estadística; $\mathcal{D}_{\text{agent}}$, planificación, elección y llamada de herramientas, seguimiento de estado y recuperación; $\mathcal{D}_{\text{replay}}$, datos generales y de etapas anteriores. Documentación, código, planes, cambios de estado y trayectorias pueden entrenarse como secuencias completas; el schema exacto de diálogo y herramientas queda para SFT. No existe una proporción universal: ajústala según curvas de aprendizaje y olvido y mídela **por tokens**, no por número de ejemplos.
-4. **Aplicar doble replay.** Conserva texto corto y datos generales, y además eleva tareas antiguas a la longitud actual con evidencia y distractores en distintas posiciones. Usa si es posible el corpus original del modelo; de lo contrario, corpus abiertos como FineWeb-2. Los datos cortos de alta calidad siguen siendo importantes junto al texto largo natural[^ch8-35].
-5. **Detenerse con puertas multidimensionales.** Sigue pérdida, tareas de dominio reservadas, capacidad general, instrucciones previas y `pass@1`/`pass@k`. Si mejora el dominio pero cae la retención, cambia mezcla o tasa de aprendizaje; si baja la pérdida pero no sube `pass@k`, revisa cobertura y la necesidad de SFT para acceder al conocimiento.
+4. **Hacer «doble reproducción» en cada etapa.** La primera es el texto corto original y los datos generales, que conservan la lengua, el conocimiento y la capacidad de contexto corto. La segunda son «tareas antiguas elevadas de longitud»: coloca en un contexto de la longitud actual tareas cortas que el modelo ya resuelve, repartiendo la información relevante y los distractores por posiciones distintas, y comprueba si la misma capacidad se sostiene en la ventana más amplia. Lo ideal es que los datos generales procedan del conjunto de preentrenamiento original del modelo base; si no está disponible, sirve un corpus abierto como FineWeb-2.
 
-### Ampliar la ventana de contexto mediante aprendizaje curricular
+5. **Decidir cuándo parar con puertas multidimensionales.** Además de la pérdida de entrenamiento, sigue el `pass@1`/`pass@k` en tareas de dominio reservadas, capacidades generales, el seguimiento de instrucciones previo y la tarea objetivo. Si las métricas de dominio suben mientras cae el conjunto de retención general, la mezcla o la tasa de aprendizaje son demasiado agresivas; si la pérdida baja y el `pass@k` no se mueve, revisa si los datos cubren realmente la capacidad necesaria y si falta después un SFT que dé acceso al conocimiento.
 
-Mid-training debe convertir la longitud nominal en una **ventana efectiva** e incorporar razonamiento largo, planificación y herramientas mientras se amplía. Cambiar `max_position_embeddings` de 32K a 128K solo permite la entrada; no demuestra que el modelo recupere, agregue y actúe. Usa un currículo, por ejemplo 8K → 16K → 32K → 64K → 128K, adaptado al modelo y al presupuesto. La mezcla de datos y el currículo de longitudes son variables clave en el pre-entrenamiento continuado de contexto largo[^ch8-36].
-
-Antes de ampliar, resuelve en la longitud actual:
+Tras el Mid-training hay que usar conjuntos de evaluación como LongBench v2, IFEval y los Agentes de extremo a extremo descritos en el capítulo 7 para verificar que no se ha perdido la **capacidad básica de contexto largo a distintas longitudes de contexto**. La capacidad de contexto largo es la base de la cadena de pensamiento larga y del seguimiento de instrucciones, y estas a su vez sostienen capacidades de orden superior del Agente, como la llamada a herramientas.
 
 - **Posición y recuperación**: una o varias agujas, distintas posiciones y distractores;
 - **Relaciones y razonamiento**: seguimiento entre párrafos/documentos, multi-salto, contradicciones y evidencia;
 - **Agregación y estadística**: conteo, agrupación, orden, comparación y resumen de tablas o logs largos;
+- **Seguimiento de instrucciones**: instrucciones complejas, incluidas varias a la vez, resolución de contradicciones, adherencia al proceso de pensamiento y cumplimiento del formato de salida;
+- **Pensamiento de cadena larga**: resolver problemas difíciles de matemáticas, razonamiento lógico y generación de código;
 - **Primitivas de Agente**: descomposición, plan, herramienta, argumentos, memoria de estado y recuperación de fallos.
-
-Para checkpoint $\theta_i$, ventana $L_i$ y capacidad $c$, exige antes de pasar a $L_{i+1}$:
-
-$$
-\begin{aligned}
-M(\theta_i,c,L_i) &\geq \tau_c &&\text{(umbral en la longitud actual)},\\
-M(\theta_i,c,L_i) &\geq M(\theta_i,c,L_{i-1})-\epsilon_{\text{len}} &&\text{(sin degradación significativa por longitud)},\\
-M(\theta_i,c,L_{i-1}) &\geq M(\theta_{i-1},c,L_{i-1})-\epsilon_{\text{retain}} &&\text{(sin olvidar la capacidad anterior)}.
-\end{aligned}
-$$
-
-La segunda condición requiere tareas elevadas de dificultad equivalente. Determina $\epsilon$ mediante intervalos de confianza de evaluaciones repetidas. Si falla una capacidad crítica, aumenta sus datos atómicos, los datos de longitud actual o replay antes de seguir ampliando.
-
-Los benchmark existentes permiten construir una matriz **capacidad × longitud**:
-
-| Capa de aceptación | Benchmark disponibles | Qué observar |
-| --- | --- | --- |
-| Posición, recuperación, seguimiento y agregación | NIAH, RULER | Degradación por posición, número de agujas, multi-salto, agregación y longitud; NIAH es solo una prueba de humo |
-| Razonamiento sobre documentos reales | LongBench, LongBench v2 | QA mono/multidocumento, diálogo largo, aprendizaje en contexto y datos estructurados, por categoría y longitud |
-| Comprensión de código largo | Tareas de repositorio de LongBench v2, LongCodeU | Unidades de código, relaciones entre archivos y comprensión del repositorio |
-| Planificación y herramientas | PlanningArena y benchmark de herramientas anteriores | Descomposición, selección, memoria, argumentos y estado |
-| Agente extremo a extremo | SWE-bench Verified, $\tau^2$-bench, Terminal-Bench, etc. | Éxito final, trayectorias válidas y `pass@k` |
-
-RULER amplía NIAH con recuperación de varias agujas, seguimiento multi-salto y agregación[^ch8-37]; LongBench v2 cubre tareas reales de documentos, diálogo, repositorios y datos estructurados[^ch8-38]; LongCodeU y PlanningArena diagnostican código largo y planificación/herramientas[^ch8-39][^ch8-40]. Reserva los test oficiales para evaluar y entrena solo con ejemplos homólogos pero no solapados. Informa por longitud, capacidad y tipo de fallo: una puntuación global puede ocultar regresiones y superar NIAH no demuestra razonamiento largo.
 
 Para hechos cambiantes o que exigen cita, sigue siendo mejor RAG. Mid-training encaja con conocimiento estable y capacidades que necesitan representación interna; valida primero la mezcla a pequeña escala.
 
@@ -883,12 +856,6 @@ Este capítulo ha respondido a cómo la actualización de parámetros permite la
 [^ch8-32]: Zheng, Chujie et al., “Stabilizing Reinforcement Learning with LLMs: Formulation and Practices”, 2025. arXiv:2512.01374. https://arxiv.org/abs/2512.01374
 [^ch8-33]: Zhong, Tianle et al., “Diagnosing Training Inference Mismatch in LLM Reinforcement Learning”, 2026. arXiv:2605.14220. https://arxiv.org/abs/2605.14220
 [^ch8-34]: He, Horace and Thinking Machines Lab, “Defeating Nondeterminism in LLM Inference”, 2025. https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/
-[^ch8-35]: Gao, Tianyu et al., “How to Train Long-Context Language Models (Effectively)”, ACL, 2025. https://aclanthology.org/2025.acl-long.366/
-[^ch8-36]: Xiong, Wenhan et al., “Effective Long-Context Scaling of Foundation Models”, NAACL, 2024. https://aclanthology.org/2024.naacl-long.260/
-[^ch8-37]: Hsieh, Cheng-Ping et al., “RULER: What’s the Real Context Size of Your Long-Context Language Models?”, COLM, 2024. https://arxiv.org/abs/2404.06654
-[^ch8-38]: Bai, Yushi et al., “LongBench: A Bilingual, Multitask Benchmark for Long Context Understanding”, ACL, 2024. https://aclanthology.org/2024.acl-long.172/; Bai, Yushi et al., “LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks”, ACL, 2025. https://aclanthology.org/2025.acl-long.183/
-[^ch8-39]: Li, Jia et al., “Benchmarking Long-Context Language Models on Long Code Understanding”, ACL, 2025. https://aclanthology.org/2025.acl-long.1324/
-[^ch8-40]: Zheng, Zihan et al., “PlanningArena: A Modular Benchmark for Multidimensional Evaluation of Planning and Tool Learning”, ACL, 2025. https://aclanthology.org/2025.acl-long.1499/
 
 ## Preguntas de Reflexión
 
