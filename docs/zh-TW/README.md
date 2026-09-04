@@ -1,9 +1,9 @@
 # 深入理解 AI Agent：設計原理與工程實踐
 
-[![PDF](https://img.shields.io/badge/PDF-%E4%B8%8B%E8%BC%89-success.svg)](#-電子書) [![線上閱讀](https://img.shields.io/badge/🌐_線上閱讀-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/翻譯-14%20種%20語言-informational.svg)](#-電子書)
+[![PDF](https://img.shields.io/badge/PDF-%E4%B8%8B%E8%BC%89-success.svg)](#-電子書) [![線上閱讀](https://img.shields.io/badge/🌐_線上閱讀-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/翻譯-15%20種%20語言-informational.svg)](#-電子書)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
-**[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · 繁體中文（台灣） ← 當前 · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md)**
+**[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · 繁體中文（台灣） ← 當前 · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
 > 📥 **[下載 PDF / EPUB](#-電子書)**（推薦）— 推薦使用 PDF / EPUB 離線閱讀，排版最佳；也可[線上閱讀](https://bojieli.github.io/ai-agent-book/)（支援多語言切換、章節摺疊、全文搜尋，每次 main 分支推送後自動重新構建）。
 
@@ -13,7 +13,7 @@
 >
 > 如果你看到的是舊版 PDF，建議[下載最新版 PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-TW.pdf)。新版還包含許多內容修正與調整，請以最新版為準。
 
-| 📚 **10 章** 正文，從基礎到生產 | 📂 **93 個** 配套專案（70+ 可獨立執行） | 🌐 **14 種** 語言：中 / 英 / 西 / 印尼 / 阿拉伯 / 繁體中文（台灣） / 俄 / 泰米爾 / 越 / 日 / 土耳其 / 韓 / 匈牙利 / 希伯來 |
+| 📚 **10 章** 正文，從基礎到生產 | 📂 **93 個** 配套專案（70+ 可獨立執行） | 🌐 **15 種** 語言：中 / 英 / 西 / 印尼 / 阿拉伯 / 繁體中文（台灣） / 俄 / 泰米爾 / 越 / 日 / 土耳其 / 韓 / 匈牙利 / 希伯來 / 葡萄牙語（巴西） |
 | :---: | :---: | :---: |
 
 ## 📖 電子書
@@ -107,14 +107,14 @@ uv run python chapter1/context/main.py
 | **智譜 GLM** | <https://open.bigmodel.cn/> | GLM-5.2 等，Coding、Agent 能力強 | 中國大陸 |
 | **Siliconflow** | <https://siliconflow.cn/> | 各種開源模型（DeepSeek、Qwen 等），中國大陸訪問速度快 | 中國大陸 |
 | **DeepSeek** | <https://platform.deepseek.com/> | DeepSeek 官方 API | 全球 + 中國大陸 |
-| **Krill AI** | [www.krill-ai.net](https://www.krill-ai.net/register?invite=Q8D3L35725) | 一站式訪問全球及國內主流模型（OpenAI、Claude、Gemini、Grok、Kimi、GLM、DeepSeek、Qwen、Minimax） | 全球 + 中國大陸 |
+| **Krill AI** | [www.krill-code.com](https://www.krill-code.com/register?invite=Q8D3L35725) | 一站式訪問全球及國內主流模型（OpenAI、Claude、Gemini、Grok、Kimi、GLM、DeepSeek、Qwen、Minimax） | 全球 + 中國大陸 |
 | **OpenRouter** | <https://openrouter.ai/> | 一站式訪問全球及國內主流模型（GPT、Claude、Gemini、Kimi、GLM、DeepSeek、Qwen 等） | 全球 |
 
 ## 💎 贊助商
 
 感謝 **Krill AI** 贊助本專案！Krill 提供 GPT / Claude / Gemini / 多款國產模型的官方穩定極速 API 中轉服務，支援企業級客製、報銷開票、7×16h 專屬技術支援，更有獨家適配的 WebSocket 連線方式，暢享極速首字速度。
 
-Krill 為本書讀者提供特別優惠：使用[此連結](https://www.krill-ai.net/register?invite=Q8D3L35725)註冊並在儲值時填寫優惠碼「ai-agent-book」，首次購買 Codex 套餐可享 77 折優惠！
+Krill 為本書讀者提供特別優惠：使用[此連結](https://www.krill-code.com/register?invite=Q8D3L35725)註冊並在儲值時填寫優惠碼「ai-agent-book」，首次購買 Codex 套餐可享 77 折優惠！
 
 > 🧪 配套實驗的執行狀態、證據與尚未完成的驗收門檻，另行記錄於 [`EXPERIMENT_STATUS.md`](../EXPERIMENT_STATUS.md)；克隆或安裝原始碼不代表實驗已完成。
 

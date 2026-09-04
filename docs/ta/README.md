@@ -1,9 +1,9 @@
 # AI Agents ஆழத்தில்: வடிவமைப்பு கோட்பாடுகள் மற்றும் பொறியியல் நடைமுறைகள்
 
-[![PDF](https://img.shields.io/badge/PDF-%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%B5%E0%AE%BF%E0%AE%B1%E0%AE%95%E0%AF%8D-success.svg)](#-மின்-புத்தகம்) [![நிகழ்நேரத்தில் படி](https://img.shields.io/badge/🌐_நிகழ்நேர_படி-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/மொழ%E0%AE%AA%E0%AF%86%E0%AE%AF%E0%AE%B0%E0%AF%8D%E0%AE%AA%E0%AF%81-14%20%E0%AE%AE%E0%AF%8A%E0%AE%B4%E0%AE%BF%E0%AE%95%E0%AE%B3%E0%AF%8D-informational.svg)](#-மின்-புத்தகம்)
+[![PDF](https://img.shields.io/badge/PDF-%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%B5%E0%AE%BF%E0%AE%B1%E0%AE%95%E0%AF%8D-success.svg)](#-மின்-புத்தகம்) [![நிகழ்நேரத்தில் படி](https://img.shields.io/badge/🌐_நிகழ்நேர_படி-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/மொழ%E0%AE%AA%E0%AF%86%E0%AE%AF%E0%AE%B0%E0%AF%8D%E0%AE%AA%E0%AF%81-15%20%E0%AE%AE%E0%AF%8A%E0%AE%B4%E0%AE%BF%E0%AE%95%E0%AE%B3%E0%AF%8D-informational.svg)](#-மின்-புத்தகம்)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
-**[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · தமிழ் ← தற்போதைய · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md)**
+**[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · தமிழ் ← தற்போதைய · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
 > 📥 **[PDF / EPUB பதிவிறக்கம்](#-மின்-புத்தகம்)** (பரிந்துரைக்கப்படுகிறது) — சிறந்த வாசிப்பு அனுபவத்திற்கு PDF / EPUB பதிப்புகளைப் பரிந்துரைக்கிறோம்; [நிகழ்நேரத்திலும் படிக்கலாம்](https://bojieli.github.io/ai-agent-book/) (மொழி மாற்றி, மடிக்கக்கூடிய அத்தியாய மரம், முழு-உரை தேடல்; main கிளைக்கு ஒவ்வொரு push-ம் தானாகவே மீண்டும் கட்டப்படுகிறது).
 
@@ -13,7 +13,7 @@
 >
 > நீங்கள் பழைய PDF-ஐப் படித்துக்கொண்டிருந்தால், [சமீபத்திய PDF-ஐப் பதிவிறக்கம் செய்ய](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ta.pdf) பரிந்துரைக்கிறோம். புதிய பதிப்பில் பல உள்ளடக்கத் திருத்தங்களும் மாற்றங்களும் உள்ளன; சமீபத்திய பதிப்பையே பயன்படுத்தவும்.
 
-| 📚 **10 அத்தியாயங்கள்**, அடிப்படை முதல் உற்பத்தி வரை | 📂 **93** துணை திட்டங்கள் (70+ தனித்து இயங்கும்) | 🌐 **14 மொழிகள்**: சீன / ஆங் / ஸ்பானிஷ் / இந்தோனேசிய / அரபு / 繁體中文（台灣） / ரஷ்ய / தமிழ் / வியத் / ஜப் / துருக்கியம் / கொரிய / ஹங்கேரியன் / எபிரேயம் |
+| 📚 **10 அத்தியாயங்கள்**, அடிப்படை முதல் உற்பத்தி வரை | 📂 **93** துணை திட்டங்கள் (70+ தனித்து இயங்கும்) | 🌐 **15 மொழிகள்**: சீன / ஆங் / ஸ்பானிஷ் / இந்தோனேசிய / அரபு / 繁體中文（台灣） / ரஷ்ய / தமிழ் / வியத் / ஜப் / துருக்கியம் / கொரிய / ஹங்கேரியன் / எபிரேயம் / போர்ச்சுகீசியம் |
 | :---: | :---: | :---: |
 
 ## 📖 மின்-புத்தகம்
@@ -108,14 +108,14 @@ uv run python chapter1/context/main.py
 | **Zhipu GLM** | <https://open.bigmodel.cn/> | GLM-4.6, சீன மொழி வலுவாக, செலவு-செயல்திறன் நல்லது | சீனா நிலப்பரப்பு |
 | **Siliconflow** | <https://siliconflow.cn/> | பல திறந்த மூல மாதிரிகள் (DeepSeek, Qwen போன்ற), சீனா நிலப்பரப்பில் விரைவான அணுகல் | சீனா நிலப்பரப்பு |
 | **DeepSeek** | <https://platform.deepseek.com/> | DeepSeek அதிகாரப்பூர்வ API | உலகளாவிய + சீனா நிலப்பரப்பு |
-| **Krill AI** | [www.krill-ai.net](https://www.krill-ai.net/register?invite=Q8D3L35725) | உலகளாவிய மற்றும் சீன உள்நாட்டு முக்கிய மாதிரிகளை (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax) ஒரே இடத்திலிருந்து அணுகலாம் | உலகளாவிய + சீனா நிலப்பரப்பு |
+| **Krill AI** | [www.krill-code.com](https://www.krill-code.com/register?invite=Q8D3L35725) | உலகளாவிய மற்றும் சீன உள்நாட்டு முக்கிய மாதிரிகளை (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax) ஒரே இடத்திலிருந்து அணுகலாம் | உலகளாவிய + சீனா நிலப்பரப்பு |
 | **OpenRouter** | <https://openrouter.ai/> | உலகளாவிய மற்றும் சீன உள்நாட்டு முக்கிய மாதிரிகளை (GPT, Claude, Gemini, Kimi, GLM, DeepSeek, Qwen போன்ற) ஒரே இடத்திலிருந்து அணுகலாம் | உலகளாவிய |
 
 ## 💎 ஸ்பான்சர்கள்
 
 இந்த திட்டத்திற்கு ஸ்பான்சர் செய்த **Krill AI**-க்கு நன்றி! Krill நிறுவனம் GPT / Claude / Gemini மற்றும் பல சீன மாதிரிகளுக்கு அதிகாரப்பூர்வ, நிலையான, அதிவேக API அணுகல் சேவையை வழங்குகிறது; நிறுவன அளவிலான தனிப்பயனாக்கம், விலைப்பட்டியல் வசதி, 7×16 மணி நேர அர்ப்பணிப்பு தொழில்நுட்ப ஆதரவு, மேலும் விரைவான முதல் டோக்கன் வேகத்திற்கான பிரத்யேக WebSocket இணைப்பும் உண்டு.
 
-புத்தக வாசகர்களுக்கு Krill சிறப்பு சலுகை வழங்குகிறது: [இந்த இணைப்பு](https://www.krill-ai.net/register?invite=Q8D3L35725) மூலம் பதிவு செய்து, ரீசார்ஜ் செய்யும் போது "ai-agent-book" என்ற சலுகைக் குறியீட்டை உள்ளிட்டால், முதல் Codex திட்ட வாங்குதலில் 23% தள்ளுபடி!
+புத்தக வாசகர்களுக்கு Krill சிறப்பு சலுகை வழங்குகிறது: [இந்த இணைப்பு](https://www.krill-code.com/register?invite=Q8D3L35725) மூலம் பதிவு செய்து, ரீசார்ஜ் செய்யும் போது "ai-agent-book" என்ற சலுகைக் குறியீட்டை உள்ளிட்டால், முதல் Codex திட்ட வாங்குதலில் 23% தள்ளுபடி!
 
 > 🧪 சோதனைகளின் இயக்க நிலை, ஆதாரங்கள் மற்றும் இன்னும் நிறைவேறாத ஏற்பு நிபந்தனைகள் [`EXPERIMENT_STATUS.md`](../EXPERIMENT_STATUS.md)-இல் தனியாகப் பதிவு செய்யப்படுகின்றன; மூலக் குறியீட்டை clone செய்வது அல்லது நிறுவுவது மட்டும் சோதனை முடிந்ததற்கான சான்றல்ல.
 

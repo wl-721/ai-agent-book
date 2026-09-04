@@ -1,9 +1,9 @@
 # فهم وكلاء الذكاء الاصطناعي بعمق: مبادئ التصميم والممارسة الهندسية
 
-[![PDF](https://img.shields.io/badge/PDF-تنزيل-success.svg)](#-الكتاب-الإلكتروني) [![القراءة عبر الإنترنت](https://img.shields.io/badge/🌐_قراءة_عبر_الإنترنت-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![النجوم](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![الترخيص](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![اللغات](https://img.shields.io/badge/الترجمات-14%20لغة-informational.svg)](#-الكتاب-الإلكتروني)
+[![PDF](https://img.shields.io/badge/PDF-تنزيل-success.svg)](#-الكتاب-الإلكتروني) [![القراءة عبر الإنترنت](https://img.shields.io/badge/🌐_قراءة_عبر_الإنترنت-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![النجوم](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![الترخيص](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![اللغات](https://img.shields.io/badge/الترجمات-15%20لغة-informational.svg)](#-الكتاب-الإلكتروني)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
-**[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · العربية ← الحالية · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md)**
+**[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · العربية ← الحالية · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
 > **ملاحظة حول الترجمة:** هذه ترجمة عربية كاملة، خضعت لمراجعة تحريرية وتقنية شملت سلامة المعنى، وطبيعية الأسلوب، واتساق المصطلحات، وبنية النص والرسوم.
 >
@@ -15,7 +15,7 @@
 >
 > إذا كنت تقرأ نسخة PDF قديمة، فننصحك بـ[تنزيل أحدث نسخة PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ar.pdf). تتضمن الطبعة الجديدة أيضًا تصحيحات وتعديلات عديدة في المحتوى، لذا يُرجى اعتماد أحدث نسخة.
 
-| 📚 **10 فصول** من الأساسيات إلى الإنتاج | 📂 **93** مشروعًا مصاحبًا (أكثر من 70 مستقلاً) | 🌐 **14 لغة**: CN / EN / ES / ID / AR / zh-TW / RU / TA / VI / JA / TR / KO / HU / HE |
+| 📚 **10 فصول** من الأساسيات إلى الإنتاج | 📂 **93** مشروعًا مصاحبًا (أكثر من 70 مستقلاً) | 🌐 **15 لغة**: CN / EN / ES / ID / AR / zh-TW / RU / TA / VI / JA / TR / KO / HU / HE / PT-BR |
 | :---: | :---: | :---: |
 
 ## 📖 الكتاب الإلكتروني
@@ -83,14 +83,14 @@
 | **Zhipu GLM** | <https://open.bigmodel.cn/> | نماذج GLM، ومنها GLM-4.6، قوية في الصينية ومنافسة من حيث الكلفة | البر الرئيسي للصين |
 | **SiliconFlow** | <https://siliconflow.cn/> | مجموعة واسعة من النماذج المفتوحة، مثل DeepSeek وQwen، مع وصول سريع من الصين | البر الرئيسي للصين |
 | **DeepSeek** | <https://platform.deepseek.com/> | واجهة DeepSeek الرسمية | عالمي + البر الرئيسي للصين |
-| **Krill AI** | [www.krill-ai.net](https://www.krill-ai.net/register?invite=Q8D3L35725) | وصول موحد إلى نماذج عالمية وصينية، منها OpenAI وClaude وGemini وKimi وGLM وDeepSeek وQwen | عالمي + البر الرئيسي للصين |
+| **Krill AI** | [www.krill-code.com](https://www.krill-code.com/register?invite=Q8D3L35725) | وصول موحد إلى نماذج عالمية وصينية، منها OpenAI وClaude وGemini وKimi وGLM وDeepSeek وQwen | عالمي + البر الرئيسي للصين |
 | **OpenRouter** | <https://openrouter.ai/> | وصول موحد إلى عدد كبير من النماذج العالمية والمفتوحة | عالمي |
 
 ## 💎 الرعاة
 
 شكرًا لـ **Krill AI** على رعاية المشروع. توفر المنصة بوابة API مستقرة وسريعة لنماذج GPT وClaude وGemini وعدد من النماذج الصينية، إلى جانب خيارات للمؤسسات والفوترة والدعم الفني واتصال WebSocket محسّن لخفض زمن وصول الرمز الأول.
 
-تقدم Krill عرضًا لقراء الكتاب: سجّل عبر [هذا الرابط](https://www.krill-ai.net/register?invite=Q8D3L35725)، ثم أدخل الرمز الترويجي `ai-agent-book` عند إضافة الرصيد للحصول على خصم 23% على أول خطة Codex.
+تقدم Krill عرضًا لقراء الكتاب: سجّل عبر [هذا الرابط](https://www.krill-code.com/register?invite=Q8D3L35725)، ثم أدخل الرمز الترويجي `ai-agent-book` عند إضافة الرصيد للحصول على خصم 23% على أول خطة Codex.
 
 > 🧪 تُسجَّل حالة تنفيذ التجارب والأدلة والبوابات المتبقية بصورة منفصلة في [`EXPERIMENT_STATUS.md`](../EXPERIMENT_STATUS.md)؛ ولا يُعد استنساخ الشفرة أو تثبيتها دليلاً على اكتمال التجربة.
 
