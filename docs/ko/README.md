@@ -1,11 +1,11 @@
 # AI 에이전트를 깊이 이해하기: 설계 원리와 엔지니어링 실전
 
-[![PDF](https://img.shields.io/badge/PDF-다운로드-success.svg)](#-전자책) [![온라인으로 읽기](https://img.shields.io/badge/🌐_온라인으로_읽기-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/번역-15개%20언어-informational.svg)](#-전자책)
+[![PDF](https://img.shields.io/badge/PDF-다운로드-success.svg)](#-전자책) [![온라인으로 읽기](https://img.shields.io/badge/🌐_온라인으로_읽기-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/astro/ko/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/번역-15개%20언어-informational.svg)](#-전자책)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
 **[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · 한국어 ← 현재 · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
-> 📥 **[PDF / EPUB 다운로드](#-전자책)**(권장) — PDF와 EPUB 판본에서 가장 좋은 읽기 경험을 제공합니다. [온라인 판본](https://bojieli.github.io/ai-agent-book/)에서는 언어 전환, 접을 수 있는 장별 탐색, 전체 텍스트 검색을 이용할 수 있습니다.
+> 📥 **[PDF / EPUB 다운로드](#-전자책)**(권장) — PDF와 EPUB 판본에서 가장 좋은 읽기 경험을 제공합니다. [온라인 판본](https://bojieli.github.io/ai-agent-book/astro/ko/)에서는 언어 전환, 접을 수 있는 장별 탐색, 강조 표시와 메모을 이용할 수 있습니다.
 
 **에이전트 = LLM + 컨텍스트 + 도구** — 이 책은 이 핵심 공식을 중심으로 10개 장에 걸쳐 AI 에이전트의 원리부터 엔지니어링 실전까지 설명합니다. 본문과 그림, **94개의 연계 실습**을 모두 오픈 소스로 공개합니다.
 
@@ -35,7 +35,7 @@
 > - **아랍어**([@TheSyBuilder](https://github.com/TheSyBuilder)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ar.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ar.epub)
 > - **터키어**([@memisemre](https://github.com/memisemre)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.epub)
 >
-> 🌐 [온라인으로도 읽을 수 있습니다](https://bojieli.github.io/ai-agent-book/). `main` 브랜치가 갱신될 때마다 사이트가 자동으로 다시 빌드됩니다.
+> 🌐 [온라인으로도 읽을 수 있습니다](https://bojieli.github.io/ai-agent-book/astro/ko/). `main` 브랜치가 갱신될 때마다 사이트가 자동으로 다시 빌드됩니다.
 
 중국어 원문은 [`book/`](../../book/)에 있으며, 한국어판은 [`book-ko/`](../../book-ko/)에 있습니다. 다른 언어판은 각 언어 디렉터리에 있는 커뮤니티 번역으로, 중국어 원문보다 갱신이 늦을 수 있습니다.
 
@@ -85,6 +85,33 @@
 | **DeepSeek** | <https://platform.deepseek.com/> | DeepSeek 공식 API | 글로벌·중국 본토 |
 | **Krill AI** | [www.krill-code.com](https://www.krill-code.com/register?invite=Q8D3L35725) | 주요 글로벌·중국 모델을 한곳에서 제공 | 글로벌·중국 본토 |
 | **OpenRouter** | <https://openrouter.ai/> | GPT, Claude, Gemini, Kimi, GLM, DeepSeek, Qwen 등을 한곳에서 제공 | 글로벌 |
+
+## ❓ 자주 묻는 질문
+
+**Q: PDF / EPUB이 있나요? 직접 빌드해야 하나요?**
+직접 빌드할 필요는 없습니다. [전자책](#-전자책) 절에 15개 언어의 PDF / EPUB 다운로드 링크가 정리되어 있으며, 항상 main 브랜치의 최신 빌드를 가리킵니다. [온라인으로 읽기](https://bojieli.github.io/ai-agent-book/)도 가능합니다. 원고를 수정하고 다시 조판하려는 경우에만 직접 빌드하면 됩니다.
+
+**Q: 이 책을 읽는 데 필요한 사전 지식은 무엇인가요?**
+서문의 "선수 지식" 절에 자세히 설명되어 있습니다. 중간 수준 복잡도의 Python 코드를 읽고 수정할 수 있고, ChatGPT, Claude 같은 LLM 제품을 사용해 본 경험이 있으며, AI 코딩 보조 도구(Claude Code, Codex, Cursor 등) 중 하나 이상에 익숙하고, 명령줄, Git, JSON, REST API 같은 소프트웨어 엔지니어링 상식을 갖추고 있으면 됩니다. 제8장 사후 학습을 제외하면 수학과 머신러닝에 대한 요구 수준은 매우 낮습니다.
+
+**Q: 내용이 많아서 읽고 나면 잊어버립니다. 어떻게 소화해야 하나요?**
+본문만 읽지 마세요. 권장하는 방법은 각 장의 실험을 직접 해 보는 것입니다. 연계 코드를 들여다보는 것이 아니라, 책의 설계 원리를 이해한 뒤 코딩 에이전트의 도움을 받아 처음부터 다시 구현하고, 출력을 관찰하며 기대와 다른 부분을 찾아내는 것입니다. 각 장 끝의 생각해 볼 문제도 좋은 자가 점검이 됩니다. 더 체계적인 경로는 [학습 가이드](LEARNING.md)를 참고하세요. 한 독자의 정리가 딱 맞습니다. "먼저 책을 얇게 읽고, 다음에 두껍게 읽고, 다시 얇게 읽어라."
+
+**Q: 실험 코드를 한 줄씩 다 이해해야 하나요?**
+그럴 필요는 없습니다. 이 책의 연계 코드는 모두 코딩 에이전트가 원고를 바탕으로 생성했고, 저자도 한 줄씩 읽지 않습니다. 핵심은 아키텍처, 핵심 구성 요소, 설계 원리를 명확히 정리한 뒤 코드 작성, 테스트 실행, 버그 수정은 AI에 맡기고, 사람은 처음의 설계와 마지막 검수를 책임지는 것입니다.
+
+**Q: 생각해 볼 문제에 참고 답안이 있나요?**
+있습니다: [`book/reference-answers.md`](../../book/reference-answers.md)([온라인 판](https://bojieli.github.io/ai-agent-book/book/reference-answers/)). 참고용일 뿐 정답은 아니므로, 다른 의견이 있다면 Discussions에서 자유롭게 토론해 주세요.
+
+**Q: 다 읽은 뒤에 실제로 만들어 볼 수 있는 프로젝트가 있나요?**
+Claude Code, Codex 같은 코딩 에이전트를 처음부터 만들어 보기를 추천합니다. 제1–5장만으로도 쓸 만한 코딩 에이전트를 만들 수 있고, 제7·9장은 평가 세트를 구축하고 실패 사례에서 지속적으로 개선하는 데, 제8장은 모델 자체에 개입하는 데, 제6·10장은 음성, Computer Use 같은 상호작용 방식과 멀티 에이전트 협업을 추가하는 데 도움이 됩니다. 평가, 관측, 신뢰성 같은 엔지니어링 단계는 제7장의 평가 실험부터 시작하면 좋습니다. 먼저 자신의 에이전트를 위해 십여 개 과제로 이루어진 작은 평가 세트를 만들고, 실패 사례를 중심으로 개선해 나가세요.
+
+**Q: 질문과 토론은 어디에서 하나요?**
+- 원고 오류, 실험 버그, 번역 문제: [Issue](https://github.com/bojieli/ai-agent-book/issues)를 열어 주세요. 장, 절, 해당 원문 문장을 함께 적어 주시기 바랍니다.
+- 읽으면서 생긴 의문, 생각해 볼 문제 토론, 경험 공유, 자료 추천: [GitHub Discussions](https://github.com/bojieli/ai-agent-book/discussions)를 이용해 주세요.
+
+**Q: 오류를 발견해서 고치고 싶다면 어떻게 하나요?**
+PR을 직접 보내 주시면 환영합니다. 중국어판 [`book/`](../../book/)이 원본이며 다른 언어는 중국어판에서 동기화됩니다. 본문을 수정할 때는 중국어판만 고치고 PR에 설명을 남겨 주시면, 번역은 병합 후 일괄 동기화됩니다. 자세한 내용은 [기여하기](#-기여하기)를 참고하세요.
 
 ## 💎 후원
 

@@ -1,11 +1,11 @@
 # AI Agents in Depth: Design Principles and Engineering Practice
 
-[![PDF](https://img.shields.io/badge/PDF-download-success.svg)](#-e-book) [![Read online](https://img.shields.io/badge/🌐_Read_online-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/translations-15%20languages-informational.svg)](#-e-book)
+[![PDF](https://img.shields.io/badge/PDF-download-success.svg)](#-e-book) [![Read online](https://img.shields.io/badge/🌐_Read_online-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/astro/en/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/translations-15%20languages-informational.svg)](#-e-book)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
 **[中文](../../README.md) · English ← current · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
-> 📥 **[Download PDF / EPUB](#-e-book)** (recommended) — the PDF / EPUB editions offer the best reading experience; you can also [read online](https://bojieli.github.io/ai-agent-book/) (multi-language switcher, collapsible chapter tree, full-text search, auto-rebuilt on every push to main).
+> 📥 **[Download PDF / EPUB](#-e-book)** (recommended) — the PDF / EPUB editions offer the best reading experience; you can also [read online](https://bojieli.github.io/ai-agent-book/astro/en/) (multi-language switcher, collapsible chapter tree, highlights and notes, auto-rebuilt on every push to main).
 
 **Agent = LLM + Context + Tools** — This book builds on this core formula across 10 chapters, taking AI Agents from principles to engineering practice. The full text, illustrations, and **93 accompanying experiments** are all open source. You are welcome to run the experiments yourself.
 
@@ -35,7 +35,7 @@
 > - **Turkish** (community translation, by [@memisemre](https://github.com/memisemre)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.epub)
 > - **Korean** (community translation, by [@JeongJaeSoon](https://github.com/JeongJaeSoon)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.epub)
 >
-> 🌐 You can also [read online](https://bojieli.github.io/ai-agent-book/) — multi-language switcher, collapsible chapter tree, full-text search, and direct links to companion experiments. Auto-rebuilt on every push to main.
+> 🌐 You can also [read online](https://bojieli.github.io/ai-agent-book/astro/en/) — multi-language switcher, collapsible chapter tree, highlights and notes, and direct links to companion experiments. Auto-rebuilt on every push to main.
 
 Chinese text source is in [`book/`](../../book/); English/Spanish/Arabic/Traditional Chinese (Taiwan)/Russian/Tamil/Vietnamese/Japanese/Turkish/Korean versions are community contributions (may lag behind the Chinese original), located in [`book-en/`](../../book-en/), [`book-es/`](../../book-es/), [`book-ar/`](../../book-ar/), [`book-zhtw/`](../../book-zhtw/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/), [`book-ja/`](../../book-ja/), [`book-tr/`](../../book-tr/), [`book-ko/`](../../book-ko/) respectively.
 
@@ -114,6 +114,33 @@ It is recommended to apply for API keys from several platforms for convenient le
 | **Atlas Cloud** | <https://www.atlascloud.ai/> | Access models from multiple vendors through an OpenAI-compatible API | Global |
 | **Krill AI** | [www.krill-code.com](https://www.krill-code.com/register?invite=Q8D3L35725) | One-stop access to major global and China-domestic models (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax) | Global + Mainland China |
 | **OpenRouter** | <https://openrouter.ai/> | One-stop access to major global and China-domestic models (GPT, Claude, Gemini, Kimi, GLM, DeepSeek, Qwen, etc.) | Global |
+
+## ❓ FAQ
+
+**Q: Is there a PDF / EPUB? Do I need to build it myself?**
+No. The [E-Book](#-e-book) section lists PDF / EPUB download links for 15 languages, which always point to the latest build of the `main` branch; you can also [read online](https://bojieli.github.io/ai-agent-book/). You only need to build it yourself if you want to modify the text and re-typeset it.
+
+**Q: What background knowledge do I need to read this book?**
+The "Prerequisites" section of the introduction spells this out: you can read and modify moderately complex Python code; you have used LLM products such as ChatGPT or Claude; you are familiar with at least one AI coding tool (Claude Code, Codex, Cursor, etc.); and you know software-engineering basics such as the command line, Git, JSON, and REST APIs. Apart from Chapter 8 on post-training, the book demands very little math or machine learning.
+
+**Q: There is a lot to take in and I forget it soon after reading. How do I digest it?**
+Don't just read the text. The recommended approach is to get hands-on with each chapter's experiments — not by reading the companion code, but by understanding the design principles in the book and then re-implementing them from scratch with a coding agent, watching the output, and debugging whatever does not behave as expected; the thought questions at the end of each chapter are also a good self-check. For a more systematic path, see [Learning Suggestions](LEARNING.md). One reader summed it up well: first read the book thin, then read it thick, then read it thin again.
+
+**Q: Do I need to understand the experiment code line by line?**
+No. All the companion code in this book was generated by coding agents from the manuscript, and the author does not read it line by line either. What matters is thinking through the architecture, the core components, and the design principles, then letting AI write the code, run the tests, and fix the bugs — the human owns the initial design and the final acceptance.
+
+**Q: Are there reference answers to the thought questions?**
+Yes: [`book/reference-answers.md`](../../book/reference-answers.md) ([online version](https://bojieli.github.io/ai-agent-book/book/reference-answers/)). They are references, not the one right answer; feel free to share a different view in Discussions.
+
+**Q: What hands-on project can I build after finishing the book?**
+We recommend building a coding agent like Claude Code or Codex from scratch: Chapters 1–5 are enough for a usable coding agent; Chapters 7 and 9 help you build an evaluation set for it and keep improving from failure cases; Chapter 8 goes into the model itself; Chapters 6 and 10 add interaction modes such as voice and Computer Use, plus multi-agent collaboration. For the engineering side — evaluation, observability, reliability — start from the evaluation experiments in Chapter 7: first build a small evaluation set of a dozen or so tasks for your own agent, then iterate on the failing cases.
+
+**Q: Where do I ask questions and discuss?**
+- Errata in the text, experiment bugs, translation problems: open an [Issue](https://github.com/bojieli/ai-agent-book/issues), noting the chapter, section, and the original sentence.
+- Reading questions, thought-question discussions, experience sharing, resource recommendations: please use [GitHub Discussions](https://github.com/bojieli/ai-agent-book/discussions).
+
+**Q: I found a mistake and want to fix it. What should I do?**
+Pull Requests are welcome. The Chinese edition in [`book/`](../../book/) is the source of truth, and the other languages are synced from it: when changing the text, edit only the Chinese version and say so in the PR; translations are synced together after the merge. See [Contributing](#-contributing) for details.
 
 ## 💎 Sponsors
 

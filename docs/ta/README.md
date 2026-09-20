@@ -1,11 +1,11 @@
 # AI Agents ஆழத்தில்: வடிவமைப்பு கோட்பாடுகள் மற்றும் பொறியியல் நடைமுறைகள்
 
-[![PDF](https://img.shields.io/badge/PDF-%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%B5%E0%AE%BF%E0%AE%B1%E0%AE%95%E0%AF%8D-success.svg)](#-மின்-புத்தகம்) [![நிகழ்நேரத்தில் படி](https://img.shields.io/badge/🌐_நிகழ்நேர_படி-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/மொழ%E0%AE%AA%E0%AF%86%E0%AE%AF%E0%AE%B0%E0%AF%8D%E0%AE%AA%E0%AF%81-15%20%E0%AE%AE%E0%AF%8A%E0%AE%B4%E0%AE%BF%E0%AE%95%E0%AE%B3%E0%AF%8D-informational.svg)](#-மின்-புத்தகம்)
+[![PDF](https://img.shields.io/badge/PDF-%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%B5%E0%AE%BF%E0%AE%B1%E0%AE%95%E0%AF%8D-success.svg)](#-மின்-புத்தகம்) [![நிகழ்நேரத்தில் படி](https://img.shields.io/badge/🌐_நிகழ்நேர_படி-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/astro/ta/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/மொழ%E0%AE%AA%E0%AF%86%E0%AE%AF%E0%AE%B0%E0%AF%8D%E0%AE%AA%E0%AF%81-15%20%E0%AE%AE%E0%AF%8A%E0%AE%B4%E0%AE%BF%E0%AE%95%E0%AE%B3%E0%AF%8D-informational.svg)](#-மின்-புத்தகம்)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
 **[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · தமிழ் ← தற்போதைய · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
-> 📥 **[PDF / EPUB பதிவிறக்கம்](#-மின்-புத்தகம்)** (பரிந்துரைக்கப்படுகிறது) — சிறந்த வாசிப்பு அனுபவத்திற்கு PDF / EPUB பதிப்புகளைப் பரிந்துரைக்கிறோம்; [நிகழ்நேரத்திலும் படிக்கலாம்](https://bojieli.github.io/ai-agent-book/) (மொழி மாற்றி, மடிக்கக்கூடிய அத்தியாய மரம், முழு-உரை தேடல்; main கிளைக்கு ஒவ்வொரு push-ம் தானாகவே மீண்டும் கட்டப்படுகிறது).
+> 📥 **[PDF / EPUB பதிவிறக்கம்](#-மின்-புத்தகம்)** (பரிந்துரைக்கப்படுகிறது) — சிறந்த வாசிப்பு அனுபவத்திற்கு PDF / EPUB பதிப்புகளைப் பரிந்துரைக்கிறோம்; [நிகழ்நேரத்திலும் படிக்கலாம்](https://bojieli.github.io/ai-agent-book/astro/ta/) (மொழி மாற்றி, மடிக்கக்கூடிய அத்தியாய மரம், சிறப்பித்துக் காட்டுதல் மற்றும் குறிப்புகள்; main கிளைக்கு ஒவ்வொரு push-ம் தானாகவே மீண்டும் கட்டப்படுகிறது).
 
 **Agent = LLM + Context + Tools** — இந்த மையக் கோவையில் 10 அத்தியாயங்களில் AI Agent-ஐ கோட்பாடு முதல் பொறியியல் நடைமுறை வரை கொண்டு செல்கிறது. முழு உரை, விளக்கப்படங்கள் மற்றும் **93 துணை சோதனைகள்** அனைத்தும் திறந்த மூலமாகும்.
 
@@ -35,7 +35,7 @@
 > - **துருக்கியம்**（சமூக மொழிபெயர்ப்பு, by [@memisemre](https://github.com/memisemre)）：[PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.epub)
 > - **கொரிய மொழி**（சமூக மொழிபெயர்ப்பு, by [@JeongJaeSoon](https://github.com/JeongJaeSoon)）：[PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.epub)
 >
-> 🌐 [நிகழ்நேரத்திலும் படிக்கலாம்](https://bojieli.github.io/ai-agent-book/) — மொழி மாற்றி, மடிக்கக்கூடிய அத்தியாய மரம், முழு-உரை தேடல் மற்றும் துணை சோதனைகளுக்கான நேரடி இணைப்புகள். main கிளைக்கு ஒவ்வொரு push-ம் தானாகவே மீண்டும் கட்டப்படுகிறது.
+> 🌐 [நிகழ்நேரத்திலும் படிக்கலாம்](https://bojieli.github.io/ai-agent-book/astro/ta/) — மொழி மாற்றி, மடிக்கக்கூடிய அத்தியாய மரம், சிறப்பித்துக் காட்டுதல் மற்றும் குறிப்புகள் மற்றும் துணை சோதனைகளுக்கான நேரடி இணைப்புகள். main கிளைக்கு ஒவ்வொரு push-ம் தானாகவே மீண்டும் கட்டப்படுகிறது.
 
 சீன மூல உரை [`book/`](../../book/)-இல் உள்ளது; ஆங்/ஸ்பானிஷ்/அரபு/繁體中文（台灣）/ரஷ்ய/தமிழ்/வியத்/ஜப்/துருக்கியம்/கொரிய பதிப்புகள் சமூகப் பங்களிப்புகள் (சீன அசலை விடப் பின்தங்கியிருக்கலாம்), [`book-en/`](../../book-en/), [`book-es/`](../../book-es/), [`book-ar/`](../../book-ar/), [`book-zhtw/`](../../book-zhtw/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/), [`book-ja/`](../../book-ja/), [`book-tr/`](../../book-tr/), [`book-ko/`](../../book-ko/)-இல் உள்ளன.
 
@@ -114,6 +114,33 @@ uv run python chapter1/context/main.py
 | **DeepSeek** | <https://platform.deepseek.com/> | DeepSeek அதிகாரப்பூர்வ API | உலகளாவிய + சீனா நிலப்பரப்பு |
 | **Krill AI** | [www.krill-code.com](https://www.krill-code.com/register?invite=Q8D3L35725) | உலகளாவிய மற்றும் சீன உள்நாட்டு முக்கிய மாதிரிகளை (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax) ஒரே இடத்திலிருந்து அணுகலாம் | உலகளாவிய + சீனா நிலப்பரப்பு |
 | **OpenRouter** | <https://openrouter.ai/> | உலகளாவிய மற்றும் சீன உள்நாட்டு முக்கிய மாதிரிகளை (GPT, Claude, Gemini, Kimi, GLM, DeepSeek, Qwen போன்ற) ஒரே இடத்திலிருந்து அணுகலாம் | உலகளாவிய |
+
+## ❓ அடிக்கடி கேட்கப்படும் கேள்விகள்
+
+**Q: PDF / EPUB உள்ளதா? நானே கட்ட (build) வேண்டுமா?**
+தேவையில்லை. [மின்-புத்தகம்](#-மின்-புத்தகம்) பகுதியில் 15 மொழிகளுக்கான PDF / EPUB பதிவிறக்க இணைப்புகள் உள்ளன; அவை எப்போதும் `main` கிளையின் சமீபத்திய கட்டமைப்பைச் சுட்டுகின்றன. [நிகழ்நேரத்திலும் படிக்கலாம்](https://bojieli.github.io/ai-agent-book/). புத்தக உரையைத் திருத்தி மீண்டும் அச்சமைக்க (typeset) விரும்பினால் மட்டுமே நீங்களே கட்ட வேண்டும்.
+
+**Q: இந்தப் புத்தகத்தைப் படிக்க என்ன முன் அறிவு தேவை?**
+அறிமுகத்தின் "முன்நிபந்தனைகள்" பகுதியில் முழு விவரம் உள்ளது: நடுத்தர சிக்கலான Python குறியீட்டைப் படித்துப் புரிந்து திருத்தும் திறன்; ChatGPT, Claude போன்ற LLM தயாரிப்புகளைப் பயன்படுத்திய அனுபவம்; குறைந்தது ஒரு AI உதவி நிரலாக்கக் கருவியில் (Claude Code, Codex, Cursor போன்றவை) பரிச்சயம்; கட்டளை வரி (command line), Git, JSON, REST API போன்ற மென்பொருள் பொறியியல் அடிப்படைகள். அத்தியாயம் 8-இன் பிந்தைய பயிற்சி (post-training) தவிர, புத்தகம் கணிதம் மற்றும் இயந்திரக் கற்றலை மிகக் குறைவாகவே எதிர்பார்க்கிறது.
+
+**Q: விஷயங்கள் நிறைய; படித்த உடனே மறந்துவிடுகிறது. எப்படி உள்வாங்குவது?**
+உரையை மட்டும் படிக்க வேண்டாம். பரிந்துரைக்கப்படும் வழி, ஒவ்வொரு அத்தியாயத்தின் சோதனைகளையும் நீங்களே செய்து பார்ப்பது—துணைக் குறியீட்டைப் படிப்பதல்ல; புத்தகத்தில் உள்ள வடிவமைப்புக் கோட்பாடுகளைப் புரிந்துகொண்டு, coding agent-இன் உதவியுடன் அவற்றைப் புதிதாக (from scratch) செயல்படுத்தி, வெளியீட்டைக் கவனித்து, எதிர்பார்ப்புக்கு மாறாக நடப்பதைத் தீர்ப்பது. ஒவ்வொரு அத்தியாயத்தின் இறுதியில் உள்ள சிந்தனை கேள்விகளும் நல்ல சுய-சோதனை. முறையான பாதைக்கு [கற்றல் பரிந்துரைகள்](LEARNING.md) பார்க்கவும். ஒரு வாசகரின் சுருக்கம் மிகப் பொருத்தமானது: முதலில் புத்தகத்தை மெலிதாக்கிப் படியுங்கள், பிறகு தடிமனாக்கிப் படியுங்கள், பிறகு மீண்டும் மெலிதாக்கிப் படியுங்கள்.
+
+**Q: சோதனைக் குறியீட்டை வரிக்கு வரி புரிந்துகொள்ள வேண்டுமா?**
+தேவையில்லை. இந்தப் புத்தகத்தின் துணைக் குறியீடு முழுவதும் புத்தக உரையின் அடிப்படையில் coding agent-களால் உருவாக்கப்பட்டது; ஆசிரியரும் அதை வரிக்கு வரி படிப்பதில்லை. முக்கியமானது, கட்டமைப்பு (architecture), மையக் கூறுகள் மற்றும் வடிவமைப்புக் கோட்பாடுகளைத் தெளிவாகச் சிந்திப்பது; பிறகு குறியீடு எழுதுவது, சோதனைகளை இயக்குவது, bug-களைத் திருத்துவது என்பவற்றை AI-யிடம் விடுவது. ஆரம்ப வடிவமைப்பும் இறுதி ஏற்பும் (acceptance) மனிதரின் பொறுப்பு.
+
+**Q: சிந்தனை கேள்விகளுக்கு குறிப்பு விடைகள் உள்ளனவா?**
+உள்ளன: [`book/reference-answers.md`](../../book/reference-answers.md) ([நிகழ்நேரப் பதிப்பு](https://bojieli.github.io/ai-agent-book/book/reference-answers/)). அவை குறிப்புகள் மட்டுமே, தரநிலை விடைகள் அல்ல; உங்கள் மாறுபட்ட கருத்துகளை Discussions-இல் விவாதிக்க வரவேற்கிறோம்.
+
+**Q: படித்து முடித்த பிறகு செய்யக்கூடிய நடைமுறைத் திட்டம் என்ன?**
+Claude Code, Codex போன்ற ஒரு coding agent-ஐப் புதிதாக உருவாக்குவதைப் பரிந்துரைக்கிறோம்: அத்தியாயங்கள் 1–5 பயன்படுத்தக்கூடிய coding agent ஒன்றை உருவாக்கப் போதுமானவை; அத்தியாயங்கள் 7 மற்றும் 9 அதற்கு மதிப்பீட்டுத் தொகுப்பை (evaluation set) உருவாக்கவும், தோல்வி நிகழ்வுகளிலிருந்து தொடர்ந்து மேம்படுத்தவும் உதவுகின்றன; அத்தியாயம் 8 மாதிரியையே கையாள்கிறது; அத்தியாயங்கள் 6 மற்றும் 10 குரல், Computer Use போன்ற தொடர்பாடல் வழிகளையும் பல-ஏஜெண்ட் ஒத்துழைப்பையும் சேர்க்கின்றன. மதிப்பீடு, கண்காணிப்பு (observability), நம்பகத்தன்மை போன்ற பொறியியல் பகுதிகளுக்கு அத்தியாயம் 7-இன் மதிப்பீட்டுச் சோதனைகளிலிருந்து தொடங்கலாம்: முதலில் உங்கள் ஏஜெண்டுக்கு பத்துப் பதினைந்து பணிகள் கொண்ட சிறிய மதிப்பீட்டுத் தொகுப்பை உருவாக்கி, பிறகு தோல்வியடையும் நிகழ்வுகளை மையமாக வைத்து மேம்படுத்தவும்.
+
+**Q: எங்கே கேள்வி கேட்பது, விவாதிப்பது?**
+- உரைப் பிழைத்திருத்தம், சோதனை bug, மொழிபெயர்ப்புச் சிக்கல்கள்: [Issue](https://github.com/bojieli/ai-agent-book/issues) திறக்கவும்; அத்தியாயம், உட்பிரிவு மற்றும் மூல வாக்கியத்தைக் குறிப்பிடவும்.
+- வாசிப்பு சந்தேகங்கள், சிந்தனை கேள்விகள் பற்றிய விவாதம், அனுபவப் பகிர்வு, வளப் பரிந்துரைகள்: [GitHub Discussions](https://github.com/bojieli/ai-agent-book/discussions) பயன்படுத்தவும்.
+
+**Q: பிழையைக் கண்டறிந்தேன், திருத்த விரும்புகிறேன். என்ன செய்வது?**
+நேரடியாக PR அனுப்ப வரவேற்கிறோம். சீனப் பதிப்பு [`book/`](../../book/) மூலப் பிரதி; மற்ற மொழிகள் சீனப் பதிப்பிலிருந்து ஒத்திசைக்கப்படுகின்றன (sync). உரையைத் திருத்தும்போது சீனப் பதிப்பை மட்டும் மாற்றி PR-இல் விளக்கினால் போதும்; மொழிபெயர்ப்புகள் merge ஆன பிறகு ஒன்றாக ஒத்திசைக்கப்படும். விவரங்களுக்கு [பங்களிப்பு](#-பங்களிப்பு) பார்க்கவும்.
 
 ## 💎 ஸ்பான்சர்கள்
 

@@ -1,11 +1,11 @@
 # Memahami AI Agent secara Mendalam: Prinsip Desain dan Praktik Rekayasa
 
-[![PDF](https://img.shields.io/badge/PDF-unduh-success.svg)](#-buku-elektronik) [![Baca daring](https://img.shields.io/badge/🌐_Baca_daring-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/terjemahan-15%20bahasa-informational.svg)](#-buku-elektronik)
+[![PDF](https://img.shields.io/badge/PDF-unduh-success.svg)](#-buku-elektronik) [![Baca daring](https://img.shields.io/badge/🌐_Baca_daring-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/astro/id/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/terjemahan-15%20bahasa-informational.svg)](#-buku-elektronik)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
 **[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · Bahasa Indonesia ← saat ini · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
-> 📥 **[Unduh PDF / EPUB](#-buku-elektronik)** (direkomendasikan) — edisi PDF dan EPUB memberikan pengalaman membaca terbaik. Anda juga dapat [membaca secara daring](https://bojieli.github.io/ai-agent-book/) dengan pemilih bahasa, navigasi bab, dan pencarian teks lengkap.
+> 📥 **[Unduh PDF / EPUB](#-buku-elektronik)** (direkomendasikan) — edisi PDF dan EPUB memberikan pengalaman membaca terbaik. Anda juga dapat [membaca secara daring](https://bojieli.github.io/ai-agent-book/astro/id/) dengan pemilih bahasa, navigasi bab, dan sorotan dan catatan.
 
 **Agent = LLM + Konteks + Alat** — buku ini memakai rumus inti tersebut untuk membahas AI Agent, dari prinsip dasar hingga praktik rekayasa, dalam sepuluh bab. Naskah, ilustrasi, dan proyek pendampingnya tersedia sebagai sumber terbuka.
 
@@ -71,6 +71,33 @@ Sumber naskah Bahasa Indonesia berada di [`book-id/`](../../book-id/). Edisi ini
 > 📚 Untuk jalur belajar yang disarankan, lihat **[Saran Belajar](LEARNING.md)**.
 
 > 🧪 Status pelaksanaan eksperimen, bukti, dan gerbang penerimaan yang belum terpenuhi dicatat secara terpisah di [`EXPERIMENT_STATUS.md`](../EXPERIMENT_STATUS.md); mengkloning atau memasang kode sumber tidak membuktikan bahwa eksperimen telah selesai.
+
+## ❓ Pertanyaan Umum
+
+**Q: Apakah ada PDF / EPUB? Apakah saya harus membuatnya sendiri?**
+Tidak perlu. Bagian [Buku Elektronik](#-buku-elektronik) mencantumkan tautan unduhan PDF / EPUB untuk 15 bahasa yang selalu menunjuk ke hasil build terbaru dari cabang `main`; Anda juga dapat [membaca secara daring](https://bojieli.github.io/ai-agent-book/). Anda hanya perlu membuatnya sendiri jika ingin mengubah naskah dan menata ulang tata letaknya.
+
+**Q: Pengetahuan awal apa yang dibutuhkan untuk membaca buku ini?**
+Bagian "Prasyarat" pada pendahuluan menjelaskannya secara lengkap: mampu membaca dan mengubah kode Python berkompleksitas menengah; pernah memakai produk LLM seperti ChatGPT atau Claude; akrab dengan setidaknya satu alat pemrograman berbantuan AI (Claude Code, Codex, Cursor, dan sebagainya); serta memahami dasar rekayasa perangkat lunak seperti baris perintah, Git, JSON, dan REST API. Selain Bab 8 tentang pascapelatihan, buku ini hanya menuntut sedikit matematika dan pembelajaran mesin.
+
+**Q: Materinya banyak dan cepat terlupa. Bagaimana cara mencernanya?**
+Jangan hanya membaca naskahnya. Cara yang disarankan adalah langsung berpraktik dengan eksperimen tiap bab — bukan dengan membaca kode pendamping, melainkan dengan memahami prinsip desain dalam buku lalu mengimplementasikannya ulang dari nol dengan bantuan coding agent, mengamati keluarannya, dan menelusuri bagian yang tidak sesuai harapan; pertanyaan pemikiran di akhir tiap bab juga merupakan sarana uji diri yang baik. Jalur yang lebih sistematis ada di [Saran Belajar](LEARNING.md). Rangkuman seorang pembaca sangat tepat: baca buku ini sampai terasa tipis, lalu sampai terasa tebal, lalu sampai terasa tipis lagi.
+
+**Q: Apakah kode eksperimen harus dipahami baris demi baris?**
+Tidak perlu. Seluruh kode pendamping buku ini dihasilkan oleh coding agent berdasarkan naskah, dan penulis pun tidak membacanya baris demi baris. Kuncinya adalah memikirkan dengan matang arsitektur, komponen inti, dan prinsip desainnya, lalu membiarkan AI menulis kode, menjalankan pengujian, dan memperbaiki bug; manusia bertanggung jawab atas desain awal dan penerimaan akhir.
+
+**Q: Apakah pertanyaan pemikiran memiliki jawaban rujukan?**
+Ada: [`book/reference-answers.md`](../../book/reference-answers.md) ([versi daring](https://bojieli.github.io/ai-agent-book/book/reference-answers/)). Jawaban tersebut hanya rujukan, bukan jawaban baku; silakan diskusikan pandangan Anda yang berbeda di Discussions.
+
+**Q: Proyek praktik apa yang bisa dikerjakan setelah selesai membaca?**
+Kami menyarankan membangun dari nol sebuah coding agent seperti Claude Code atau Codex: Bab 1–5 sudah cukup untuk menghasilkan coding agent yang dapat dipakai; Bab 7 dan 9 membantu Anda membangun himpunan evaluasi untuknya dan terus memperbaikinya dari kasus gagal; Bab 8 masuk ke modelnya sendiri; Bab 6 dan 10 menambahkan cara interaksi seperti suara dan Computer Use serta kolaborasi multi-Agent. Untuk sisi rekayasa — evaluasi, observabilitas, keandalan — mulailah dari eksperimen evaluasi di Bab 7: bangun dulu himpunan evaluasi kecil berisi belasan tugas untuk agent Anda sendiri, lalu lakukan perbaikan berdasarkan kasus yang gagal.
+
+**Q: Di mana saya bisa bertanya dan berdiskusi?**
+- Koreksi naskah, bug eksperimen, masalah terjemahan: buka [Issue](https://github.com/bojieli/ai-agent-book/issues) dengan menyebutkan bab, subbab, dan kalimat aslinya.
+- Pertanyaan saat membaca, diskusi pertanyaan pemikiran, berbagi pengalaman, rekomendasi bahan: gunakan [GitHub Discussions](https://github.com/bojieli/ai-agent-book/discussions).
+
+**Q: Saya menemukan kesalahan dan ingin memperbaikinya. Bagaimana caranya?**
+Silakan langsung mengirim PR. Versi bahasa Tionghoa di [`book/`](../../book/) adalah naskah induk, dan bahasa lain disinkronkan darinya: saat mengubah isi naskah, cukup ubah versi bahasa Tionghoa dan jelaskan di PR; terjemahan akan disinkronkan bersama setelah digabungkan. Lihat [Kontribusi](#-kontribusi) untuk detailnya.
 
 ## 📦 Lampiran · Mengambil Repositori Eksternal
 

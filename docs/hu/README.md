@@ -1,11 +1,11 @@
 # Az AI-ügynökök mélyreható megértése: tervezési alapelvek és mérnöki gyakorlat
 
-[![PDF](https://img.shields.io/badge/PDF-letöltés-success.svg)](#-e-könyv) [![Online olvasás](https://img.shields.io/badge/🌐_Online_olvasás-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![Licenc](https://img.shields.io/badge/licenc-Apache--2.0-blue.svg)](../../LICENSE) [![Nyelvek](https://img.shields.io/badge/fordítások-15%20nyelv-informational.svg)](#-e-könyv)
+[![PDF](https://img.shields.io/badge/PDF-letöltés-success.svg)](#-e-könyv) [![Online olvasás](https://img.shields.io/badge/🌐_Online_olvasás-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/astro/hu/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![Licenc](https://img.shields.io/badge/licenc-Apache--2.0-blue.svg)](../../LICENSE) [![Nyelvek](https://img.shields.io/badge/fordítások-15%20nyelv-informational.svg)](#-e-könyv)
 [![A nap felkapott GitHub-projektje](https://img.shields.io/badge/GitHub%20Trending-A%20nap%20projektje-orange?logo=github)](https://github.com/trending)
 
 **[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · Magyar ← jelenlegi · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
-> 📥 **[PDF / EPUB letöltése](#-e-könyv)** (ajánlott) — a PDF- és EPUB-kiadás nyújtja a legjobb olvasási élményt; a könyv [online is olvasható](https://bojieli.github.io/ai-agent-book/), nyelvváltóval, összecsukható fejezetfával és teljes szövegű kereséssel.
+> 📥 **[PDF / EPUB letöltése](#-e-könyv)** (ajánlott) — a PDF- és EPUB-kiadás nyújtja a legjobb olvasási élményt; a könyv [online is olvasható](https://bojieli.github.io/ai-agent-book/astro/hu/), nyelvváltóval, összecsukható fejezetfával és kiemelésekkel és jegyzetekkel.
 
 **Ágens = NYM + Kontextus + Eszközök** — a könyv erre az alapképletre építve, tíz fejezeten keresztül vezet el az AI-ügynökök alapelveitől a mérnöki gyakorlatig. A teljes szöveg, az ábrák és a **104 kapcsolódó projekt** nyílt forráskódú.
 
@@ -37,7 +37,7 @@
 > - **Török**: [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.epub)
 > - **Koreai**: [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.epub)
 >
-> 🌐 A könyv [online is olvasható](https://bojieli.github.io/ai-agent-book/). A webhely a `main` ág minden frissítése után automatikusan újraépül.
+> 🌐 A könyv [online is olvasható](https://bojieli.github.io/ai-agent-book/astro/hu/). A webhely a `main` ág minden frissítése után automatikusan újraépül.
 
 A magyar kézirat forrása a [`book-hu/`](../../book-hu/) könyvtárban található. Ez közösségi fordítás, ezért előfordulhat, hogy lemarad a kínai eredeti mögött.
 
@@ -98,6 +98,33 @@ uv run python chapter1/context/main.py
 A modellt használó kísérletekhez legalább egy szolgáltatói API-kulcs szükséges. A modellválasztáshoz lásd [ezt az útmutatót](https://01.me/2025/07/llm-api-setup/); az egyes kísérletek pontos beállításait mindig a saját README-jük tartalmazza.
 
 > 🧪 A kísérletek futtatási állapotát, bizonyítékait és még teljesítendő kapuit külön az [`EXPERIMENT_STATUS.md`](../EXPERIMENT_STATUS.md) tartalmazza; a forráskód klónozása vagy telepítése önmagában nem igazolja a kísérlet befejezését.
+
+## ❓ Gyakori kérdések
+
+**K: Van PDF / EPUB? Magamnak kell buildelnem?**
+Nem kell. Az [E-könyv](#-e-könyv) szakasz 15 nyelven sorolja fel a PDF / EPUB letöltési hivatkozásokat, amelyek mindig a main ág legfrissebb buildjére mutatnak; a könyv [online is olvasható](https://bojieli.github.io/ai-agent-book/). Saját buildre csak akkor van szükség, ha módosítani szeretnéd a szöveget, és újra akarod tördelni.
+
+**K: Milyen előismeretek szükségesek a könyv olvasásához?**
+A bevezető „Előfeltételek” szakasza részletesen leírja: közepesen összetett Python-kód olvasása és módosítása; tapasztalat LLM-termékek, például a ChatGPT vagy a Claude használatában; legalább egy AI-alapú kódolóeszköz (Claude Code, Codex, Cursor stb.) ismerete; szoftvermérnöki alapismeretek, mint a parancssor, a Git, a JSON és a REST API-k. A 8. fejezet utótanításán (post-training) kívül a könyv matematikai és gépi tanulási követelményei nagyon alacsonyak.
+
+**K: Sok az ismeret, és olvasás után elfelejtem – hogyan emészthető meg?**
+Ne csak a főszöveget olvasd. A javasolt módszer, hogy minden fejezet kísérleteit saját kezűleg végezd el – nem a kapcsolódó kód nézegetésével, hanem úgy, hogy a könyvben leírt tervezési elvek megértése után egy coding agent segítségével a nulláról újra megvalósítod, megfigyeled a kimenetet, és felderíted, hol tér el a várttól. A fejezetek végén található gondolatébresztő kérdések is jó önellenőrzést adnak. A rendszerezettebb útvonalat a [Tanulási javaslatok](LEARNING.md) tartalmazza. Egy olvasó összegzése nagyon találó: először olvasd vékonyra a könyvet, aztán vastagra, aztán újra vékonyra.
+
+**K: A kísérletek kódját soronként meg kell értenem?**
+Nem kell. A könyvhöz tartozó kódot teljes egészében coding agentek generálták a könyv szövege alapján, és a szerző sem olvassa soronként. A lényeg az architektúra, az alapvető komponensek és a tervezési elvek tisztázása; ezután az AI írja a kódot, futtatja a teszteket és javítja a hibákat, az ember pedig a kezdeti tervezésért és a végső átvételért felel.
+
+**K: Vannak referenciaválaszok a gondolatébresztő kérdésekhez?**
+Igen: [`book/reference-answers.md`](../../book/reference-answers.md) ([online változat](https://bojieli.github.io/ai-agent-book/book/reference-answers/)). Ezek csak referenciák, nem hivatalos megoldások; eltérő véleményedet szívesen látjuk a Discussions felületen.
+
+**K: A könyv elolvasása után milyen gyakorlati projektbe vághatok bele?**
+Javasoljuk, hogy építs a nulláról egy Claude Code- vagy Codex-szerű coding agentet: az 1–5. fejezet elég egy használható coding agent elkészítéséhez; a 7. és 9. fejezet segít értékelési halmazt építeni hozzá, és a hibás esetekből folyamatosan javítani; a 8. fejezet magába a modellbe nyúl bele; a 6. és 10. fejezet hang-, Computer Use- és egyéb interakciós módokat, valamint többügynökös együttműködést ad hozzá. Az értékelés, a megfigyelhetőség és a megbízhatóság mérnöki lépéseit a 7. fejezet értékelési kísérleteivel kezdheted: először építs a saját agentedhez egy tucatnyi feladatból álló kis értékelési halmazt, majd a hibás esetek köré szervezve javíts.
+
+**K: Hol lehet kérdezni és eszmét cserélni?**
+- Szöveghibák, kísérleti bugok, fordítási problémák: nyiss egy [Issue-t](https://github.com/bojieli/ai-agent-book/issues), és add meg a fejezetet, az alfejezetet és az eredeti mondatot.
+- Olvasás közben felmerülő kérdések, a gondolatébresztő kérdések megvitatása, tapasztalatmegosztás, anyagajánlás: használd a [GitHub Discussions](https://github.com/bojieli/ai-agent-book/discussions) felületet.
+
+**K: Hibát találtam, és javítani szeretném – mit tegyek?**
+Nyugodtan küldj közvetlenül Pull Requestet. A kínai változat, a [`book/`](../../book/) az elsődleges forrás, a többi nyelv a kínaiból szinkronizálódik: a főszöveg módosításakor elég a kínai változatot módosítani, és a PR-ben leírni; a fordítások az összeolvasztás után egységesen szinkronizálódnak. Részletek a [Közreműködés](#-közreműködés) szakaszban.
 
 ## 📦 Függelék · Külső repository-k beszerzése
 

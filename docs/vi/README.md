@@ -1,11 +1,11 @@
 # Hiểu sâu về AI Agent: Nguyên lý thiết kế và thực hành kỹ thuật
 
-[![PDF](https://img.shields.io/badge/PDF-tải%20về-success.svg)](#-sách-điện-tử) [![Đọc trực tuyến](https://img.shields.io/badge/🌐_Đọc_trực_tuyến-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/dịch-15%20ngôn%20ngữ-informational.svg)](#-sách-điện-tử)
+[![PDF](https://img.shields.io/badge/PDF-tải%20về-success.svg)](#-sách-điện-tử) [![Đọc trực tuyến](https://img.shields.io/badge/🌐_Đọc_trực_tuyến-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/astro/vi/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/dịch-15%20ngôn%20ngữ-informational.svg)](#-sách-điện-tử)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
 **[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · Tiếng Việt ← hiện tại · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · [Türkçe](../tr/README.md) · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
-> 📥 **[Tải PDF / EPUB](#-sách-điện-tử)** (khuyên dùng) — nên đọc sách qua bản PDF / EPUB để có trải nghiệm tốt nhất; bạn cũng có thể [đọc trực tuyến](https://bojieli.github.io/ai-agent-book/) (chuyển đổi ngôn ngữ, mục lục đóng/mở được, tìm kiếm toàn văn; tự động xây dựng lại sau mỗi lần đẩy lên main).
+> 📥 **[Tải PDF / EPUB](#-sách-điện-tử)** (khuyên dùng) — nên đọc sách qua bản PDF / EPUB để có trải nghiệm tốt nhất; bạn cũng có thể [đọc trực tuyến](https://bojieli.github.io/ai-agent-book/astro/vi/) (chuyển đổi ngôn ngữ, mục lục đóng/mở được, đánh dấu và ghi chú; tự động xây dựng lại sau mỗi lần đẩy lên main).
 
 **Agent = LLM + Context + Tools** — Cuốn sách xây dựng trên công thức cốt lõi này qua 10 chương, đưa AI Agent từ nguyên lý đến thực hành kỹ thuật. Toàn bộ nội dung, hình minh họa và **93 thí nghiệm đi kèm** đều là mã nguồn mở. Hoan nghênh bạn tự chạy các thí nghiệm.
 
@@ -35,7 +35,7 @@
 > - **Tiếng Thổ Nhĩ Kỳ**（dịch cộng đồng, by [@memisemre](https://github.com/memisemre)）：[PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.epub)
 > - **Tiếng Hàn**（dịch cộng đồng, by [@JeongJaeSoon](https://github.com/JeongJaeSoon)）：[PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.epub)
 >
-> 🌐 Bạn cũng có thể [đọc trực tuyến](https://bojieli.github.io/ai-agent-book/) — chuyển đổi ngôn ngữ, mục lục đóng/mở được, tìm kiếm toàn văn và liên kết trực tiếp đến các thí nghiệm kèm theo. Tự động xây dựng lại sau mỗi lần đẩy lên main.
+> 🌐 Bạn cũng có thể [đọc trực tuyến](https://bojieli.github.io/ai-agent-book/astro/vi/) — chuyển đổi ngôn ngữ, mục lục đóng/mở được, đánh dấu và ghi chú và liên kết trực tiếp đến các thí nghiệm kèm theo. Tự động xây dựng lại sau mỗi lần đẩy lên main.
 
 Mã nguồn tiếng Trung nằm trong [`book/`](../../book/); các bản Anh/Tây Ban Nha/Ả Rập/Trung phồn thể (Đài Loan)/Nga/Tamil/Việt/Nhật/Thổ Nhĩ Kỳ/Hàn là đóng góp cộng đồng (có thể chậm hơn bản gốc), nằm trong [`book-en/`](../../book-en/), [`book-es/`](../../book-es/), [`book-ar/`](../../book-ar/), [`book-zhtw/`](../../book-zhtw/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/), [`book-ja/`](../../book-ja/), [`book-tr/`](../../book-tr/), [`book-ko/`](../../book-ko/).
 
@@ -114,6 +114,33 @@ Nên đăng ký API key từ vài nền tảng để thuận tiện học tập.
 | **DeepSeek** | <https://platform.deepseek.com/> | API chính thức của DeepSeek | Toàn cầu + Trung Quốc đại lục |
 | **Krill AI** | [www.krill-code.com](https://www.krill-code.com/register?invite=Q8D3L35725) | Truy cập một điểm đến các mô hình chính toàn cầu và nội địa Trung Quốc (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax) | Toàn cầu + Trung Quốc đại lục |
 | **OpenRouter** | <https://openrouter.ai/> | Truy cập một điểm đến các mô hình chính toàn cầu và nội địa Trung Quốc (GPT, Claude, Gemini, Kimi, GLM, DeepSeek, Qwen, v.v.) | Toàn cầu |
+
+## ❓ Câu hỏi thường gặp
+
+**Q: Có bản PDF / EPUB không? Tôi có phải tự build không?**
+Không cần. Mục [Sách điện tử](#-sách-điện-tử) liệt kê liên kết tải PDF / EPUB cho 15 ngôn ngữ, luôn trỏ tới bản dựng mới nhất của nhánh `main`; bạn cũng có thể [đọc trực tuyến](https://bojieli.github.io/ai-agent-book/). Chỉ khi muốn sửa bản thảo và dàn trang lại thì bạn mới cần tự build.
+
+**Q: Đọc cuốn sách này cần kiến thức nền gì?**
+Mục "Kiến thức tiên quyết" trong phần mở đầu giải thích đầy đủ: đọc hiểu và sửa được mã Python có độ phức tạp trung bình; đã dùng các sản phẩm LLM như ChatGPT, Claude; quen với ít nhất một công cụ lập trình có AI hỗ trợ (Claude Code, Codex, Cursor, v.v.); nắm các kiến thức kỹ thuật phần mềm cơ bản như dòng lệnh, Git, JSON, REST API. Ngoài Chương 8 về post-training, cả cuốn sách yêu cầu rất ít toán và học máy.
+
+**Q: Kiến thức nhiều, đọc xong lại quên, làm sao để tiêu hóa?**
+Đừng chỉ đọc phần chính văn. Cách được khuyến nghị là tự tay làm các thí nghiệm của từng chương — không phải đọc mã đi kèm, mà là hiểu các nguyên lý thiết kế trong sách rồi dùng coding agent tự cài đặt lại từ đầu, quan sát kết quả và truy tìm những chỗ không đúng như kỳ vọng; các câu hỏi tư duy cuối mỗi chương cũng là cách tự kiểm tra tốt. Lộ trình có hệ thống hơn xem tại [Gợi ý học tập](LEARNING.md). Một độc giả đã tổng kết rất đúng: trước tiên đọc cho cuốn sách mỏng đi, rồi đọc cho nó dày lên, rồi lại đọc cho nó mỏng đi.
+
+**Q: Có cần hiểu từng dòng mã thí nghiệm không?**
+Không cần. Toàn bộ mã đi kèm của sách do coding agent sinh ra từ bản thảo, và tác giả cũng không đọc từng dòng. Điều quan trọng là nghĩ thật rõ về kiến trúc, các thành phần cốt lõi và nguyên lý thiết kế, rồi để AI viết mã, chạy kiểm thử, sửa bug; con người chịu trách nhiệm thiết kế ban đầu và nghiệm thu cuối cùng.
+
+**Q: Câu hỏi tư duy có đáp án tham khảo không?**
+Có: [`book/reference-answers.md`](../../book/reference-answers.md) ([bản trực tuyến](https://bojieli.github.io/ai-agent-book/book/reference-answers/)). Đó chỉ là tham khảo, không phải đáp án chuẩn; hoan nghênh bạn trao đổi ý kiến khác trong Discussions.
+
+**Q: Đọc xong rồi có dự án thực hành nào để áp dụng?**
+Khuyên bạn tự làm từ đầu một coding agent giống Claude Code hay Codex: Chương 1–5 đủ để làm ra một coding agent dùng được; Chương 7 và 9 giúp bạn xây bộ đánh giá cho nó và liên tục cải thiện từ các ca thất bại; Chương 8 can thiệp vào chính mô hình; Chương 6 và 10 bổ sung cho nó các phương thức tương tác như giọng nói, Computer Use và cộng tác đa Agent. Với các khâu kỹ thuật như đánh giá, quan sát, độ tin cậy, có thể bắt đầu từ thí nghiệm đánh giá ở Chương 7: trước hết xây cho agent của mình một bộ đánh giá nhỏ khoảng mười mấy tác vụ, rồi cải thiện xoay quanh các ca thất bại.
+
+**Q: Đặt câu hỏi và thảo luận ở đâu?**
+- Lỗi trong bản thảo, bug thí nghiệm, vấn đề dịch thuật: mở [Issue](https://github.com/bojieli/ai-agent-book/issues), ghi rõ chương, mục và câu nguyên văn.
+- Thắc mắc khi đọc, thảo luận câu hỏi tư duy, chia sẻ kinh nghiệm, giới thiệu tài liệu: vui lòng dùng [GitHub Discussions](https://github.com/bojieli/ai-agent-book/discussions).
+
+**Q: Phát hiện lỗi muốn sửa thì làm thế nào?**
+Hoan nghênh gửi PR trực tiếp. Bản tiếng Trung [`book/`](../../book/) là bản gốc, các ngôn ngữ khác được đồng bộ từ tiếng Trung: khi sửa chính văn chỉ cần sửa bản tiếng Trung và ghi rõ trong PR, bản dịch sẽ được đồng bộ thống nhất sau khi merge. Xem chi tiết tại [Đóng góp](#-đóng-góp).
 
 ## 💎 Nhà tài trợ
 

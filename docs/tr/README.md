@@ -1,11 +1,11 @@
 # AI Agent'ları Derinlemesine Anlamak: Tasarım İlkeleri ve Mühendislik Pratiği
 
-[![PDF](https://img.shields.io/badge/PDF-indir-success.svg)](#-e-kitap) [![Çevrimiçi oku](https://img.shields.io/badge/🌐_Çevrimiçi_oku-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/çeviri-15%20dil-informational.svg)](#-e-kitap)
+[![PDF](https://img.shields.io/badge/PDF-indir-success.svg)](#-e-kitap) [![Çevrimiçi oku](https://img.shields.io/badge/🌐_Çevrimiçi_oku-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/astro/tr/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/çeviri-15%20dil-informational.svg)](#-e-kitap)
 [![Trending GitHub Project of the Day](https://img.shields.io/badge/GitHub%20Trending-Project%20of%20the%20Day-orange?logo=github)](https://github.com/trending)
 
 **[中文](../../README.md) · [English](../en/README.md) · [Español](../es/README.md) · [Bahasa Indonesia](../id/README.md) · [العربية](../ar/README.md) · [繁體中文（台灣）](../zh-TW/README.md) · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md) · Türkçe ← şu an · [한국어](../ko/README.md) · [Magyar](../hu/README.md) · [עברית](../../README.he.md) · [Português (Brasil)](../../README.ptbr.md)**
 
-> 📥 **[PDF / EPUB indir](#-e-kitap)** (önerilir) — PDF / EPUB sürümleri en iyi okuma deneyimini sunar; kitabı [çevrimiçi](https://bojieli.github.io/ai-agent-book/) da okuyabilirsiniz.
+> 📥 **[PDF / EPUB indir](#-e-kitap)** (önerilir) — PDF / EPUB sürümleri en iyi okuma deneyimini sunar; kitabı [çevrimiçi](https://bojieli.github.io/ai-agent-book/astro/tr/) da okuyabilirsiniz.
 
 **Agent = LLM + Bağlam + Araçlar** — Bu kitap, bu temel formül etrafında 10 bölümde AI Agent'ları ilkelerden mühendislik pratiğine taşıyor. Tüm metin, görseller ve **93 eşlik eden deney** açık kaynak; deneyleri bizzat çalıştırmanız için sizi bekliyor.
 
@@ -35,7 +35,7 @@
 > - **Türkçe** (topluluk çevirisi, by [@memisemre](https://github.com/memisemre)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-tr.epub)
 > - **Korece** (topluluk çevirisi, by [@JeongJaeSoon](https://github.com/JeongJaeSoon)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ko.epub)
 >
-> 🌐 Kitabı ayrıca [çevrimiçi okuyabilirsiniz](https://bojieli.github.io/ai-agent-book/) — dil değiştirici, katlanabilir bölüm ağacı, tam metin araması ve eşlik eden deneylere doğrudan bağlantılar sunar.
+> 🌐 Kitabı ayrıca [çevrimiçi okuyabilirsiniz](https://bojieli.github.io/ai-agent-book/astro/tr/) — dil değiştirici, katlanabilir bölüm ağacı, vurgular ve notlar ve eşlik eden deneylere doğrudan bağlantılar sunar.
 
 Çince metin kaynağı [`book/`](../../book/) içindedir; İngilizce/İspanyolca/Arapça/Geleneksel Çince/Rusça/Tamilce/Vietnamca/Japonca/Türkçe/Korece sürümleri topluluk katkısıdır (Çince orijinalin gerisinde kalabilir), sırasıyla [`book-en/`](../../book-en/), [`book-es/`](../../book-es/), [`book-ar/`](../../book-ar/), [`book-zhtw/`](../../book-zhtw/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/), [`book-ja/`](../../book-ja/), [`book-tr/`](../../book-tr/), [`book-ko/`](../../book-ko/) klasörlerinde bulunur.
 
@@ -88,6 +88,33 @@ Kitap, **Agent = LLM + Bağlam + Araçlar** temel formülü etrafında şekillen
 | **OpenRouter** | <https://openrouter.ai/> | Gemini / Claude / GPT-5 vb.'ye tek noktadan erişim (resmi API'ler yurt dışı IP/ödeme gerektirir; OpenAI ayrıca yurt dışı kimlik doğrulaması ister) |
 
 > 🧪 Deneylerin yürütme durumu, kanıtları ve karşılanmamış kabul koşulları ayrı olarak [`EXPERIMENT_STATUS.md`](../EXPERIMENT_STATUS.md) dosyasında izlenir; kaynak kodu klonlamak veya kurmak deneyin tamamlandığını kanıtlamaz.
+
+## ❓ Sık Sorulan Sorular
+
+**S: PDF / EPUB var mı? Kendim derlemem gerekiyor mu?**
+Gerekmiyor. [E-Kitap](#-e-kitap) bölümünde 15 dildeki PDF / EPUB indirme bağlantıları listelenir ve bunlar her zaman main dalının en son derlemesine işaret eder; kitabı [çevrimiçi](https://bojieli.github.io/ai-agent-book/) de okuyabilirsiniz. Yalnızca metni değiştirip yeniden dizmek istiyorsanız kendiniz derlemeniz gerekir.
+
+**S: Bu kitabı okumak için hangi ön bilgiler gerekir?**
+Giriş bölümündeki "Ön Koşullar" kısmı bunu tam olarak açıklar: orta karmaşıklıkta Python kodunu okuyup değiştirebilmek; ChatGPT, Claude gibi LLM ürünlerini kullanmış olmak; en az bir AI destekli kodlama aracına (Claude Code, Codex, Cursor vb.) aşina olmak; komut satırı, Git, JSON, REST API gibi yazılım mühendisliği temellerini bilmek. 8. bölümdeki post-training dışında kitabın matematik ve makine öğrenimi gereksinimi çok düşüktür.
+
+**S: Çok fazla bilgi var, okuduktan sonra unutuyorum; nasıl sindirebilirim?**
+Yalnızca metni okumayın. Önerilen yol, her bölümün deneylerini kendi elinizle yapmaktır — eşlik eden kodu okumak değil, kitaptaki tasarım ilkelerini anladıktan sonra bir coding agent yardımıyla sıfırdan yeniden uygulamak, çıktıyı gözlemlemek ve beklentiye uymayan yerleri ayıklamak. Her bölümün sonundaki düşünce soruları da iyi bir öz değerlendirmedir. Daha sistemli bir yol için [Öğrenme Önerileri](LEARNING.md) sayfasına bakın. Bir okurun özeti çok yerinde: önce kitabı inceltin, sonra kalınlaştırın, sonra yeniden inceltin.
+
+**S: Deney kodunu satır satır anlamam gerekiyor mu?**
+Gerekmiyor. Kitaba eşlik eden kodun tamamı coding agent'lar tarafından kitap metnine göre üretildi; yazar da bunu satır satır okumuyor. Önemli olan mimariyi, temel bileşenleri ve tasarım ilkelerini netleştirmek, ardından kodu yazmayı, testleri çalıştırmayı ve hataları düzeltmeyi AI'ya bırakmaktır; insan ilk tasarımdan ve son kabulden sorumludur.
+
+**S: Düşünce sorularının örnek cevapları var mı?**
+Var: [`book/reference-answers.md`](../../book/reference-answers.md) ([çevrimiçi sürüm](https://bojieli.github.io/ai-agent-book/book/reference-answers/)). Bunlar yalnızca referanstır, standart cevap değildir; farklı görüşlerinizi Discussions'ta tartışmaktan çekinmeyin.
+
+**S: Kitabı bitirdikten sonra hayata geçirebileceğim bir uygulama projesi var mı?**
+Claude Code veya Codex benzeri bir coding agent'ı sıfırdan yapmanızı öneririz: 1–5. bölümler kullanılabilir bir coding agent yapmak için yeterlidir; 7. ve 9. bölümler ona bir değerlendirme kümesi kurmanıza ve başarısız örneklerden sürekli iyileştirmenize yardım eder; 8. bölüm modelin kendisine müdahale eder; 6. ve 10. bölümler ses, Computer Use gibi etkileşim biçimleri ve çoklu Agent iş birliği ekler. Değerlendirme, gözlemlenebilirlik ve güvenilirlik gibi mühendislik adımlarına 7. bölümdeki değerlendirme deneylerinden başlayabilirsiniz: önce kendi agent'ınız için on-on beş görevlik küçük bir değerlendirme kümesi kurun, sonra başarısız örnekler etrafında iyileştirme yapın.
+
+**S: Soruları ve tartışmaları nereye yazabilirim?**
+- Metin hataları, deney bug'ları, çeviri sorunları: bir [Issue](https://github.com/bojieli/ai-agent-book/issues) açın; lütfen bölümü, alt bölümü ve ilgili cümleyi belirtin.
+- Okuma soruları, düşünce sorularının tartışılması, deneyim paylaşımı, kaynak önerileri: lütfen [GitHub Discussions](https://github.com/bojieli/ai-agent-book/discussions) kullanın.
+
+**S: Bir hata buldum ve düzeltmek istiyorum, ne yapmalıyım?**
+Doğrudan PR göndermeniz memnuniyetle karşılanır. Çince sürüm [`book/`](../../book/) ana kaynaktır; diğer diller Çince'den senkronize edilir. Metni değiştirirken yalnızca Çince sürümü değiştirip PR'da açıklamanız yeterlidir; çeviriler birleştirmeden sonra toplu olarak senkronize edilir. Ayrıntılar için [Katkıda Bulunma](#-katkıda-bulunma) bölümüne bakın.
 
 ## 📦 Ek · Harici Depoların Temin Edilmesi
 
